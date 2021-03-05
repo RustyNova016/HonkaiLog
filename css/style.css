@@ -4,5 +4,18 @@
 }
 
 .bg {
-  background-color: #0a1b6a;
+    background-color: #282f3f;
+    color: #ffffff;
+}
+
+.title {
+    padding-top: 20px;
+    padding-bottom: 15px;
+}
+
+pre {
+    background-color: #ffffff;
+    color: #000000;
+    border-radius: 15px;
+    border: 5px solid rgba(255, 0, 63, 1);
 }
