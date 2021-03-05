@@ -2,7 +2,7 @@
 $server = "localhost";
 $user = "root";
 $pass = "";
-$database = "routard";
+$database = "honkailog";
 try {
     $dbh = new PDO('mysql:host='.$server.';dbname='.$database, $user, $pass);
     
