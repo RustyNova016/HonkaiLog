@@ -3,7 +3,7 @@ function update_currency_count($dbh, $idcap, $idcurrency, $quantity, $libchange)
 {
     $SQLrequest = "INSERT INTO currency_count (id_captain, id_currency, quantity, libchange) VALUES (".$idcap.", ".$idcurrency.", ".$quantity.", '".$libchange."');";
 
-    echo $SQLrequest;
+    //echo $SQLrequest;
     $sth = $dbh->prepare($SQLrequest);
     $outp = [$sth->execute()];
 

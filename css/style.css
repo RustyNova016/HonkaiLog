@@ -19,3 +19,8 @@ pre {
     border-radius: 15px;
     border: 5px solid rgba(255, 0, 63, 1);
 }
+
+.sticky {
+  position: sticky;
+  top: 10px;
+}

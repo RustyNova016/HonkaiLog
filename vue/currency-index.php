@@ -1,28 +1,53 @@
 <div class="bg">
     <div class="container bg">
 
-        <h1 class="title">Currencies</h1>
+        <?php
+        if (isset($update_valid)){
+            if ($update_valid[0]){
+                echo "<br><div class=\"alert alert-success\" role=\"alert\">Successfully updated the currency count</div>";
+            } else {
+                echo "<br><div class=\"alert alert-danger\" role=\"alert\">Something went wrong</div>";
+            }
+        }
+        ?>
 
-        <form action="/honkailog/user/" method=get>
+        <h1 class="title">Currency: <?=$cur_info["name"] ?></h1>
 
-            <div class="mb-3">
-                <select class="form-select" aria-label="Default select example">
-                    <option selected>Open this select menu</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
-                </select>
-                <button type="submit" class="btn btn-primary">Select currency</button>
-            </div>
+        <form action="/honkailog/currency/" method=post>
+
+
+            <select onchange="this.form.submit()" name="cur" class="form-select form-select-lg" aria-label=".form-select-lg example">
+                <?php
+                foreach ($currencies as $key) {
+                    if ($key["id_currency"] == $idcurrency){
+                        $sele = "selected";
+                    } else {
+                        $sele = "";
+                    }
+                    echo "<option value=\"".$key["id_currency"]."\" ".$sele.">".$key["name"]."</option>"
+
+                ?>
+                <?php
+                }
+                ?>
+            </select>
+
 
 
         </form>
 
+        <p>You currently have <?=$timespan_type[0]["current"] ?> <?=$cur_info["name"] ?>s</p>
+        <br><br>
+
+        <h2>Update value:</h2><br>
+
         <form action="/honkailog/currency/" method=post>
 
+            <input name="cur" type="hidden" value="<?=$cur_info["id_currency"] ?>">
+
             <div class="mb-3">
-                <label for="exampleFormControlInput1" class="form-label">Crystal quantity</label>
-                <input name="quantity" type="input" class="form-control" id="exampleFormControlInput1" placeholder="">
+                <label for="exampleFormControlInput1" class="form-label"><?=$cur_info["name"] ?> quantity</label>
+                <input name="quantity" type="input" class="form-control" value="<?=$timespan_type[0]["current"] ?>">
             </div>
             <div class="mb-3">
                 <label for="exampleFormControlTextarea1" class="form-label">Change</label>
@@ -36,23 +61,37 @@
 
         <h1 class="title">Stats</h1>
 
-        <div class="row">
+        <div class="row justify-content-between">
             <?php
-            foreach ($timespan_type as $times) {
+            foreach ($timespan_type as $timespan) {
             ?>
 
-            <div class="card text-white bg-success mb-3" style="width: 18rem; margin: 5px;">
-              <div class="card-body">
-                <h5 class="card-title"><?=$times["name"] ?></h5>
-                <p class="card-text"><?=$times["start"] ?>, you:</p>
-                  <ul>
-                      <li>Gained <?=$times["gain"] ?></li>
-                      <li>Lost <?=$times["loses"] ?></li>
-                  </ul>
-                  Overall, you got <?=$times["overall_change"] ?>
-              </div>
-            </div>
+                <div class="card text-white <?=$timespan["bg"] ?> col-sm-5" style="width: auto; margin: 10px; padding:15px;">
+                    <div class="card-body" style="padding: 5px;">
+                        <h5 class="card-title"><?=$timespan["name"] ?></h5>
+                        <p class="card-text"><?=$timespan["start"] ?>, you:</p>
+                        <ul>
+                            <li>Gained <?=$timespan["gain"] ?> <?=$cur_info["name"] ?>s</li>
+                            <li>Lost <?=$timespan["loses"] ?> <?=$cur_info["name"] ?>s</li>
+                        </ul>
+                        Overall, you got <?=$timespan["overall_change"] ?> <?=$cur_info["name"] ?>s during this period.
+                        <br> <br>
 
+                        <?php
+                        if ($timespan["overall_change_average"] != -1){
+                            echo "On average, you got ".$timespan["overall_change_average"]." ".$cur_info["name"]."s per day. Which is ";
+
+                            if ($timespan["overall_change_average"] > $timespan_type[1]["gain"]) {
+                                echo "<a style='color: #ff7474'>more</a> than the last 24h";
+                            } elseif ($timespan["overall_change_average"] == $timespan_type[1]["gain"]){
+                                echo "the same as the last 24h";
+                            } else {
+                                echo "<a style='color: #7eff76'>less</a> than the last 24h";
+                            }
+                        }
+                        ?>
+                    </div>
+                </div>
             <?php
             }
             ?>
