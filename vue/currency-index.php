@@ -34,6 +34,30 @@
 
         </form>
 
+        <h1 class="title">Stats</h1>
+
+        <div class="row">
+            <?php
+            foreach ($timespan_type as $times) {
+            ?>
+
+            <div class="card text-white bg-success mb-3" style="width: 18rem; margin: 5px;">
+              <div class="card-body">
+                <h5 class="card-title"><?=$times["name"] ?></h5>
+                <p class="card-text"><?=$times["start"] ?>, you:</p>
+                  <ul>
+                      <li>Gained <?=$times["gain"] ?></li>
+                      <li>Lost <?=$times["loses"] ?></li>
+                  </ul>
+                  Overall, you got <?=$times["overall_change"] ?>
+              </div>
+            </div>
+
+            <?php
+            }
+            ?>
+        </div>
+
 
     </div>
 </div>

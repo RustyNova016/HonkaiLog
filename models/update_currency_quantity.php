@@ -5,12 +5,10 @@ function update_currency_count($dbh, $idcap, $idcurrency, $quantity, $libchange)
 
     echo $SQLrequest;
     $sth = $dbh->prepare($SQLrequest);
-    if ($sth->execute()) {
-        $id = $dbh->lastInsertId();
-        echo "Insert of id: " . $id;
-    } else {
-        $id = -1;
-        echo "Error";
+    $outp = [$sth->execute()];
+
+    if ($outp[0]) {
+        $outp[1] = $dbh->lastInsertId();
     }
-    return $id;
+    return $outp;
 }
