@@ -1,3 +1,12 @@
+body {
+    background-color: #282f3f;
+}
+
+html, body {
+    margin: 0;
+    height: 100%;
+}
+
 .navbar{
     background-color: #040b26;
     color: #ffffff;
