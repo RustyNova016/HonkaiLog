@@ -6,7 +6,7 @@ function get_currency_history($dbh, $idcap, $idcurrency, $date)
     if ($date != "TODAY") {
         $SQLrequest .= " AND time_stamp  > DATE_SUB(NOW(), INTERVAL ". $date .")";
     } else {
-        $SQLrequest .= " AND DATE_SUB(time_stamp, INTERVAL 4 HOUR) > DATE_ADD(NOW(), INTERVAL 1 DAY)";
+        $SQLrequest .= " AND DATE_SUB(time_stamp, INTERVAL 4 HOUR) > DATE_ADD(DATE_SUB(NOW(), INTERVAL 1 DAY), INTERVAL 4 HOUR)";
     }
 
     $SQLrequest .= " ORDER BY time_stamp;";
