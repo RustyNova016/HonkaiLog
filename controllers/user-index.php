@@ -1,12 +1,11 @@
 <?php
-echo "<pre>";
-print_r($_POST);
-echo "</pre>";
+include "models/get_user.php";
 
-include "models/add_user.php";
-if (!empty($_POST)){
-    add_user($dbh, $_POST["name"]);
+if (!empty($params[2])){
+    $_SESSION["iduser"] = $params[2];
 }
 
-include "vue/user-add.php"
+$captains = get_user($dbh);
+
+include "vue/user-index.php";
 ?>

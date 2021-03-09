@@ -2,7 +2,6 @@
 // We start the session
 session_start();
 
-
 include "global/connection.php";
 include "templates/header.php";
 include "templates/menu.php";
@@ -17,6 +16,7 @@ else
     $params = array("", "");
 }
 
+//var_dump($_SESSION);
 // Debug
 //echo "<pre>";
 //print_r($params);
