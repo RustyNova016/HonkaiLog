@@ -72,21 +72,23 @@
                         <p class="card-text"><?=$timespan["start"] ?>, you:</p>
                         <ul>
                             <li>Gained <?=$timespan["gain"] ?> <?=$cur_info["name"] ?>s</li>
-                            <li>Lost <?=$timespan["loses"] ?> <?=$cur_info["name"] ?>s</li>
+                            <li>Spent <?=$timespan["loses"] ?> <?=$cur_info["name"] ?>s</li>
                         </ul>
                         Overall, you got <?=$timespan["overall_change"] ?> <?=$cur_info["name"] ?>s during this period.
                         <br> <br>
 
                         <?php
-                        if ($timespan["overall_change_average"] != -1){
-                            echo "On average, you got ".$timespan["overall_change_average"]." ".$cur_info["name"]."s per day. Which is ";
+                        $change_average = $timespan["overall_change_average"];
+                        if ($change_average != -1){
+                            echo "On average, you got ". $change_average ." ".$cur_info["name"]."s per day. Which is ";
 
-                            if ($timespan["overall_change_average"] > $timespan_type[1]["gain"]) {
-                                echo "<a style='color: #ff7474'>more</a> than the last 24h";
-                            } elseif ($timespan["overall_change_average"] == $timespan_type[1]["gain"]){
+                            $today_overall_change = $timespan_type[0]["overall_change"];
+                            if ($change_average > $today_overall_change) {
+                                echo "<a style='color: #ffa7a7'>more</a> than today";
+                            } elseif ($change_average == $today_overall_change){
                                 echo "the same as the last 24h";
                             } else {
-                                echo "<a style='color: #7eff76'>less</a> than the last 24h";
+                                echo "<a style='color: #7eff76'>less</a> than today";
                             }
                         }
                         ?>
