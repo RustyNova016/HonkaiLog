@@ -80,5 +80,6 @@ if (!empty($_SESSION["iduser"])){
     include "vue/currency-index.php";
 } else {
     header("Location: /honkailog/user/");
+    echo "who is this?";
     die();
 }

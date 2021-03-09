@@ -12,7 +12,7 @@
             <?php
               foreach ($captains as $cap)
 	    	{
-	    	    $id = $cap["id_captain"];
+	    	    $id = $cap["id_user"];
 	    		$username = $cap['name'];
 	    		$level = $cap['level'];
 
