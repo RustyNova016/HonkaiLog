@@ -1,6 +1,6 @@
 <?php
 function get_user_list($dbh){
-    $SQLrequest = "SELECT * FROM captain";
+    $SQLrequest = "SELECT * FROM user";
 
 
     //echo $SQLrequest;

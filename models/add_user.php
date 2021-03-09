@@ -1,7 +1,7 @@
 <?php
 function add_user($dbh, $username)
 {
-    $SQLrequest = "INSERT INTO captain (name) VALUES ('".$username."');";
+    $SQLrequest = "INSERT INTO user (name) VALUES ('".$username."');";
 
     echo $SQLrequest;
     $sth = $dbh->prepare($SQLrequest);
