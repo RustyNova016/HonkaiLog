@@ -1,66 +1,67 @@
 <?php
 // We check for if the user is connected
 if (!empty($_SESSION["iduser"])){
-    // We get the avaible currencies
-    include "models/get_currencies.php";
-    $currencies = get_currencies($dbh);
+    include "models/material.php";
+    $material_DTB = new material($dbh);
 
-    //echo "<pre>";
-    //print_r($currencies);
-    //echo "</pre>";
+    // We get the available currencies
+    $currencies = $material_DTB->get_material_type_list("currency");
 
     if (!empty($_POST)){
-        $idcurrency = $_POST["cur"];
+        $idcurrency_selected = $_POST["cur"];
     } else {
-        $idcurrency = 1;
+        $idcurrency_selected = 1;
     }
 
-    $cur_info = $currencies[$idcurrency-1];
+    $cur_info = $currencies[$idcurrency_selected-1];
 
-    include "models/update_currency_quantity.php";
     if (!empty($_POST)){
         if (!empty($_POST["quantity"])){
-            $update_valid = update_currency_count($dbh, $_SESSION["iduser"], $idcurrency, $_POST["quantity"], $_POST["libchange"]);
+            $update_valid = $material_DTB->update_material($_SESSION["iduser"], $idcurrency_selected, $_POST["quantity"], $_POST["libchange"]);
         }
     }
 
+    //TODO: move to separate file
     $timespan_type = [
         [
             "name" => "Today",
-            "SQL" => "TODAY",
+            "SQL" => "1 DAY",
             "start" => "Today",
             "nbr_day" => 1,
+            "wholeday" => 1
         ],
         [
             "name" => "Last 24h",
             "SQL" => "1 DAY",
             "start" => "In the last 24h",
             "nbr_day" => 1,
+            "wholeday" => 0
         ],
         [
             "name" => "Last 7 day",
             "SQL" => "7 DAY",
             "start" => "In the last 7 days",
             "nbr_day" => 7,
+            "wholeday" => 1
         ],
         [
             "name" => "Last 30 day",
             "SQL" => "30 DAY",
             "start" => "In the last 30 days",
             "nbr_day" => 30,
+            "wholeday" => 1
         ],
         [
             "name" => "Last year",
             "SQL" => "365 DAY",
             "start" => "In the last year",
             "nbr_day" => 365,
+            "wholeday" => 1
         ]
     ];
 
-    include "models/get_currency_history.php";
-
     for ($i=0; $i < count($timespan_type); $i++) {
-        $timespan_type[$i]["history_data"] = get_currency_history($dbh, $_SESSION["iduser"], $idcurrency, $timespan_type[$i]["SQL"]);
+        $timespan_type[$i]["history_data"] = $material_DTB->get_material_history($_SESSION["iduser"], $idcurrency_selected, $timespan_type[$i]["SQL"]);
     }
 
 
@@ -78,6 +79,8 @@ if (!empty($_SESSION["iduser"])){
     //echo "</pre>";
 
     include "vue/currency-index.php";
+
+    //TODO: History table
 } else {
     header("Location: /honkailog/user/");
     echo "who is this?";

@@ -19,12 +19,12 @@
             <select onchange="this.form.submit()" name="cur" class="form-select form-select-lg" aria-label=".form-select-lg example">
                 <?php
                 foreach ($currencies as $key) {
-                    if ($key["id_currency"] == $idcurrency){
+                    if ($key["id_material"] == $idcurrency_selected){
                         $sele = "selected";
                     } else {
                         $sele = "";
                     }
-                    echo "<option value=\"".$key["id_currency"]."\" ".$sele.">".$key["name"]."</option>"
+                    echo "<option value=\"".$key["id_material"]."\" ".$sele.">".$key["name"]."</option>"
 
                 ?>
                 <?php
@@ -43,7 +43,7 @@
 
         <form action="/honkailog/currency/" method=post>
 
-            <input name="cur" type="hidden" value="<?=$cur_info["id_currency"] ?>">
+            <input name="cur" type="hidden" value="<?=$cur_info["id_material"] ?>">
 
             <div class="mb-3">
                 <label for="exampleFormControlInput1" class="form-label"><?=$cur_info["name"] ?> quantity</label>
