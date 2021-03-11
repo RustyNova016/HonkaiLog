@@ -2,10 +2,10 @@
 // We check for if the user is connected
 if (!empty($_SESSION["iduser"])){
     include "models/material.php";
-    $material_DTB = new material($dbh);
+    $material_DB = new material($dbh);
 
-    // We get the available currencies
-    $currencies = $material_DTB->get_material_type_list("currency");
+    // We get the available list_material_type
+    $currencies = $material_DB->get_material_list_of_type("currency");
 
     if (!empty($_POST)){
         $idcurrency_selected = $_POST["cur"];
@@ -17,7 +17,7 @@ if (!empty($_SESSION["iduser"])){
 
     if (!empty($_POST)){
         if (!empty($_POST["quantity"])){
-            $update_valid = $material_DTB->update_material($_SESSION["iduser"], $idcurrency_selected, $_POST["quantity"], $_POST["libchange"]);
+            $update_valid = $material_DB->update_material($_SESSION["iduser"], $idcurrency_selected, $_POST["quantity"], $_POST["libchange"]);
         }
     }
 
@@ -25,7 +25,7 @@ if (!empty($_SESSION["iduser"])){
     $timespan_type = [
         [
             "name" => "Today",
-            "SQL" => "1 DAY",
+            "SQL" => "0 DAY",
             "start" => "Today",
             "nbr_day" => 1,
             "wholeday" => 1
@@ -61,7 +61,7 @@ if (!empty($_SESSION["iduser"])){
     ];
 
     for ($i=0; $i < count($timespan_type); $i++) {
-        $timespan_type[$i]["history_data"] = $material_DTB->get_material_history($_SESSION["iduser"], $idcurrency_selected, $timespan_type[$i]["SQL"]);
+        $timespan_type[$i]["history_data"] = $material_DB->get_material_history($_SESSION["iduser"], $idcurrency_selected, $timespan_type[$i]["SQL"]);
     }
 
 

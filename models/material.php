@@ -28,8 +28,8 @@ class material{
     /**
      * Get all of the X type materials from the database if they aren't expired
      */
-    public function get_material_type_list($type){
-        $SQLrequest = "SELECT * FROM material WHERE (expiration_date IS NULL OR expiration_date > NOW()) AND type = :type_material";//TODO: Honkai timezone
+    public function get_material_list_of_type($type){
+        $SQLrequest = "SELECT * FROM material WHERE (expiration_date IS NULL OR expiration_date > NOW()) AND type_mat = :type_material";//TODO: Honkai timezone
 
         $values = [
             ":type_material" => $type
@@ -82,7 +82,9 @@ class material{
         }
         else {
             // We get all the logs of the materials that are after ([Actual time] - [Timespan to remove]) [Honkai reset time]
-            $SQLrequest = "SELECT quantity, time_stamp FROM material_count WHERE id_user = :id_user AND id_material = :id_mat AND DATE_SUB(time_stamp, INTERVAL 4 HOUR) > DATE_ADD(DATE_SUB(NOW(), INTERVAL ".$date."), INTERVAL 4 HOUR) ORDER BY time_stamp";
+            $SQLrequest = "SELECT quantity, time_stamp FROM material_count WHERE id_user = :id_user AND id_material = :id_mat AND DATE_SUB(time_stamp, INTERVAL 4 HOUR) > DATE_ADD(DATE_SUB(CURRENT_DATE(), INTERVAL ".$date."), INTERVAL 4 HOUR) ORDER BY time_stamp";
+
+            // DATE_SUB(time_stamp, INTERVAL 4 HOUR) < ((GETDATE() - time) +4 h)
 
             $values = [
                 ":id_user" => $id_user,
@@ -90,9 +92,12 @@ class material{
             ];
         }
 
+        var_dump($SQLrequest);
+
         $sth = material::$dbh->prepare($SQLrequest, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
         $exe = $sth->execute($values);
         $result_in_range = $sth->fetchall();
+        var_dump($result_in_range);
 
 
         // Now, we take one value before the time range
