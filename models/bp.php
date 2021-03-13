@@ -11,9 +11,12 @@ class bp{
         // Database requests
         $this->dbh = $myDbh;
         $this->bp_info = $this->request_bp();
-        $this->total_days = diff_whole_days($this->$bp_info[0]["date_start"], $this->$bp_info[0]["date_end"]);
+
+        // Time
+        $this->total_days = diff_whole_days($this->bp_info[0]["date_start"], $this->bp_info[0]["date_end"]);
         $date = new DateTime();
         $this->days_left = diff_whole_days($date->format('Y-m-d H:i:s'), $this->$bp_info[0]["date_end"]);
+        $this->days_left = diff_whole_days($date->format('Y-m-d H:i:s'), $this->bp_info[0]["date_end"]);
 
         var_dump(bp::$total_days);
         var_dump(bp::$days_left);
