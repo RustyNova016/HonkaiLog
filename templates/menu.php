@@ -13,3 +13,12 @@
         </div>
     </div>
 </nav>
+
+<?php
+$json = file_get_contents("img/background/background.json");
+$background_array = json_decode($json, true);
+$background = $background_array[array_rand($background_array, 1)]   ;
+?>
+
+<div class="background-div" style="background-image: url(img/background/<?=$background ?>.png);">
+    <div class="background-div">

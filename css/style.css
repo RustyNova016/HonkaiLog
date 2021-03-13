@@ -7,13 +7,20 @@ html, body {
     height: 100%;
 }
 
+.background-div {
+    background-color: #282f3fdd;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+}
+
 .navbar{
     background-color: #040b26;
     color: #ffffff;
 }
 
 .bg {
-    background-color: #282f3f;
     color: #ffffff;
 }
 
