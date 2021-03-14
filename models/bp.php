@@ -50,6 +50,11 @@ class bp{
         $fetchall = $sth->fetchall();
         return $fetchall;
     }
+
+
+    /** Get the current BP season
+     * @return array
+     */
     private function request_current_bp_season(){
         $SQLrequest = "SELECT id, date_start, date_end, lv_max_F, 
                            DATEDIFF(DATE_SUB(bp_season.date_end, INTERVAL 4 HOUR), DATE_SUB(bp_season.date_start, INTERVAL 4 HOUR)) AS days    
@@ -61,6 +66,36 @@ class bp{
         $sth->execute();
         $fetchall = $sth->fetchall();
         return $fetchall;
+    }
+
+
+    /** Log the current bp count into the database
+     * @param $bp_level
+     * @param $bp_xp
+     */
+    public function update_bp($bp_level, $bp_xp){
+        $bp_total = ($bp_level * 1000) + $bp_xp;
+        $SQLrequest = " INSERT INTO `bp_season_progress` (`id`, `id_season`, `id_user`, `xp_count`, `time_stamp`) 
+                        VALUES (NULL, :id_season, :id_user, :xp_count, CURRENT_TIMESTAMP());";
+
+        $values = [
+            ":id_season" => $this->bp_season_info["id"],
+            ":id_user" => $_SESSION["id_user"],
+            ":xp_count" => $bp_total
+        ];
+
+        $sth = $this->dbh->prepare($SQLrequest);
+        $sth->execute(["id_user" => $_SESSION["iduser"]]);
+
+        $this->reload_current_bp_progress();
+    }
+
+
+    /** Recount the current progress
+     */
+    public function reload_current_bp_progress(){
+        $this->bp_progress = $this->request_current_bp_progress()[0];
+        $this->current_bp = $this->bp_progress["xp_count"];
     }
 
     public function get_xp_left(){
