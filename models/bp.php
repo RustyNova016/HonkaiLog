@@ -13,6 +13,7 @@ class bp{
     public function __construct($myDbh){
         // Database requests
         $this->dbh = $myDbh;
+        $this->bp_season_info = $this->request_current_bp_season();
         $this->bp_info = $this->request_bp();
 
         // Time
