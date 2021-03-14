@@ -11,6 +11,8 @@ echo "BP/Day: ".$bp_levels->get_bp_per_day()."<br>";
 echo "BP/Day left: ".$bp_levels->get_bp_per_day_current()."<br>";
 echo "</pre>";
 
-//$bp_levels->analyse_bp();
+if (!empty($_POST["bp_level"])){
+    $bp_levels->update_bp($_POST["bp_level"], $_POST["bp_xp"]);
+}
 
 include "vue/bp-index.php";

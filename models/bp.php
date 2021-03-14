@@ -80,12 +80,16 @@ class bp{
 
         $values = [
             ":id_season" => $this->bp_season_info["id"],
-            ":id_user" => $_SESSION["id_user"],
+            ":id_user" => $_SESSION["iduser"],
             ":xp_count" => $bp_total
         ];
 
+        var_dump($_SESSION);
+
+        var_dump($values);
+
         $sth = $this->dbh->prepare($SQLrequest);
-        $sth->execute(["id_user" => $_SESSION["iduser"]]);
+        $sth->execute($values);
 
         $this->reload_current_bp_progress();
     }
