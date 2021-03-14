@@ -3,6 +3,7 @@ include "models/date_function.php";
 
 class bp{
     private $dbh;
+    private $bp_season_info;
     private $bp_info;
     private $total_days;
     private $days_left;
@@ -41,6 +42,18 @@ class bp{
 
         $sth = $this->dbh->prepare($SQLrequest);
         $sth->execute(["id_user" => $_SESSION["iduser"]]);
+        $fetchall = $sth->fetchall();
+        return $fetchall;
+    }
+    private function request_current_bp_season(){
+        $SQLrequest = "SELECT id, date_start, date_end, lv_max_F, 
+                           DATEDIFF(DATE_SUB(bp_season.date_end, INTERVAL 4 HOUR), DATE_SUB(bp_season.date_start, INTERVAL 4 HOUR)) AS days    
+                       FROM bp_season7
+                       WHERE bp_season.date_end > DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 4 HOUR)
+                       LIMIT 1;";
+
+        $sth = $this->dbh->prepare($SQLrequest);
+        $sth->execute();
         $fetchall = $sth->fetchall();
         return $fetchall;
     }
