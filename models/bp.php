@@ -84,10 +84,6 @@ class bp{
             ":xp_count" => $bp_total
         ];
 
-        var_dump($_SESSION);
-
-        var_dump($values);
-
         $sth = $this->dbh->prepare($SQLrequest);
         $sth->execute($values);
 
@@ -142,5 +138,13 @@ class bp{
     public function getTotalBpNeeded()
     {
         return $this->total_bp_needed;
+    }
+
+    public function getBPLevel(){
+        return floor($this->getCurrentBp()/1000);
+    }
+
+    public function getBPXP(){
+        return $this->current_bp - ($this->getBPLevel() * 1000);
     }
 }
