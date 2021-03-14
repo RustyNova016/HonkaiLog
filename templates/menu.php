@@ -8,6 +8,7 @@
             <div class="navbar-nav">
                 <a class="nav-link active" aria-current="page" href="/honkailog/">Home</a>
                 <a class="nav-link" href="/honkailog/user">Users</a>
+                <a class="nav-link" href="/honkailog/bp">Battle pass</a>
                 <a class="nav-link" href="/honkailog/currency">Currencies</a>
             </div>
         </div>
