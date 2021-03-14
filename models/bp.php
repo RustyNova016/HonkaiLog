@@ -53,7 +53,7 @@ class bp{
     private function request_current_bp_season(){
         $SQLrequest = "SELECT id, date_start, date_end, lv_max_F, 
                            DATEDIFF(DATE_SUB(bp_season.date_end, INTERVAL 4 HOUR), DATE_SUB(bp_season.date_start, INTERVAL 4 HOUR)) AS days    
-                       FROM bp_season7
+                       FROM bp_season
                        WHERE bp_season.date_end > DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 4 HOUR)
                        LIMIT 1;";
 
