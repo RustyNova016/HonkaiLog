@@ -18,14 +18,14 @@ class bp{
         $this->bp_progress = $this->request_current_bp_progress()[0];
 
         // Time
-        $this->total_days = diff_whole_days($this->bp_progress[0]["date_start"], $this->bp_progress[0]["date_end"]);
+        $this->total_days = diff_whole_days($this->bp_season_info["date_start"], $this->bp_season_info["date_end"]);
         $date = new DateTime();
-        $this->days_left = diff_whole_days($date->format('Y-m-d H:i:s'), $this->bp_progress[0]["date_end"]);
+        $this->days_left = diff_whole_days($date->format('Y-m-d H:i:s'), $this->bp_season_info["date_end"]);
 
         // XP counts
-        $this->lv_max_F = $this->bp_progress[0]["lv_max_F"]; //TODO: This-> ou bp:: ??
+        $this->lv_max_F = $this->bp_season_info["lv_max_F"]; //TODO: This-> ou bp:: ??
         $this->total_bp_needed = $this->lv_max_F * 1000;
-        $this->current_bp = $this->bp_progress[0]["xp_count"];
+        $this->current_bp = $this->bp_progress["xp_count"];
     }
 
 
