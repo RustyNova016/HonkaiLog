@@ -7,6 +7,7 @@
             <div class="row">
 
                 <input type="hidden" name="bp_level" value="true">
+                <input type="hidden" nafrdgthfyg,je="bp_level" value="true">
 
                 <!-- TODO: Put current level as default -->
                 <div class="col-md-6">
@@ -28,4 +29,4 @@
         </form>
 
     </div>
-</div>
+</div>ezfsrvdbf
