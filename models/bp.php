@@ -4,7 +4,8 @@ include "models/date_function.php";
 class bp{
     private $dbh;
     private $bp_season_info;
-    private $bp_progress;
+    private $bp_progress_now;
+    private $bp_progress_yesterday;
     private $total_days;
     private $days_left;
     private $lv_max_F;
@@ -15,7 +16,8 @@ class bp{
         // Database requests
         $this->dbh = $myDbh;
         $this->bp_season_info = $this->request_current_bp_season()[0];
-        $this->bp_progress = $this->request_current_bp_progress()[0];
+        $this->bp_progress_now = $this->request_current_bp_progress()[0];
+        $this->bp_progress_yesterday = $this->request_bp_progress_yesterday()[0];
 
         // Time
         $this->total_days = diff_whole_days($this->bp_season_info["date_start"], $this->bp_season_info["date_end"]);
@@ -25,7 +27,8 @@ class bp{
         // XP counts
         $this->lv_max_F = $this->bp_season_info["lv_max_F"]; //TODO: This-> ou bp:: ??
         $this->total_bp_needed = $this->lv_max_F * 1000;
-        $this->current_bp = $this->bp_progress["xp_count"];
+        $this->current_bp = $this->bp_progress_now["xp_count"];
+
     }
 
 
@@ -69,6 +72,51 @@ class bp{
     }
 
 
+    /** Get all of today's entries
+     * @return array
+     */
+    private function request_bp_progress_today(){
+        $SQLrequest = "SELECT xp_count    
+                       FROM bp_season_progress 
+                       WHERE id_user = :id_user 
+                           AND id_season = :id_season
+                           AND DATE_SUB(time_stamp, INTERVAL 4 HOUR) > DATE_ADD(DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY), INTERVAL 4 HOUR) 
+                       ORDER BY time_stamp DESC;";
+
+        $values = [
+            "id_user" => $_SESSION["iduser"],
+            "id_season" => $this->bp_season_info["id"]
+        ];
+
+        $sth = $this->dbh->prepare($SQLrequest);
+        $sth->execute($values);
+        $fetchall = $sth->fetchall();
+        return $fetchall;
+    }
+
+    /** Get the last entry before today
+     * @return array
+     */
+    private function request_bp_progress_yesterday(){
+        $SQLrequest = "SELECT xp_count    
+                       FROM bp_season_progress 
+                       WHERE id_user = :id_user 
+                           AND id_season = :id_season
+                           AND DATE_SUB(time_stamp, INTERVAL 4 HOUR) < DATE_ADD(DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY), INTERVAL 4 HOUR) 
+                       ORDER BY time_stamp DESC
+                       LIMIT 1;";
+
+        $values = [
+            "id_user" => $_SESSION["iduser"],
+            "id_season" => $this->bp_season_info["id"]
+        ];
+
+        $sth = $this->dbh->prepare($SQLrequest);
+        $sth->execute($values);
+        $fetchall = $sth->fetchall();
+        return $fetchall;
+    }
+
     /** Log the current bp count into the database
      * @param $bp_level
      * @param $bp_xp
@@ -94,8 +142,8 @@ class bp{
     /** Recount the current progress
      */
     public function reload_current_bp_progress(){
-        $this->bp_progress = $this->request_current_bp_progress()[0];
-        $this->current_bp = $this->bp_progress["xp_count"];
+        $this->bp_progress_now = $this->request_current_bp_progress()[0];
+        $this->current_bp = $this->bp_progress_now["xp_count"];
     }
 
     public function get_xp_left(){
@@ -106,14 +154,14 @@ class bp{
      * @return float|int
      */
     public function get_bp_per_day(){
-        return $this->total_bp_needed / $this->total_days;
+        return ceil($this->total_bp_needed / $this->total_days);
     }
 
     /** Get the BP/Day count needed to finish at the current state
      * @return float|int
      */
     public function get_bp_per_day_current(){
-        return $this->get_xp_left() / $this->days_left;
+        return ceil($this->get_xp_left() / $this->days_left);
     }
 
     /**
@@ -146,5 +194,9 @@ class bp{
 
     public function getBPXP(){
         return $this->current_bp - ($this->getBPLevel() * 1000);
+    }
+
+    public function get_today_bp(){
+        return $this->bp_progress_now["xp_count"] - $this->bp_progress_yesterday["xp_count"];
     }
 }
