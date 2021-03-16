@@ -78,7 +78,7 @@
                         <br> <br>
 
                         <?php
-                        $change_average = $timespan["overall_change_average"];
+                        $change_average = $timespan["gain_average"];
                         if ($change_average != -1){
                             echo "On average, you got ". $change_average ." ".$cur_info["name"]."s per day. Which is ";
 

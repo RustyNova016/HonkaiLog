@@ -101,12 +101,12 @@ class material{
             ];
         }
 
-        var_dump($SQLrequest);
+        //var_dump($SQLrequest);
 
         $sth = material::$dbh->prepare($SQLrequest, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
         $exe = $sth->execute($values);
         $result_in_range = $sth->fetchall();
-        var_dump($result_in_range);
+        //var_dump($result_in_range);
 
 
         // Now, we take one value before the time range

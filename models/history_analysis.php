@@ -27,8 +27,10 @@ function history_analysis($timespan){
 
     if ($timespan["nbr_day"] > 1){
         $overall_change_average = round($overall_change / $timespan["nbr_day"], 2);
+        $gain_average = round($gain / $timespan["nbr_day"], 2);
     } else {
         $overall_change_average = -1;
+        $gain_average = -1;
     }
 
     if ($overall_change < 0){
@@ -42,6 +44,7 @@ function history_analysis($timespan){
     return [
         "overall_change" => $overall_change,
         "overall_change_average" => $overall_change_average,
+        "gain_average" => $gain_average,
         "gain" => $gain,
         "loses" => $loses,
         "current" => $current_quantity,
