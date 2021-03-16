@@ -41,6 +41,15 @@ class material{
         return $result;
     }
 
+    public function get_material_types(){
+        $SQLrequest = "SELECT DISTINCT type_mat FROM material WHERE (expiration_date IS NULL OR expiration_date > NOW());"; //TODO: Honkai timezone
+
+        $sth = material::$dbh->prepare($SQLrequest);
+        $sth->execute();
+        $result = $sth->fetchall();
+        return $result;
+    }
+
     /** Add a log to the database
      * @param $id_user
      * @param $id_material
