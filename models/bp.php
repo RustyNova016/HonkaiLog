@@ -102,10 +102,10 @@ class bp{
                        FROM bp_season_progress 
                        WHERE id_user = :id_user 
                            AND id_season = :id_season
-                           AND DATE_SUB(time_stamp, INTERVAL 4 HOUR) < DATE_ADD(DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY), INTERVAL 4 HOUR) 
+                           AND DATE_SUB(time_stamp, INTERVAL 4 HOUR) < DATE_ADD(CURRENT_DATE(), INTERVAL 4 HOUR) 
                        ORDER BY time_stamp DESC
                        LIMIT 1;";
-
+        
         $values = [
             "id_user" => $_SESSION["iduser"],
             "id_season" => $this->bp_season_info["id"]
