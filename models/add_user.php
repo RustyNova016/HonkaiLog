@@ -1,9 +1,10 @@
 <?php
-function add_user($dbh, $username)
+function add_user($dbh, $username, $level, $mot_de_passe)
 {
-    $SQLrequest = "INSERT INTO user (name) VALUES ('".$username."');";
+    $SQLrequest = "INSERT INTO user (name, level, mot_de_passe) VALUES ('".$username."',".$level.",SHA1('".$mot_de_passe."'));";
 
-    echo $SQLrequest;
+	var_dump($SQLrequest);
+    //echo $SQLrequest;
     $sth = $dbh->prepare($SQLrequest);
     if ($sth->execute())
     {
