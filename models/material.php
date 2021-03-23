@@ -55,6 +55,21 @@ class material{
         return $result;
     }
 
+    public function get_material_type_info($id){
+        $SQLrequest = "SELECT *
+                       FROM material_type
+                       WHERE id_material_type = :id;"; //TODO: Honkai timezone
+
+        $values = [
+            ":id" => $id
+        ];
+
+        $sth = material::$dbh->prepare($SQLrequest);
+        $sth->execute($values);
+        $result = $sth->fetchall();
+        return $result;
+    }
+
     /** Add a log to the database
      * @param $id_user
      * @param $id_material

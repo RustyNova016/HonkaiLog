@@ -1,6 +1,6 @@
 <div class="bg">
     <div class="container bg">
-        <h1 class="title">Material: <?=$id_selected_mat_type ?></h1>
+        <h1 class="title">Materials: <?=$selected_mat_type["name"] ?></h1>
 
         <div class="btn-group">
             <button class="btn btn-secondary btn-lg dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
