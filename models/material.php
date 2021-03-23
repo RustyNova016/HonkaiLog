@@ -29,7 +29,11 @@ class material{
      * Get all of the X type materials from the database if they aren't expired
      */
     public function get_material_list_of_type($type){
-        $SQLrequest = "SELECT * FROM material WHERE (expiration_date IS NULL OR expiration_date > NOW()) AND type_mat = :type_material";//TODO: Honkai timezone
+        $SQLrequest = "SELECT * 
+                       FROM material 
+                           INNER JOIN material_type ON material.id_material_type = material_type.id_material_type
+                       WHERE (expiration_date IS NULL OR expiration_date > NOW()) 
+                           AND material_type.name = :type_material";//TODO: Honkai timezone
 
         $values = [
             ":type_material" => $type
@@ -42,7 +46,8 @@ class material{
     }
 
     public function get_material_types(){
-        $SQLrequest = "SELECT DISTINCT type_mat FROM material WHERE (expiration_date IS NULL OR expiration_date > NOW());"; //TODO: Honkai timezone
+        $SQLrequest = "SELECT *
+                       FROM material_type;"; //TODO: Honkai timezone
 
         $sth = material::$dbh->prepare($SQLrequest);
         $sth->execute();

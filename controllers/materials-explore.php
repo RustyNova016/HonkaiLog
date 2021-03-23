@@ -4,6 +4,7 @@ include "models/material.php";
 $material_DB = new material($dbh);
 
 $list_material_type = $material_DB->get_material_types();
+var_dump($list_material_type);
 
 var_dump($params);
 if(isset($params[2])){

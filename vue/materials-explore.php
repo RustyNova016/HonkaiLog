@@ -11,12 +11,12 @@
                 foreach ($list_material_type as $key) {
 
 
-                    if ($key["id_material"] == $id_selected_mat_type){
+                    if ($key["id_material_type"] == $id_selected_mat_type){
                         $sele = "selected";
                     } else {
                     $sele = "";
                     }
-                    echo "<li><a class=\"dropdown-item\" href='/honkailog/materials/explore/".$key["type_mat"]."'>".$key["type_mat"]."</a></li>";
+                    echo "<li><a class=\"dropdown-item\" href='/honkailog/materials/explore/".$key["id_material_type"]."'>".$key["name"]."</a></li>";
                 }
                 ?>
             </ul>
