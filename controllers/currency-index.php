@@ -5,7 +5,8 @@ if (!empty($_SESSION["iduser"])){
     $material_DB = new material($dbh);
 
     // We get the available list_material_type
-    $currencies = $material_DB->get_material_list_of_type("currency");
+    $currencies = $material_DB->get_material_list_of_type(1);
+
 
     if (!empty($_POST)){
         $idcurrency_selected = $_POST["cur"];

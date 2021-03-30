@@ -19,7 +19,7 @@
 
     <link rel="stylesheet" href="/honkailog/CSS/style.css">
 
-    <title>Captain on the bridge!</title>
+    <title>HonkaiLog - Captain on the bridge!</title>
 
     <style>
 
