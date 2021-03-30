@@ -1,7 +1,7 @@
 <?php
-include "models/material.php";
+include "models/material_db.php";
 
-$material_DB = new material($dbh);
+$material_DB = new material_db($dbh);
 
 $list_material_type = $material_DB->get_material_types();
 //var_dump($list_material_type);
