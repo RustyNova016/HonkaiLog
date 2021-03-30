@@ -44,11 +44,13 @@ else
 
 
 $page = "controllers/".$controller."-".$action.".php";
-//echo $page;
-if(!@include($page))
-{
-    include("controllers/404-index.php");
-}
+echo $page;
+include($page);
+
+// if(!@)
+// {
+    // include("controllers/404-index.php");
+// }
 
 include "templates/footer.php";
 $dbh = null;
