@@ -1,6 +1,8 @@
 <?php
 include "models/material_db.php";
 
+//var_dump($_POST);
+
 $material_DB = new material_db($dbh);
 
 $list_material_type = $material_DB->get_material_types();
@@ -56,28 +58,50 @@ $timespan_type = [
     ]
 ];
 
-var_dump($list_materials);
+//var_dump($list_materials);
 
-$material_info_array = [];
-foreach($list_materials as $material){
-    $material_info = [
-        "id" => $material["id_material"],
-        "name" => $material["name"],
-        "history" => [],
-    ];
-    for ($i=0; $i < count($timespan_type); $i++) {
-        $material_history = $material_DB->get_material_history($_SESSION["iduser"], $material["id_material"], $timespan_type[$i]["SQL"]);
-        $material_history["history"] = $timespan_type[$i];
-        var_dump($material_history);
-        array_push($material_info["history"], $material_history);
-    }
-    $material_info_array[$material["id_material"]] = $material_info;
+
+include "models/material/material.php";
+include "models/material/material_history.php";
+include "models/material/time_frame.php";
+
+$time_frame_list = [];
+
+foreach ($timespan_type as $time_array){
+    $new_time_frame = new time_frame(
+        $time_array["SQL"],
+        $time_array["name"],
+        $time_array["nbr_day"],
+        $time_array["wholeday"],
+        $time_array["start"],
+        $time_array["name"]
+    );
+    //var_dump($new_time_frame);
+    array_push($time_frame_list, $new_time_frame);
 }
 
-//var_dump($material_info_array);
+//var_dump($time_frame_list);
 
-echo "<pre>";
-print_r($material_info_array);
-echo "</pre>";
+$material_list_ = [];
+foreach($list_materials as $material_base){
+    $material = new material($material_base["id_material"], $material_base["name"]);
 
+
+
+    if (!empty($_POST[$material->getId()."_quantity"])){
+        $material->log_material_count($dbh, $_POST[$material->getId()."_quantity"], "");
+    }
+    //var_dump($material);
+
+
+    foreach($time_frame_list as $one_time_frame){
+        $material->request_material_history($dbh, $one_time_frame);
+    }
+
+
+
+    array_push($material_list_, $material);
+}
+//var_dump($material_list_);
+$_POST = array();
 include "vue/materials-explore.php";

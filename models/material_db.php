@@ -174,4 +174,8 @@ class material_db{
 
         return $result;
     }
+
+    public function get_material_history_new($material, $time_frame){
+
+    }
 }

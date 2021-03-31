@@ -1,8 +1,8 @@
 <?php
 // We check for if the user is connected
 if (!empty($_SESSION["iduser"])){
-    include "models/material.php";
-    $material_DB = new material($dbh);
+    include "models/material_db.php";
+    $material_DB = new material_db($dbh);
 
     // We get the available list_material_type
     $currencies = $material_DB->get_material_list_of_type(1);
