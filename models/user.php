@@ -6,12 +6,12 @@
         private int $id_user;
         private int $user_level;
         private database $db;
-        private bool $loged_in;
+        private bool $logged_in;
         
         public function __construct($db, $username) {
             $this->db = $db;
             $this->username = $username;
-            $this->loged_in = false;
+            $this->logged_in = false;
         }
     
         public function login($password) {
@@ -29,7 +29,7 @@
             $this->id_user = $result["id_user"];
             $this->user_level = $result["level"];
             
-            $this->loged_in = true;
+            $this->logged_in = true;
         }
         
         /**
@@ -51,5 +51,12 @@
          */
         public function get_user_level(): int {
             return $this->user_level;
+        }
+    
+        /**
+         * @return bool
+         */
+        public function isLogged_in(): bool {
+            return $this->logged_in;
         }
     }
