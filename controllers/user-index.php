@@ -8,7 +8,7 @@
         
         if($user->isLogged_in()){
             $user->unset_db();
-            $_SESSION["user"] = $user;
+            $_SESSION["user"] = serialize($user);
             //TODO: Confirmation message
         } else {
             //TODO: Message

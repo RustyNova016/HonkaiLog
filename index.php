@@ -1,8 +1,10 @@
 ﻿<?php
 // We start the session
 session_start();
+//$_SESSION = [];
 
 include "global/connection.php";
+include "global/user.php";
 include "templates/header.php";
 include "templates/menu.php";
 
