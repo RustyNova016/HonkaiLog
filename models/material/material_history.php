@@ -34,13 +34,21 @@
         public function get_average_change(){
             if ($this->time_frame->getNbrDay() > 1){
                 $overall_change_average = round($this->get_overall_change() / $this->time_frame->getNbrDay(), 2);
-                $gain_average = round($this->getNetGains() / $this->time_frame->getNbrDay(), 2);
             } else {
                 $overall_change_average = -1;
-                $gain_average = -1;
             }
             //var_dump($overall_change_average);
             return $overall_change_average;
+        }
+    
+        public function get_average_gain() {
+            if ($this->time_frame->getNbrDay() > 1){
+                $gain_average = round($this->getNetGains() / $this->time_frame->getNbrDay(), 2);
+            } else {
+                $gain_average = -1;
+            }
+            //var_dump($gain_average);
+            return $gain_average;
         }
         
         public function get_overall_change(){
@@ -53,6 +61,7 @@
         private function gain_loss(){
             $this->net_gains = 0;
             $this->net_loss = 0;
+            $old_amount = $this->timestamps[0]["quantity"];
             for ($i=1; $i < count($this->timestamps); $i++) {
                 $amount = $this->timestamps[$i]["quantity"];
                 $diff = $amount - $old_amount;

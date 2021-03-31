@@ -88,7 +88,7 @@
                                         <br> <br>
 
                                         <?php
-                                        $change_average = $history_time_span->get_average_change();
+                                        $change_average = $history_time_span->get_average_gain();
                                         if ($change_average != -1){
                                             echo "On average, you got ". $change_average ." ".$material_item->getName()."s per day. Which is ";
 
