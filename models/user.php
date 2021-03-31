@@ -18,14 +18,14 @@
             $SQL_request = "SELECT id_user, level
                             FROM user
                             WHERE name = :username
-                              AND mot_de_passe = SHA1(:password);";
+                              AND password = SHA1(:password);";
             
             $values = [
                 ":username" => $this->username,
                 ":password" => $password
             ];
             
-            $result = $this->db->select($SQL_request, $values);
+            $result = $this->db->select($SQL_request, $values)[0];
             $this->id_user = $result["id_user"];
             $this->user_level = $result["level"];
             
