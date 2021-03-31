@@ -5,7 +5,7 @@
         private string $username;
         private int $id_user;
         private int $user_level;
-        private database $db;
+        private $db;
         private bool $logged_in;
         
         public function __construct($db, $username) {
@@ -58,5 +58,16 @@
          */
         public function isLogged_in(): bool {
             return $this->logged_in;
+        }
+    
+        /**
+         * @param database $db
+         */
+        public function setDb(database $db): void {
+            $this->db = $db;
+        }
+    
+        public function unset_db() {
+            $this->db = null;
         }
     }

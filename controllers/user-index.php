@@ -7,6 +7,7 @@
         $user->login($_POST["password"]);
         
         if($user->isLogged_in()){
+            $user->unset_db();
             $_SESSION["user"] = $user;
             //TODO: Confirmation message
         } else {
