@@ -1,24 +1,18 @@
 <?php
 include "models/material_db.php";
 
-//var_dump($_POST);
-
 $material_DB = new material_db($dbh);
 
 $list_material_type = $material_DB->get_material_types();
-//var_dump($list_material_type);
 
-//var_dump($params);
 if(isset($params[2])){
     $id_selected_mat_type = $params[2];
+    
     $selected_mat_type = $material_DB->get_material_type_info($id_selected_mat_type)[0];
-    //var_dump($selected_mat_type);
+
     $list_materials = $material_DB->get_material_list_of_type($id_selected_mat_type);
 }
 
-//var_dump($list_materials);
-//var_dump($id_selected_mat_type);
-//echo $id_selected_mat_type;
 
 $timespan_type = [
     [

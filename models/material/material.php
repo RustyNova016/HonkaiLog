@@ -20,7 +20,7 @@ class material {
         return $this->history[0]->get_current_count();
     }
 
-    public function request_material_history($dbh, time_frame $timestamp) {
+    public function request_material_history($dbh, time_frame $timestamp, $recursion_depth=0) {
         // Wholeday:
         // 0: We take exactly $date time before
         // 1: We take take the whole day
@@ -107,24 +107,40 @@ class material {
 
         $result = array_merge_recursive($result, $result_in_range);
         
+        if (empty($result)){
+            if ($recursion_depth < 1) {
+                $this->log_material_count($dbh, 0, "Init");
+                $this->request_material_history($dbh, $timestamp, $recursion_depth + 1);
+            } else {
+                echo "<pre>";
+                echo "Recursion limit";
+                echo "</pre>";
+            }
+        } else {
+            array_push($this->history, new material_history($result, $timestamp));
+        }
+        
         //var_dump($result);
         
         //var_dump($result);
 
-        array_push($this->history, new material_history($result, $timestamp));
+        
+        //var_dump($this->name);
+        //var_dump($this->history);
     }
 
-    public function log_material_count($dbh, $quantity, $lib_change){
+    public function log_material_count($dbh, $quantity, $lib_change, $time_stamp="CURRENT_TIMESTAMP"){
         $user = unserialize($_SESSION["user"]);
         
-        $SQLrequest = "INSERT INTO material_count (id_user,  id_material , quantity, libchange) 
-                        VALUES (:id_user, :id_material, :quantity, :libchange);";
+        $SQLrequest = "INSERT INTO material_count (id_user,  id_material , quantity, libchange, time_stamp)
+                        VALUES (:id_user, :id_material, :quantity, :libchange, :time_stamp);";
 
         $values = [
             ":id_user" => $user->get_id_user(),
             ":id_material" => strval($this->id),
             ":quantity" => $quantity,
-            ":libchange" => $lib_change
+            ":libchange" => $lib_change,
+            ":time_stamp" => $time_stamp
         ];
 
         //var_dump($SQLrequest);
