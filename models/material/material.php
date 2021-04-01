@@ -42,11 +42,15 @@ class material {
         }
         else {
             // We get all the logs of the materials that are after ([Actual time] - [Timespan to remove]) [Honkai reset time]
+            
+            // 
+            
+            
             $SQLrequest = "SELECT quantity, time_stamp 
                            FROM material_count 
                            WHERE id_user = :id_user 
                                 AND id_material = :id_material 
-                                AND DATE_SUB(time_stamp, INTERVAL 4 HOUR) > DATE_ADD(
+                                AND DATE_SUB(time_stamp, INTERVAL 4 HOUR) > DATE_SUB(
                                     DATE_SUB(CURRENT_DATE(), INTERVAL ".$timestamp->getSQL()."), 
                                     INTERVAL 4 HOUR) 
                            ORDER BY time_stamp -- with wholeday";
@@ -93,6 +97,8 @@ class material {
         $result = $sth->fetchall();
 
         $result = array_merge_recursive($result, $result_in_range);
+        
+        //var_dump($result);
 
         array_push($this->history, new material_history($result, $timestamp));
     }

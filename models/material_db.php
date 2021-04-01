@@ -65,7 +65,8 @@ class material_db{
 
     public function get_material_types(){
         $SQLrequest = "SELECT *
-                       FROM material_type;"; //TODO: Honkai timezone
+                       FROM material_type
+                       ORDER BY display_order;"; //TODO: Honkai timezone
 
         $sth = material_db::$dbh->prepare($SQLrequest);
         $sth->execute();
@@ -76,7 +77,8 @@ class material_db{
     public function get_material_type_info($id){
         $SQLrequest = "SELECT *
                        FROM material_type
-                       WHERE id_material_type = :id;"; //TODO: Honkai timezone
+                       WHERE id_material_type = :id
+                       ORDER BY display_order;"; //TODO: Honkai timezone
 
         $values = [
             ":id" => $id
