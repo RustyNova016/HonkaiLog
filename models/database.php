@@ -19,14 +19,20 @@
             return [$sth, $success];
         }
     
-        public function select(string $SQL_request, array $values, bool $debug=false, bool $output_only=true) {
+        public function select(string $SQL_request, array $values=[], bool $debug=false, bool $output_only=true) {
             $result = $this->query($SQL_request, $values, $debug);
             $sth = $result[0];
             $success = $result[1];
+            $fetchall = $sth->fetchall();
+            
+            if ($debug){
+                var_dump($fetchall);
+            }
+            
             if ($output_only){
-                return $sth->fetchall();
+                return $fetchall;
             } else {
-                return [$sth->fetchall(), $sth, $result];
+                return [$fetchall, $sth, $result];
             }
         }
         

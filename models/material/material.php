@@ -1,5 +1,5 @@
 <?php
-
+include_once "models/date_function.php";
 
 class material {
     private int $id;
@@ -24,6 +24,8 @@ class material {
         // Wholeday:
         // 0: We take exactly $date time before
         // 1: We take take the whole day
+        
+        $user = unserialize($_SESSION["user"]);
 
         if (!$timestamp->getWholeDay()){
             // We get all the logs of the materials that are after [Actual time] - [Timespan to remove]
@@ -32,12 +34,13 @@ class material {
                            FROM material_count 
                            WHERE id_user = :id_user 
                                 AND id_material = :id_material 
-                                AND time_stamp  > DATE_SUB(NOW(), INTERVAL ".$timestamp->getSQL().") 
+                                AND time_stamp  > DATE_SUB(:next_reset, INTERVAL ".$timestamp->getSQL().")
                            ORDER BY time_stamp -- without wholeday";
 
             $values = [
-                ":id_user" => $_SESSION["iduser"],
+                ":id_user" => $user->get_id_user(),
                 ":id_material" => strval($this->id),
+                ":next_reset" => last_reset()->format('Y-m-d H:i:s')
             ];
         }
         else {
@@ -50,17 +53,18 @@ class material {
                            FROM material_count 
                            WHERE id_user = :id_user 
                                 AND id_material = :id_material 
-                                AND DATE_SUB(time_stamp, INTERVAL 4 HOUR) > DATE_SUB(
-                                    DATE_SUB(CURRENT_DATE(), INTERVAL ".$timestamp->getSQL()."), 
-                                    INTERVAL 4 HOUR) 
+                                AND time_stamp > DATE_SUB(:next_reset, INTERVAL ".$timestamp->getSQL().")
                            ORDER BY time_stamp -- with wholeday";
 
             // DATE_SUB(time_stamp, INTERVAL 4 HOUR) < ((GETDATE() - time) +4 h)
 
             $values = [
-                ":id_user" => $_SESSION["iduser"],
-                ":id_material" => $this->id
+                ":id_user" => $user->get_id_user(),
+                ":id_material" => $this->id,
+                ":next_reset" => last_reset()->format('Y-m-d H:i:s')
             ];
+            
+            
         }
 
         //var_dump($SQLrequest);
@@ -75,10 +79,15 @@ class material {
         // Now, we take one value before the time range
         if (!empty($result_in_range)){
             $SQLrequest = "SELECT quantity, time_stamp 
-                           FROM material_count WHERE id_user = :id_user AND id_material = :id_mat AND time_stamp < :last_timestamp ORDER BY time_stamp DESC LIMIT 1;";
+                           FROM material_count
+                           WHERE id_user = :id_user
+                             AND id_material = :id_mat
+                             AND time_stamp < :last_timestamp
+                           ORDER BY time_stamp DESC
+                           LIMIT 1;";
 
             $values = [
-                ":id_user" => $_SESSION["iduser"],
+                ":id_user" => $user->get_id_user(),
                 ":id_mat" => $this->id,
                 ":last_timestamp" => $result_in_range[0]["time_stamp"]
             ];
@@ -87,7 +96,7 @@ class material {
             $SQLrequest = "SELECT quantity, time_stamp FROM material_count WHERE id_user = :id_user AND id_material = :id_mat AND time_stamp < NOW() ORDER BY time_stamp DESC LIMIT 1;";
 
             $values = [
-                ":id_user" => $_SESSION["iduser"],
+                ":id_user" => $user->get_id_user(),
                 ":id_mat" => $this->id
             ];
         }
@@ -99,16 +108,20 @@ class material {
         $result = array_merge_recursive($result, $result_in_range);
         
         //var_dump($result);
+        
+        //var_dump($result);
 
         array_push($this->history, new material_history($result, $timestamp));
     }
 
     public function log_material_count($dbh, $quantity, $lib_change){
+        $user = unserialize($_SESSION["user"]);
+        
         $SQLrequest = "INSERT INTO material_count (id_user,  id_material , quantity, libchange) 
                         VALUES (:id_user, :id_material, :quantity, :libchange);";
 
         $values = [
-            ":id_user" => $_SESSION["iduser"],
+            ":id_user" => $user->get_id_user(),
             ":id_material" => strval($this->id),
             ":quantity" => $quantity,
             ":libchange" => $lib_change
