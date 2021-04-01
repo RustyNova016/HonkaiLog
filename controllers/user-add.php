@@ -6,7 +6,8 @@
 include "models/add_user.php";
 if (!empty($_POST)){
     if (!empty($_POST)){
-        add_user($dbh, $_POST["name"]);
+		var_dump($_POST);
+        add_user($dbh, $_POST["name"],$_POST["level"],$_POST["password"]);
     }
 }
 

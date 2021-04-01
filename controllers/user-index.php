@@ -1,11 +1,19 @@
 <?php
-include "models/get_user_list.php";
-
-if (!empty($params[2])){
-    $_SESSION["iduser"] = $params[2];
-}
-
-$captains = get_user_list($dbh);
-
-include "vue/user-index.php";
+    include "models/user.php";
+    
+    if (!empty($_POST)){
+        $user = new user($db, $_POST["username"]);
+        
+        $user->login($_POST["password"]);
+        
+        if($user->isLogged_in()){
+            $user->unset_db();
+            $_SESSION["user"] = serialize($user);
+            //TODO: Confirmation message
+        } else {
+            //TODO: Message
+        }
+    }
+    
+    include "vue/user-index.php"
 ?>
