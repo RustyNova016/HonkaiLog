@@ -8,6 +8,7 @@
             <div class="navbar-nav">
                 <a class="nav-link active" aria-current="page" href="/honkailog/">Home</a>
                 <a class="nav-link" href="/honkailog/bp">Battle pass</a>
+                <a class="nav-link" href="/honkailog/materials/explore">Materials</a>
                 <a class="nav-link" href="/honkailog/currency">Currencies</a>
             </div>
         </div>
@@ -36,5 +37,5 @@ $background_array = json_decode($json, true);
 $background = $background_array[array_rand($background_array, 1)]   ;
 ?>
 
-<div class="background-div" style="background-image: url(img/background/<?=$background ?>.png);">
+<div class="background-div" style="background-image: url(/honkailog/img/background/<?=$background ?>.png);">
     <div class="background-div">

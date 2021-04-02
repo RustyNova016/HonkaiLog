@@ -20,6 +20,11 @@ html, body {
     color: #ffffff;
 }
 
+.modal-bg{
+    background-color: #282f3f;
+    color: #ffffff;
+}
+
 .bg {
     color: #ffffff;
 }
@@ -27,6 +32,10 @@ html, body {
 .title {
     padding-top: 20px;
     padding-bottom: 15px;
+}
+
+myModal.in{
+    z-index: 999999;
 }
 
 pre {

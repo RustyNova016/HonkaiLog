@@ -1,16 +1,16 @@
 <?php
-class material{
+class material_db{
     private static $dbh;
     private static $material_list;
 
     public function __construct($myDbh){
-        material::$dbh = $myDbh;
+        material_db::$dbh = $myDbh;
     }
 
 
     public function get_material_list(){
         $this->request_material_list();
-        return material::$material_list;
+        return material_db::$material_list;
     }
 
     /**
@@ -20,22 +20,71 @@ class material{
     {
         $SQLrequest = "SELECT * FROM material WHERE expiration_date IS NULL OR expiration_date > NOW()";//TODO: Honkai timezone
 
-        $sth = material::$dbh->prepare($SQLrequest);
+        $sth = material_db::$dbh->prepare($SQLrequest);
         $sth->execute();
-        material::$material_list = $sth->fetchall();
+        material_db::$material_list = $sth->fetchall();
     }
 
     /**
      * Get all of the X type materials from the database if they aren't expired
      */
     public function get_material_list_of_type($type){
-        $SQLrequest = "SELECT * FROM material WHERE (expiration_date IS NULL OR expiration_date > NOW()) AND type_mat = :type_material";//TODO: Honkai timezone
+        $SQLrequest = "SELECT material.id_material, material.name 
+                       FROM material 
+                           INNER JOIN material_type ON material.id_material_type = material_type.id_material_type
+                       WHERE material_type.id_material_type = :type_material;";//TODO: Honkai timezone
 
         $values = [
             ":type_material" => $type
         ];
 
-        $sth = material::$dbh->prepare($SQLrequest);
+        //var_dump($SQLrequest);
+        //var_dump($values);
+
+        $sth = material_db::$dbh->prepare($SQLrequest);
+        $sth->execute($values);
+        $result = $sth->fetchall();
+        return $result;
+    }
+
+    public function get_material_count_of_material($id_material){
+        $SQLrequest = "SELECT material_count.id, material_count.quantity, material_count.libchange, material_count.time_stamp
+                       FROM material_count 
+                       WHERE id_user = :id_user
+                           AND id_material = :id_material;";//TODO: Honkai timezone
+
+        $values = [
+            ":type_material" => $type
+        ];
+
+        $sth = material_db::$dbh->prepare($SQLrequest);
+        $sth->execute($values);
+        $result = $sth->fetchall();
+        return $result;
+    }
+
+    public function get_material_types(){
+        $SQLrequest = "SELECT *
+                       FROM material_type
+                       ORDER BY display_order;"; //TODO: Honkai timezone
+
+        $sth = material_db::$dbh->prepare($SQLrequest);
+        $sth->execute();
+        $result = $sth->fetchall();
+        return $result;
+    }
+
+    public function get_material_type_info($id){
+        $SQLrequest = "SELECT *
+                       FROM material_type
+                       WHERE id_material_type = :id
+                       ORDER BY display_order;"; //TODO: Honkai timezone
+
+        $values = [
+            ":id" => $id
+        ];
+
+        $sth = material_db::$dbh->prepare($SQLrequest);
         $sth->execute($values);
         $result = $sth->fetchall();
         return $result;
@@ -58,7 +107,7 @@ class material{
             ":libchange" => $libchange
         ];
 
-        $sth = material::$dbh->prepare($SQLrequest);
+        $sth = material_db::$dbh->prepare($SQLrequest);
         $outp = [$sth->execute($values)];
 
         return $outp;
@@ -94,7 +143,7 @@ class material{
 
         //var_dump($SQLrequest);
 
-        $sth = material::$dbh->prepare($SQLrequest, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+        $sth = material_db::$dbh->prepare($SQLrequest, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
         $exe = $sth->execute($values);
         $result_in_range = $sth->fetchall();
         //var_dump($result_in_range);
@@ -119,12 +168,16 @@ class material{
             ];
         }
 
-        $sth = material::$dbh->prepare($SQLrequest);
+        $sth = material_db::$dbh->prepare($SQLrequest);
         $exe = $sth->execute($values);
         $result = $sth->fetchall();
 
         $result = array_merge_recursive($result, $result_in_range);
 
         return $result;
+    }
+
+    public function get_material_history_new($material, $time_frame){
+
     }
 }
