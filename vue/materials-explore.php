@@ -9,8 +9,6 @@
             <ul class="dropdown-menu">
               <?php
                 foreach ($list_material_type as $key) {
-
-
                     if ($key["id_material_type"] == $id_selected_mat_type){
                         $sele = "selected";
                     } else {
@@ -36,7 +34,7 @@
 
                         <input name="id_material" type="hidden" value="<?=$material_item->getId() ?>">
 
-                        You got <?=$material_item->getCurrentCount() ?> <?=$material_item->getName() ?>
+                        <label style="min-width: 300px">You got <?=$material_item->getCurrentCount() ?> <?=$material_item->getName() ?></label>
                         <div class="col-auto">
                             <input name="<?=$material_item->getId() ?>_quantity" type="input" class="form-control" value="<?=$material_item->getCurrentCount() ?>">
                         </div>
@@ -102,6 +100,42 @@
                                             }
                                         }
                                         ?>
+                                        
+                                        <br>
+                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#Modal_<?=$i ?>_<?=str_replace(' ', '', $history_time_span->getTimeFrame()->getCardTitle()); ?>" style="margin-top: 20px">
+                                            More info
+                                        </button>
+                                        
+                                        <div class="modal fade  bg" id="Modal_<?=$i ?>_<?=str_replace(' ', '', $history_time_span->getTimeFrame()->getCardTitle()); ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-bg modal-content">
+                                                    <div class="modal-header">
+                                                       <h5 class="modal-title" id="exampleModalLabel"><?=$history_time_span->getTimeFrame()->getCardTitle() ?></h5>
+                                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                      </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <?=$material_item->getName() ?> counts:
+                                                        <ul>
+                                                            <li>Gained <?=$history_time_span->getNetGains() ?> <?=$material_item->getName() ?>s</li>
+                                                            <li>Spent <?=$history_time_span->getNetLoss() ?> <?=$material_item->getName() ?>s</li>
+                                                            <li>In total, <?=$history_time_span->get_overall_change() ?> <?=$material_item->getName() ?>s</li>
+                                                        </ul>
+                                                        
+                                                        <?=$material_item->getName() ?> counts / day:
+                                                        <ul>
+                                                            <li>Gained <?=$history_time_span->get_average_gain() ?> <?=$material_item->getName() ?>s / day</li>
+                                                            <li>Spent <?=$history_time_span->get_average_loss() ?> <?=$material_item->getName() ?>s / day</li>
+                                                            <li>In average, <?=$history_time_span->get_average_change() ?> <?=$material_item->getName() ?>s / day</li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             <?php

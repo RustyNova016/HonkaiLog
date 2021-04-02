@@ -129,18 +129,18 @@ class material {
         //var_dump($this->history);
     }
 
-    public function log_material_count($dbh, $quantity, $lib_change, $time_stamp="CURRENT_TIMESTAMP"){
+    public function log_material_count($dbh, $quantity, $lib_change, $time_stamp="CURRENT_TIMESTAMP()"){
         $user = unserialize($_SESSION["user"]);
         
-        $SQLrequest = "INSERT INTO material_count (id_user,  id_material , quantity, libchange, time_stamp)
-                        VALUES (:id_user, :id_material, :quantity, :libchange, :time_stamp);";
+        $SQLrequest = "INSERT INTO material_count (id_user,  id_material , quantity, libchange)
+                        VALUES (:id_user, :id_material, :quantity, :libchange);";
 
         $values = [
             ":id_user" => $user->get_id_user(),
             ":id_material" => strval($this->id),
             ":quantity" => $quantity,
-            ":libchange" => $lib_change,
-            ":time_stamp" => $time_stamp
+            ":libchange" => $lib_change//,
+            //":time_stamp" => $time_stamp
         ];
 
         //var_dump($SQLrequest);

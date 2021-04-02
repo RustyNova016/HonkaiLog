@@ -51,6 +51,16 @@
             return $gain_average;
         }
         
+        public function get_average_loss() {
+            if ($this->time_frame->getNbrDay() > 1){
+                $gain_loss = round($this->getNetLoss() / $this->time_frame->getNbrDay(), 2);
+            } else {
+                $gain_loss = -1;
+            }
+            //var_dump($gain_average);
+            return $gain_loss;
+        }
+        
         public function get_overall_change(){
             return $this->get_current_count() - $this->get_oldest_count();
         }
