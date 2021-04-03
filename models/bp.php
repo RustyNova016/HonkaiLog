@@ -1,20 +1,34 @@
 <?php
     include "models/date_function.php";
     
+    /**
+     * Class bp
+     */
     class bp {
-        private $dbh;
-        private $bp_season_info;
+        private PDO $dbh;
+        private database $db;
+        private array $bp_season_info;
         private $bp_progress_now;
         private $bp_progress_yesterday;
         private $total_days;
         private $days_left;
-        private $lv_max_F;
-        private $total_bp_needed;
+        private int $lv_max_F;
+        private int $total_bp_needed;
         private $current_bp;
         
-        public function __construct($myDbh) {
+        /**
+         * bp constructor.
+         *
+         * @param $myDbh
+         */
+        public function __construct($db) {
+            if (get_class($db) == "database") {
+                $this->dbh = $db->getDbh();
+            } else {
+                $this->dbh = $db;
+            }
+            
             // Database requests
-            $this->dbh = $myDbh;
             $this->bp_season_info = $this->request_current_bp_season()[0];
             $this->bp_progress_now = $this->request_current_bp_progress()[0];
             $this->bp_progress_yesterday = $this->request_bp_progress_yesterday()[0];
@@ -25,7 +39,7 @@
             $this->days_left = diff_whole_days($date->format('Y-m-d H:i:s'), $this->bp_season_info["date_end"]);
             
             // XP counts
-            $this->lv_max_F = $this->bp_season_info["lv_max_F"]; //TODO: This-> ou bp:: ??
+            $this->lv_max_F = $this->bp_season_info["lv_max_F"];
             $this->total_bp_needed = $this->lv_max_F * 1000;
             $this->current_bp = $this->bp_progress_now["xp_count"];
             
@@ -105,24 +119,30 @@
         
         /** Log the current bp count into the database
          *
-         * @param $bp_level
-         * @param $bp_xp
+         * @param database $db
+         * @param int      $bp_level
+         * @param int      $bp_xp
          */
-        public function update_bp($bp_level, $bp_xp) {
-            $user = unserialize($_SESSION["user"]);
-            
-            $bp_total = ($bp_level * 1000) + $bp_xp;
-            $SQLrequest = " INSERT INTO `bp_season_progress` (`id`, `id_season`, `id_user`, `xp_count`, `time_stamp`)
+        public function insert_bp_log(database $db, int $bp_level, int $bp_xp) {
+            $request = "INSERT INTO `bp_season_progress` (`id`, `id_season`, `id_user`, `xp_count`, `time_stamp`)
                         VALUES (NULL, :id_season, :id_user, :xp_count, CURRENT_TIMESTAMP());";
             
+            
+            $user = unserialize($_SESSION["user"]);
+            $bp_total = ($bp_level * 1000) + $bp_xp;
             $values = [
                 ":id_season" => $this->bp_season_info["id"],
                 ":id_user" => $user->get_id_user(),
                 ":xp_count" => $bp_total
             ];
             
-            $sth = $this->dbh->prepare($SQLrequest);
-            $sth->execute($values);
+            $result = $db->query($request, $values);
+            
+            if ($result){
+                info_message("Succesfully logged current BP count.");
+            } else {
+                info_message("An error happened", "warning");
+            }
             
             $this->reload_current_bp_progress();
         }
@@ -150,6 +170,9 @@
             return ceil($this->get_xp_left() / $this->days_left);
         }
         
+        /**
+         * @return float|int|mixed
+         */
         public function get_xp_left() {
             return $this->total_bp_needed - $this->current_bp;
         }
@@ -168,21 +191,30 @@
             return $this->total_bp_needed;
         }
         
+        /**
+         * @return float|int|mixed
+         */
         public function getBPXP() {
             return $this->current_bp - ($this->getBPLevel() * 1000);
         }
         
+        /**
+         * @return false|float
+         */
         public function getBPLevel() {
-            return floor($this->getCurrentBp() / 1000);
+            return floor($this->get_current_bp() / 1000);
         }
         
         /**
          * @return mixed
          */
-        public function getCurrentBp() {
+        public function get_current_bp() {
             return $this->current_bp;
         }
         
+        /**
+         * @return mixed
+         */
         public function get_today_bp() {
             return $this->bp_progress_now["xp_count"] - $this->bp_progress_yesterday["xp_count"];
         }

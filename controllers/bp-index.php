@@ -1,10 +1,10 @@
 <?php
     include "models/bp.php";
     
-    $bp_levels = new bp($dbh);
+    $bp_levels = new bp($db);
     
     if (!empty($_POST["bp_level"])) {
-        $bp_levels->update_bp($_POST["bp_level"], $_POST["bp_xp"]);
+        $bp_levels->insert_bp_log($db, $_POST["bp_level"], $_POST["bp_xp"]);
     }
 
 //echo "<pre>";
