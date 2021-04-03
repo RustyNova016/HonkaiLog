@@ -15,16 +15,22 @@
          * @param bool $debug
          * @param bool $output_only
          *
-         * @return array
+         * @return array [$fetchall, $sth, $success]
          */
-        public function select(string $SQL_request, array $values, bool $debug = false, bool $output_only = true) {
+        public function select(string $SQL_request, array $values, bool $debug = false, bool $output_only = true): array {
             $result = $this->query($SQL_request, $values, $debug);
             $sth = $result[0];
             $success = $result[1];
+            $fetchall = $sth->fetchall();
+            
+            if($debug){
+                var_dump($fetchall);
+            }
+            
             if ($output_only) {
-                return $sth->fetchall();
+                return $fetchall;
             } else {
-                return [$sth->fetchall(), $sth, $result];
+                return [$fetchall, $sth, $success];
             }
         }
         
@@ -34,7 +40,7 @@
          * @param $values
          * @param false $debug
          *
-         * @return array
+         * @return array [$sth, $success]
          */
         public function query($SQL_request, $values, $debug = false) {
             if ($debug) {
@@ -54,16 +60,22 @@
          * @param bool $debug
          * @param bool $output_only
          *
-         * @return array
+         * @return array [$fetchall, $sth, $success]
          */
         public function select_unique(string $SQL_request, array $values, bool $debug = false, bool $output_only = true) {
             $result = $this->query($SQL_request, $values, $debug);
             $sth = $result[0];
             $success = $result[1];
+            $fetchall = $sth->fetchall()[0];
+    
+            if ($debug) {
+                var_dump($fetchall);
+            }
+            
             if ($output_only) {
-                return $sth->fetchall()[0];
+                return $fetchall;
             } else {
-                return [$sth->fetchall()[0], $sth, $result];
+                return [$fetchall, $sth, $success];
             }
         }
         
