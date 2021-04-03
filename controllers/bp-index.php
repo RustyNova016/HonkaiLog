@@ -1,5 +1,4 @@
 <?php
-    include "models/bp.php";
     require_once "models/BP/BP_progress.php";
     
     $bp_db = new BP_progress($db);
