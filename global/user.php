@@ -77,6 +77,6 @@
         }
         
         public function unset_db() {
-            $this->db = null;
+            unset($this->db);
         }
     }
