@@ -68,22 +68,19 @@
                                          style="width: auto; margin: 10px; padding:15px;">
                                         <div class="card-body" style="padding: 5px;">
                                             <h5 class="card-title"><?=$history_time_span->getTimeFrame()->getCardTitle()?></h5>
-                                            <p class="card-text"><?=$history_time_span->getTimeFrame()->getCardStart()?>
-                                                ,
+                                            <p class="card-text"><?=$history_time_span->getTimeFrame()->getCardStart()?>,
                                                 you:</p>
                                             <ul>
                                                 <li>
-                                                    Gained <?=$history_time_span->getNetGains()?> <?=$name?>
-                                                    s
+                                                    Gained <?=$history_time_span->getNetGains()?> <?=$name?>s
                                                 </li>
                                                 <li>
-                                                    Spent <?=$history_time_span->getNetLoss()?> <?=$name?>
-                                                    s
+                                                    Spent <?=$history_time_span->getNetLoss()?> <?=$name?>s
                                                 </li>
                                             </ul>
                                             Overall, you
-                                            got <?=$history_time_span->get_overall_change()?> <?=$name?>
-                                            s during this period.
+                                            got <?=$history_time_span->get_overall_change()?> <?=$name?>s during this
+                                            period.
                                             <br> <br>
                                             <?php
                                                 $change_average = $history_time_span->get_average_gain();
@@ -125,32 +122,32 @@
                                                             <?=$name?> counts:
                                                             <ul>
                                                                 <li>
-                                                                    Gained <?=$history_time_span->getNetGains()?> <?=$name?>
-                                                                    s
+                                                                    Gained <?=$history_time_span->getNetGains()?>
+                                                                    <?=$name?>s
                                                                 </li>
                                                                 <li>
-                                                                    Spent <?=$history_time_span->getNetLoss()?> <?=$name?>
-                                                                    s
+                                                                    Spent <?=$history_time_span->getNetLoss()?>
+                                                                    <?=$name?>s
                                                                 </li>
                                                                 <li>In
-                                                                    total, <?=$history_time_span->get_overall_change()?> <?=$name?>
-                                                                    s
+                                                                    total, <?=$history_time_span->get_overall_change()?>
+                                                                    <?=$name?>s
                                                                 </li>
                                                             </ul>
                                                             
                                                             <?=$name?> counts / day:
                                                             <ul>
                                                                 <li>
-                                                                    Gained <?=$history_time_span->get_average_gain()?> <?=$name?>
-                                                                    s / day
+                                                                    Gained <?=$history_time_span->get_average_gain()?>
+                                                                    <?=$name?>s / day
                                                                 </li>
                                                                 <li>
-                                                                    Spent <?=$history_time_span->get_average_loss()?> <?=$name?>
-                                                                    s / day
+                                                                    Spent <?=$history_time_span->get_average_loss()?>
+                                                                    <?=$name?>s / day
                                                                 </li>
                                                                 <li>In
-                                                                    average, <?=$history_time_span->get_average_change()?> <?=$name?>
-                                                                    s / day
+                                                                    average, <?=$history_time_span->get_average_change()?>
+                                                                    <?=$name?>s / day
                                                                 </li>
                                                             </ul>
                                                         </div>
