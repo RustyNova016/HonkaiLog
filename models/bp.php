@@ -36,6 +36,8 @@ class bp{
      * @return array
      */
     private function request_current_bp_progress(){
+        $user = unserialize($_SESSION["user"]);
+        
         $SQLrequest = "SELECT xp_count    
                        FROM bp_season_progress 
                        WHERE id_user = :id_user 
@@ -44,7 +46,7 @@ class bp{
                        LIMIT 1;";
 
         $values = [
-            "id_user" => $_SESSION["iduser"],
+            "id_user" => $user->get_id_user(),
             "id_season" => $this->bp_season_info["id"]
         ];
 
@@ -62,11 +64,15 @@ class bp{
         $SQLrequest = "SELECT id, date_start, date_end, lv_max_F, 
                            DATEDIFF(DATE_SUB(bp_season.date_end, INTERVAL 4 HOUR), DATE_SUB(bp_season.date_start, INTERVAL 4 HOUR)) AS days    
                        FROM bp_season
-                       WHERE bp_season.date_end > DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 4 HOUR)
+                       WHERE bp_season.date_end > :last_reset
                        LIMIT 1;";
 
+        $values = [
+            ":last_reset" => last_reset()->format('Y-m-d H:i:s')
+        ];
+        
         $sth = $this->dbh->prepare($SQLrequest);
-        $sth->execute();
+        $sth->execute($values);
         $fetchall = $sth->fetchall();
         return $fetchall;
     }
@@ -76,6 +82,8 @@ class bp{
      * @return array
      */
     private function request_bp_progress_today(){
+        $user = unserialize($_SESSION["user"]);
+        
         $SQLrequest = "SELECT xp_count    
                        FROM bp_season_progress 
                        WHERE id_user = :id_user 
@@ -84,7 +92,7 @@ class bp{
                        ORDER BY time_stamp DESC;";
 
         $values = [
-            "id_user" => $_SESSION["iduser"],
+            "id_user" => $user->get_id_user(),
             "id_season" => $this->bp_season_info["id"]
         ];
 
@@ -98,6 +106,8 @@ class bp{
      * @return array
      */
     private function request_bp_progress_yesterday(){
+        $user = unserialize($_SESSION["user"]);
+        
         $SQLrequest = "SELECT xp_count    
                        FROM bp_season_progress 
                        WHERE id_user = :id_user 
@@ -107,7 +117,7 @@ class bp{
                        LIMIT 1;";
         
         $values = [
-            "id_user" => $_SESSION["iduser"],
+            "id_user" => $user->get_id_user(),
             "id_season" => $this->bp_season_info["id"]
         ];
 
@@ -122,13 +132,15 @@ class bp{
      * @param $bp_xp
      */
     public function update_bp($bp_level, $bp_xp){
+        $user = unserialize($_SESSION["user"]);
+        
         $bp_total = ($bp_level * 1000) + $bp_xp;
         $SQLrequest = " INSERT INTO `bp_season_progress` (`id`, `id_season`, `id_user`, `xp_count`, `time_stamp`) 
                         VALUES (NULL, :id_season, :id_user, :xp_count, CURRENT_TIMESTAMP());";
 
         $values = [
             ":id_season" => $this->bp_season_info["id"],
-            ":id_user" => $_SESSION["iduser"],
+            ":id_user" => $user->get_id_user(),
             ":xp_count" => $bp_total
         ];
 
