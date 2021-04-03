@@ -1,5 +1,6 @@
 <?php
     include "models/date_function.php";
+    require_once "models/BP/BP_season.php";
     
     /**
      * Class bp
@@ -29,7 +30,7 @@
             }
             
             // Database requests
-            $this->bp_season_info = $this->request_current_bp_season()[0];
+            $this->request_current_bp_season();
             $this->bp_progress_now = $this->request_current_bp_progress()[0];
             $this->bp_progress_yesterday = $this->request_bp_progress_yesterday()[0];
             
@@ -39,7 +40,7 @@
             $this->days_left = diff_whole_days($date->format('Y-m-d H:i:s'), $this->bp_season_info["date_end"]);
             
             // XP counts
-            $this->lv_max_F = $this->bp_season_info["lv_max_F"];
+            $this->lv_max_F = $this->bp_season_info["level_max_vanguard"];
             $this->total_bp_needed = $this->lv_max_F * 1000;
             $this->current_bp = $this->bp_progress_now["xp_count"];
             
@@ -47,23 +48,28 @@
         
         /** Get the current BP season
          *
-         * @return array
          */
         private function request_current_bp_season() {
-            $SQLrequest = "SELECT id, date_start, date_end, lv_max_F,
-                           DATEDIFF(DATE_SUB(bp_season.date_end, INTERVAL 4 HOUR), DATE_SUB(bp_season.date_start, INTERVAL 4 HOUR)) AS days
-                       FROM bp_season
-                       WHERE bp_season.date_end > :last_reset
-                       LIMIT 1;";
+            $request = "SELECT bp_season.*,
+                            DATE_ADD(date_start, INTERVAL :reset_hour HOUR) AS date_start_user,
+                            DATE_ADD(date_end, INTERVAL :reset_hour HOUR) AS date_end_user,
+                            DATEDIFF(
+                                DATE_ADD(date_end, INTERVAL :reset_hour HOUR),
+                                DATE_ADD(date_start, INTERVAL :reset_hour HOUR)
+                                ) AS days
+                        FROM bp_season
+                        WHERE bp_season.date_end > :last_reset
+                        LIMIT 1;
+                        ";
             
+            
+            $user = unserialize($_SESSION["user"]);
             $values = [
-                ":last_reset" => last_reset()->format('Y-m-d H:i:s')
+                ":last_reset" => last_reset()->format('Y-m-d H:i:s'),
+                ":reset_hour" => $user->get_reset_hour()
             ];
             
-            $sth = $this->dbh->prepare($SQLrequest);
-            $sth->execute($values);
-            $fetchall = $sth->fetchall();
-            return $fetchall;
+            $this->bp_season_info = $this->db->select_unique($request, $values);
         }
         
         /** Get the last entry of the current BP season progress

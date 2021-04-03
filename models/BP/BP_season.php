@@ -5,21 +5,94 @@
      */
     class BP_season {
         private int $id;
+        private string $bp_type;
         private DateTime $date_start;
         private DateTime $date_end;
         private int $total_days;
-        private int $level_max_vanguard;
-        private int $level_max_knight;
-        private int $level_max_paladin;
-
+        private int $level_max;
+        
         /**
          * BP_season constructor.
          *
          * @param database $db
-         * @param int      $id
+         * @param string   $bp_type
          */
-        public function __construct(database $db) {
+        public function __construct(database $db, string $bp_type) {
+            $this->bp_type = $bp_type;
             $this->query_info($db);
+        }
+        
+        /**
+         * @param int $level
+         * @param int $xp
+         *
+         * @return int
+         */
+        public function convert_lv_xp_to_xp(int $level = 0, int $xp = 0): int {
+            return ($level * 1000) + $xp;
+        }
+        
+        /**
+         * @return string
+         */
+        public function get_bp_type(): string {
+            return $this->bp_type;
+        }
+        
+        /**
+         * @return DateTime
+         */
+        public function get_date_end(): DateTime {
+            return $this->date_end;
+        }
+        
+        /**
+         * @return DateTime
+         */
+        public function get_date_start(): DateTime {
+            return $this->date_start;
+        }
+        
+        /** Get the number of days left before the end of the BP season
+         *
+         * @return int
+         */
+        public function get_day_left(): int {
+            $today_date = new DateTime();
+            return intval(
+                diff_whole_days(
+                    $today_date->format('Y-m-d H:i:s'),
+                    $this->date_end->format('Y-m-d H:i:s')
+                )
+            );
+        }
+        
+        /**
+         * @return int
+         */
+        public function get_id(): int {
+            return $this->id;
+        }
+        
+        /**
+         * @return int
+         */
+        public function get_level_max(): int {
+            return $this->level_max;
+        }
+        
+        /**
+         * @return int
+         */
+        public function get_total_bp_needed(): int {
+            return $this->convert_lv_xp_to_xp($this->level_max);
+        }
+        
+        /**
+         * @return int
+         */
+        public function get_total_days(): int {
+            return $this->total_days;
         }
         
         function query_info(database $db) {
@@ -50,72 +123,6 @@
             $this->date_start = new DateTime($result["date_start_user"]);
             $this->date_end = new DateTime($result["date_end_user"]);
             $this->total_days = $result["total_days"];
-            $this->level_max_vanguard = $result["level_max_vanguard"];
-            $this->level_max_knight = $result["level_max_knight"];
-            $this->level_max_paladin = $result["level_max_paladin"];
-        }
-        
-        /**
-         * @return int
-         */
-        public function get_id(): int {
-            return $this->id;
-        }
-        
-        /** Get the number of days left before the end of the BP season
-         *
-         * @return int
-         */
-        public function get_day_left(): int {
-            $today_date = new DateTime();
-            return intval(
-                diff_whole_days(
-                    $today_date->format('Y-m-d H:i:s'),
-                    $this->date_end
-                )
-            );
-        }
-        
-        
-        /**
-         * @return DateTime
-         */
-        public function get_date_end(): DateTime {
-            return $this->date_end;
-        }
-        
-        /**
-         * @return DateTime
-         */
-        public function get_date_start(): DateTime {
-            return $this->date_start;
-        }
-        
-        /**
-         * @return int
-         */
-        public function get_level_max_knight(): int {
-            return $this->level_max_knight;
-        }
-        
-        /**
-         * @return int
-         */
-        public function get_level_max_paladin(): int {
-            return $this->level_max_paladin;
-        }
-        
-        /**
-         * @return int
-         */
-        public function get_level_max_vanguard(): int {
-            return $this->level_max_vanguard;
-        }
-        
-        /**
-         * @return int
-         */
-        public function get_total_days(): int {
-            return $this->total_days;
+            $this->level_max = $result["level_max_" . $this->bp_type];
         }
     }
