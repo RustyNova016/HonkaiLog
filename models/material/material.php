@@ -1,10 +1,10 @@
 <?php
-    require_once  "models/date_function.php";
+    require_once "models/date_function.php";
     
     /**
      * Class material
      */
-    class material{
+    class material {
         private int $id;
         private string $name;
         private array $history;
@@ -14,6 +14,8 @@
          * material constructor.
          *
          * @param $id
+         * @param $db
+         * @param $time_frames
          */
         public function __construct($id, $db, $time_frames) {
             $this->id = $id;
@@ -24,24 +26,6 @@
             $this->set_time_frame_list($time_frames);
             $this->query_material_histories($db);
         }
-
-    
-        /**
-         * @param $db
-         */
-        public function query_info(database $db) {
-            $request = "SELECT *
-                        FROM material
-                        WHERE id_material = :id_material";
-    
-            $values = [
-                ":id_material" => $this->id
-            ];
-    
-            $result = $db->select_unique($request, $values, false, true);
-            
-            $this->name = $result["name"];
-        }
         
         /**
          * @return int
@@ -49,18 +33,107 @@
         public function getCurrentCount(): int {
             return $this->history[0]->get_current_count();
         }
-    
-        public function query_material_histories($db) {
-            $this->history = [];
-            foreach ($this->time_frame_list as $time){
-                $this->query_material_history($db, $time);
-            }
+        
+        /**
+         * @return array
+         */
+        public function getHistory(): array {
+            return $this->history;
+        }
+        
+        /**
+         * @return int
+         */
+        public function getId(): int {
+            return $this->id;
+        }
+        
+        /**
+         * @return string
+         */
+        public function getName(): string {
+            return $this->name;
+        }
+        
+        /**
+         * @return array
+         */
+        public function get_time_frame_list(): array {
+            return $this->time_frame_list;
+        }
+        
+        /**
+         * @param array $time_frame_list
+         */
+        public function set_time_frame_list(array $time_frame_list): void {
+            $this->time_frame_list = $time_frame_list;
+        }
+        
+        /** Log a currency count to the database
+         *
+         * @param        $dbh
+         * @param        $quantity
+         * @param        $lib_change
+         * @param string $time_stamp
+         *
+         * @return array
+         */
+        public function log_material_count($dbh, $quantity, $lib_change, $time_stamp = "CURRENT_TIMESTAMP()"): array {
+            $user = unserialize($_SESSION["user"]);
+            
+            $SQLrequest = "INSERT INTO material_count (id_user,  id_material , quantity, libchange)
+                        VALUES (:id_user, :id_material, :quantity, :libchange);";
+            
+            $values = [
+                ":id_user" => $user->get_id_user(),
+                ":id_material" => strval($this->id),
+                ":quantity" => $quantity,
+                ":libchange" => $lib_change//,
+                //":time_stamp" => $time_stamp
+            ];
+            
+            //var_dump($SQLrequest);
+            //var_dump($values);
+            
+            $sth = $dbh->prepare($SQLrequest);
+            $outp = [$sth->execute($values)];
+            
+            $this->query_material_histories($dbh);
+            
+            return $outp;
         }
     
         /**
-         * @param $dbh
+         * @param database $db
+         */
+        public function query_info(database $db) : void {
+            // SQL Request
+            $request = "SELECT *
+                        FROM material
+                        WHERE id_material = :id_material";
+    
+            // Values to insert
+            $values = [
+                ":id_material" => $this->id
+            ];
+    
+            // Execute the request
+            $result = $db->select_unique($request, $values, false, true);
+            
+            $this->name = $result["name"];
+        }
+        
+        public function query_material_histories($db) {
+            $this->history = [];
+            foreach ($this->time_frame_list as $time) {
+                $this->query_material_history($db, $time);
+            }
+        }
+        
+        /**
+         * @param            $dbh
          * @param time_frame $timestamp
-         * @param int $recursion_depth
+         * @param int        $recursion_depth
          */
         public function query_material_history($db, time_frame $timestamp, $recursion_depth = 0) {
             // Wholeday:
@@ -79,9 +152,9 @@
                 // We get all the logs of the materials that are after [Actual time] - [Timespan to remove]
                 
                 $SQLrequest = "SELECT quantity, time_stamp
-                           FROM material_count 
-                           WHERE id_user = :id_user 
-                                AND id_material = :id_material 
+                           FROM material_count
+                           WHERE id_user = :id_user
+                                AND id_material = :id_material
                                 AND time_stamp  > DATE_SUB(:next_reset, INTERVAL " . $timestamp->getSQL() . ")
                            ORDER BY time_stamp -- without wholeday";
                 
@@ -97,9 +170,9 @@
                 
                 
                 $SQLrequest = "SELECT quantity, time_stamp
-                           FROM material_count 
-                           WHERE id_user = :id_user 
-                                AND id_material = :id_material 
+                           FROM material_count
+                           WHERE id_user = :id_user
+                                AND id_material = :id_material
                                 AND time_stamp > DATE_SUB(:next_reset, INTERVAL " . $timestamp->getSQL() . ")
                            ORDER BY time_stamp -- with wholeday";
                 
@@ -174,74 +247,5 @@
             
             //var_dump($this->name);
             //var_dump($this->history);
-        }
-    
-        /** Log a currency count to the database
-         *
-         * @param $dbh
-         * @param $quantity
-         * @param $lib_change
-         * @param string $time_stamp
-         *
-         * @return array
-         */
-        public function log_material_count($dbh, $quantity, $lib_change, $time_stamp = "CURRENT_TIMESTAMP()"): array {
-            $user = unserialize($_SESSION["user"]);
-            
-            $SQLrequest = "INSERT INTO material_count (id_user,  id_material , quantity, libchange)
-                        VALUES (:id_user, :id_material, :quantity, :libchange);";
-            
-            $values = [
-                ":id_user" => $user->get_id_user(),
-                ":id_material" => strval($this->id),
-                ":quantity" => $quantity,
-                ":libchange" => $lib_change//,
-                //":time_stamp" => $time_stamp
-            ];
-            
-            //var_dump($SQLrequest);
-            //var_dump($values);
-            
-            $sth = $dbh->prepare($SQLrequest);
-            $outp = [$sth->execute($values)];
-            
-            $this->query_material_histories($dbh);
-            
-            return $outp;
-        }
-        
-        /**
-         * @return string
-         */
-        public function getName(): string {
-            return $this->name;
-        }
-        
-        /**
-         * @return int
-         */
-        public function getId(): int {
-            return $this->id;
-        }
-    
-        /**
-         * @param array $time_frame_list
-         */
-        public function set_time_frame_list(array $time_frame_list): void {
-            $this->time_frame_list = $time_frame_list;
-        }
-    
-        /**
-         * @return array
-         */
-        public function get_time_frame_list(): array {
-            return $this->time_frame_list;
-        }
-        
-        /**
-         * @return array
-         */
-        public function getHistory(): array {
-            return $this->history;
         }
     }
