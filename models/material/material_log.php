@@ -16,27 +16,13 @@
          * @param $db
          * @param $id_log
          *
-         * @throws ErrorException
+         * @throws Exception
          */
         public function __construct($db, $id_log) {
             $this->id_log = $id_log;
             $this->query_info($db);
         }
-        
-        /**
-         * @return int
-         */
-        public function get_id_log(): int {
-            return $this->id_log;
-        }
-        
-        /**
-         * @return int
-         */
-        public function get_libchange(): int {
-            return $this->libchange;
-        }
-        
+    
         /**
          * @return int
          */

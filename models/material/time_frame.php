@@ -80,7 +80,7 @@
         }
     
         /**
-         * @return DateTime
+         * @return DateTime|bool
          */
         public function get_date_start(): DateTime|bool {
             return $this->date_start;

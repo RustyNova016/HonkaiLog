@@ -2,27 +2,39 @@
     require_once "models/material/material_log.php";
     require_once "models/other_functions.php";
     
+    /**
+     * Class material_history
+     */
     class material_history {
         private array $log_list;
         private int $net_gains;
         private int $net_loss;
         private time_frame $time_frame;
-        
+    
+        /**
+         * material_history constructor.
+         *
+         * @param database   $db
+         * @param time_frame $time_frame
+         * @param int        $id_material
+         *
+         * @throws Exception
+         */
         public function __construct(database $db, time_frame $time_frame, int $id_material) {
             $this->time_frame = $time_frame;
             $this->log_list = [];
             
             $this->query_material_logs($db, $id_material);
         }
-        
+    
+    
         /**
-         *
          * @param database $db
-         * @param          $id_material
+         * @param int      $id_material
          *
-         * @throws ErrorException
+         * @throws Exception
          */
-        function query_material_logs(database $db, $id_material) {
+        function query_material_logs(database $db, int $id_material) : void {
             // SQL Request
             // First, we get one value before the time frame for reference
             $request_value_before = "SELECT id
@@ -128,26 +140,27 @@
             }
             return $this->net_gains;
         }
-        
+    
+    
         /** Calculate gains and losses
          *
          */
-        private function gain_loss() {
+        private function gain_loss() : void {
             $this->net_gains = 0;
             $this->net_loss = 0;
             $old_amount = $this->get_oldest_count();
-    
+            
             /** @var material_log $log */
-            foreach ($this->log_list as $log){
+            foreach ($this->log_list as $log) {
                 $amount = $log->get_quantity();
                 $diff = $amount - $old_amount;
-    
+                
                 if ($diff > 0) {
                     $this->net_gains += $diff;
                 } else if ($diff < 0) {
                     $this->net_loss += $diff;
                 }
-    
+                
                 $old_amount = $amount;
             }
         }
@@ -174,7 +187,7 @@
             }
             return $this->net_loss;
         }
-    
+        
         /**
          * @return time_frame
          */

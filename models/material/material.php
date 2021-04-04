@@ -10,13 +10,15 @@
         private int $id_material;
         private string $name;
         private array $time_frame_list;
-        
+    
         /**
          * material constructor.
          *
          * @param $id
          * @param $db
          * @param $time_frames
+         *
+         * @throws Exception
          */
         public function __construct($id, $db, $time_frames) {
             $this->id_material = $id;
@@ -48,9 +50,11 @@
             
             $this->name = $result["name"];
         }
-        
+    
         /**
          * @param database $db
+         *
+         * @throws Exception
          */
         public function query_material_histories(database $db): void {
             $this->history = [];
@@ -88,24 +92,19 @@
         }
         
         /**
-         * @return array
-         */
-        public function get_time_frame_list(): array {
-            return $this->time_frame_list;
-        }
-        
-        /**
          * @param array $time_frame_list
          */
         public function set_time_frame_list(array $time_frame_list): void {
             $this->time_frame_list = $time_frame_list;
         }
-        
+    
         /** Log a currency count to the database
          *
          * @param database $db
          * @param int      $quantity
          * @param string   $lib_change
+         *
+         * @throws Exception
          */
         public function log_material_count(database $db, int $quantity, string $lib_change) {
             // SQL Request
