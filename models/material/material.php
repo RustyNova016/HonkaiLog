@@ -6,9 +6,9 @@
      * Class material
      */
     class material {
+        private array $history;
         private int $id_material;
         private string $name;
-        private array $history;
         private array $time_frame_list;
         
         /**
@@ -26,6 +26,37 @@
             $this->query_info($db);
             $this->set_time_frame_list($time_frames);
             $this->query_material_histories($db);
+        }
+        
+        /** Get the info about the current material
+         *
+         * @param database $db
+         */
+        public function query_info(database $db): void {
+            // SQL Request
+            $request = "SELECT *
+                        FROM material
+                        WHERE id_material = :id_material";
+            
+            // Values to insert
+            $values = [
+                ":id_material" => $this->id_material
+            ];
+            
+            // Execute the request
+            $result = $db->select_unique($request, $values, false, true);
+            
+            $this->name = $result["name"];
+        }
+        
+        /**
+         * @param database $db
+         */
+        public function query_material_histories(database $db): void {
+            $this->history = [];
+            foreach ($this->time_frame_list as $time_frame) {
+                array_push($this->history, new material_history($db, $time_frame, $this->id_material));
+            }
         }
         
         /**
@@ -99,36 +130,5 @@
             
             // And reload
             $this->query_material_histories($db);
-        }
-        
-        /** Get the info about the current material
-         *
-         * @param database $db
-         */
-        public function query_info(database $db): void  {
-            // SQL Request
-            $request = "SELECT *
-                        FROM material
-                        WHERE id_material = :id_material";
-            
-            // Values to insert
-            $values = [
-                ":id_material" => $this->id_material
-            ];
-            
-            // Execute the request
-            $result = $db->select_unique($request, $values, false, true);
-            
-            $this->name = $result["name"];
-        }
-    
-        /**
-         * @param database $db
-         */
-        public function query_material_histories(database $db) : void{
-            $this->history = [];
-            foreach ($this->time_frame_list as $time_frame) {
-                array_push($this->history, new material_history($db, $time_frame, $this->id_material));
-            }
         }
     }
