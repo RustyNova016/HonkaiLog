@@ -1,22 +1,27 @@
 <?php
-    require_once  "models/date_function.php";
+    require_once "models/date_function.php";
+    require_once "models/info_message.php";
     
     /**
      * Class material
      */
-    class material{
-        private int $id;
-        private string $name;
+    class material {
         private array $history;
+        private int $id_material;
+        private string $name;
         private array $time_frame_list;
     
         /**
          * material constructor.
          *
          * @param $id
+         * @param $db
+         * @param $time_frames
+         *
+         * @throws Exception
          */
         public function __construct($id, $db, $time_frames) {
-            $this->id = $id;
+            $this->id_material = $id;
             
             $this->history = [];
             
@@ -24,206 +29,68 @@
             $this->set_time_frame_list($time_frames);
             $this->query_material_histories($db);
         }
-
-    
-        /**
-         * @param $db
+        
+        /** Get the info about the current material
+         *
+         * @param database $db
          */
-        public function query_info(database $db) {
+        public function query_info(database $db): void {
+            // SQL Request
             $request = "SELECT *
                         FROM material
                         WHERE id_material = :id_material";
-    
+            
+            // Values to insert
             $values = [
-                ":id_material" => $this->id
+                ":id_material" => $this->id_material
             ];
-    
+            
+            // Execute the request
             $result = $db->select_unique($request, $values, false, true);
             
             $this->name = $result["name"];
+        }
+    
+        /**
+         * @param database $db
+         *
+         * @throws Exception
+         */
+        public function query_material_histories(database $db): void {
+            $this->history = [];
+            foreach ($this->time_frame_list as $time_frame) {
+                array_push($this->history, new material_history($db, $time_frame, $this->id_material));
+            }
         }
         
         /**
          * @return int
          */
-        public function getCurrentCount(): int {
+        public function get_current_count(): int {
             return $this->history[0]->get_current_count();
         }
-    
-        public function query_material_histories($db) {
-            $this->history = [];
-            foreach ($this->time_frame_list as $time){
-                $this->query_material_history($db, $time);
-            }
-        }
-    
+        
         /**
-         * @param $dbh
-         * @param time_frame $timestamp
-         * @param int $recursion_depth
-         */
-        public function query_material_history($db, time_frame $timestamp, $recursion_depth = 0) {
-            // Wholeday:
-            // 0: We take exactly $date time before
-            // 1: We take take the whole day
-            
-            if (get_class($db) == "database") {
-                $dbh = $db->getDbh();
-            } else {
-                $dbh = $db;
-            }
-            
-            $user = unserialize($_SESSION["user"]);
-            
-            if (!$timestamp->getWholeDay()) {
-                // We get all the logs of the materials that are after [Actual time] - [Timespan to remove]
-                
-                $SQLrequest = "SELECT quantity, time_stamp
-                           FROM material_count 
-                           WHERE id_user = :id_user 
-                                AND id_material = :id_material 
-                                AND time_stamp  > DATE_SUB(:next_reset, INTERVAL " . $timestamp->getSQL() . ")
-                           ORDER BY time_stamp -- without wholeday";
-                
-                $values = [
-                    ":id_user" => $user->get_id_user(),
-                    ":id_material" => strval($this->id),
-                    ":next_reset" => last_reset()->format('Y-m-d H:i:s')
-                ];
-            } else {
-                // We get all the logs of the materials that are after ([Actual time] - [Timespan to remove]) [Honkai reset time]
-                
-                //
-                
-                
-                $SQLrequest = "SELECT quantity, time_stamp
-                           FROM material_count 
-                           WHERE id_user = :id_user 
-                                AND id_material = :id_material 
-                                AND time_stamp > DATE_SUB(:next_reset, INTERVAL " . $timestamp->getSQL() . ")
-                           ORDER BY time_stamp -- with wholeday";
-                
-                // DATE_SUB(time_stamp, INTERVAL 4 HOUR) < ((GETDATE() - time) +4 h)
-                
-                $values = [
-                    ":id_user" => $user->get_id_user(),
-                    ":id_material" => $this->id,
-                    ":next_reset" => last_reset()->format('Y-m-d H:i:s')
-                ];
-                
-                
-            }
-            
-            //var_dump($SQLrequest);
-            //var_dump($values);
-            
-            $sth = $dbh->prepare($SQLrequest);
-            $exe = $sth->execute($values);
-            $result_in_range = $sth->fetchall();
-            //var_dump($result_in_range);
-            
-            
-            // Now, we take one value before the time range
-            if (!empty($result_in_range)) {
-                $SQLrequest = "SELECT quantity, time_stamp
-                           FROM material_count
-                           WHERE id_user = :id_user
-                             AND id_material = :id_mat
-                             AND time_stamp < :last_timestamp
-                           ORDER BY time_stamp DESC
-                           LIMIT 1;";
-                
-                $values = [
-                    ":id_user" => $user->get_id_user(),
-                    ":id_mat" => $this->id,
-                    ":last_timestamp" => $result_in_range[0]["time_stamp"]
-                ];
-                
-            } else {
-                $SQLrequest = "SELECT quantity, time_stamp FROM material_count WHERE id_user = :id_user AND id_material = :id_mat AND time_stamp < NOW() ORDER BY time_stamp DESC LIMIT 1;";
-                
-                $values = [
-                    ":id_user" => $user->get_id_user(),
-                    ":id_mat" => $this->id
-                ];
-            }
-            
-            $sth = $dbh->prepare($SQLrequest);
-            $exe = $sth->execute($values);
-            $result = $sth->fetchall();
-            
-            $result = array_merge_recursive($result, $result_in_range);
-            
-            if (empty($result)) {
-                if ($recursion_depth < 1) {
-                    $this->log_material_count($dbh, 0, "Init");
-                    $this->query_material_history($dbh, $timestamp, $recursion_depth + 1);
-                } else {
-                    echo "<pre>";
-                    echo "Recursion limit";
-                    echo "</pre>";
-                }
-            } else {
-                array_push($this->history, new material_history($result, $timestamp));
-            }
-            
-            //var_dump($result);
-            
-            //var_dump($result);
-            
-            
-            //var_dump($this->name);
-            //var_dump($this->history);
-        }
-    
-        /** Log a currency count to the database
-         *
-         * @param $dbh
-         * @param $quantity
-         * @param $lib_change
-         * @param string $time_stamp
-         *
          * @return array
          */
-        public function log_material_count($dbh, $quantity, $lib_change, $time_stamp = "CURRENT_TIMESTAMP()"): array {
-            $user = unserialize($_SESSION["user"]);
-            
-            $SQLrequest = "INSERT INTO material_count (id_user,  id_material , quantity, libchange)
-                        VALUES (:id_user, :id_material, :quantity, :libchange);";
-            
-            $values = [
-                ":id_user" => $user->get_id_user(),
-                ":id_material" => strval($this->id),
-                ":quantity" => $quantity,
-                ":libchange" => $lib_change//,
-                //":time_stamp" => $time_stamp
-            ];
-            
-            //var_dump($SQLrequest);
-            //var_dump($values);
-            
-            $sth = $dbh->prepare($SQLrequest);
-            $outp = [$sth->execute($values)];
-            
-            $this->query_material_histories($dbh);
-            
-            return $outp;
+        public function get_history(): array {
+            return $this->history;
+        }
+        
+        /**
+         * @return int
+         */
+        public function get_id_material(): int {
+            return $this->id_material;
         }
         
         /**
          * @return string
          */
-        public function getName(): string {
+        public function get_name(): string {
             return $this->name;
         }
         
-        /**
-         * @return int
-         */
-        public function getId(): int {
-            return $this->id;
-        }
-    
         /**
          * @param array $time_frame_list
          */
@@ -231,17 +98,36 @@
             $this->time_frame_list = $time_frame_list;
         }
     
-        /**
-         * @return array
+        /** Log a currency count to the database
+         *
+         * @param database $db
+         * @param int      $quantity
+         * @param string   $lib_change
+         *
+         * @throws Exception
          */
-        public function get_time_frame_list(): array {
-            return $this->time_frame_list;
-        }
-        
-        /**
-         * @return array
-         */
-        public function getHistory(): array {
-            return $this->history;
+        public function log_material_count(database $db, int $quantity, string $lib_change) {
+            // SQL Request
+            $request = "INSERT INTO material_count (id_user,  id_material , quantity, libchange)
+                        VALUES (:id_user, :id_material, :quantity, :libchange);";
+            
+            // Values to insert
+            $user = unserialize($_SESSION["user"]);
+            $values = [
+                ":id_user" => $user->get_id_user(),
+                ":id_material" => strval($this->id_material),
+                ":quantity" => $quantity,
+                ":libchange" => $lib_change//,
+                //":time_stamp" => $time_stamp
+            ];
+            
+            // Execute the request
+            $result = $db->query($request, $values, false);
+            if ($result[1]) {
+                info_message("Successfully logged new " . $this->name . " count");
+            }
+            
+            // And reload
+            $this->query_material_histories($db);
         }
     }

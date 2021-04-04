@@ -41,12 +41,15 @@
             
             $this->init = true;
         }
-        
+    
         /** Fill the $material_list parameter with the material from the database
          *
          * @param database $db
+         * @param array    $material_history_time_frame
+         *
+         * @throws Exception
          */
-        public function query_material_list(database $db, $material_history_time_frame) {
+        public function query_material_list(database $db, array $material_history_time_frame) {
             $request = "SELECT id_material
                         FROM material
                         WHERE id_material_type = :id_material_type";
@@ -63,7 +66,7 @@
                     $this->list_of_id_material[$new_id_material] = $new_id_material;
                     
                     $material_item1 = new material($new_id_material, $db, $material_history_time_frame);
-                    $this->list_of_material[$material_item1->getId()] = $material_item1;
+                    $this->list_of_material[$material_item1->get_id_material()] = $material_item1;
                 }
             }
         }
