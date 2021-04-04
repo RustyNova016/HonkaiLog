@@ -99,12 +99,14 @@
         public function get_xp_left(string $bp_type) {
             return $this->seasons[$bp_type]->get_total_bp_needed() - $this->get_current_bp();
         }
-        
+    
         /** Log the current bp count into the database
          *
          * @param database $db
          * @param int      $bp_level
          * @param int      $bp_xp
+         *
+         * @throws Exception
          */
         public function insert_bp_log(database $db, int $bp_level, int $bp_xp) {
             $request = "INSERT INTO `bp_season_progress` (`id`, `id_season`, `id_user`, `xp_count`, `time_stamp`)
@@ -154,7 +156,9 @@
             ];
             
             // Execute the request
-            $this->yesterday_log = $db->select_unique($request, $values, false, true);
+            $result = $db->select_unique($request, $values, false, true);
+            array_push($this->history, $result);
+            $this->yesterday_log = $result;
         }
         
         /** Get the history of BP
