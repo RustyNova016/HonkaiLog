@@ -37,7 +37,7 @@
         function query_material_logs(database $db, int $id_material): void {
             // SQL Request
             // First, we get one value before the time frame for reference
-            $request_value_before = "SELECT id
+            $request_value_before = "SELECT id_log
                                      FROM material_count
                                      WHERE id_user = :id_user
                                          AND id_material = :id_material
@@ -45,7 +45,7 @@
                                      ORDER BY time_stamp DESC
                                      LIMIT 1;";
             
-            $request_values_in_time_frame = "SELECT id
+            $request_values_in_time_frame = "SELECT id_log
                                              FROM material_count
                                              WHERE id_user = :id_user
                                                  AND id_material = :id_material
