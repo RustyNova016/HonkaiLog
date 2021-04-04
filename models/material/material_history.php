@@ -67,7 +67,7 @@
             $result = array_merge_recursive($result, $result_in_range);
             
             foreach ($result as $log) {
-                array_push($this->log_list, new material_log($db, $log["id"]));
+                array_push($this->log_list, new material_log($db, $log["id_log"]));
             }
         }
         
