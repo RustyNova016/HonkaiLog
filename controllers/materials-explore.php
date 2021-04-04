@@ -6,6 +6,11 @@
     require_once "models/material/material_history.php";
     require_once "models/material/time_frame.php";
     
+    /**
+     * @var PDO      $dbh
+     * @var database $db
+     */
+    
     // We get the list of the ids of the materials
     $material_DB = new material_db($dbh);
     $list_of_id_material_type = $material_DB->get_material_types();

@@ -10,7 +10,7 @@
         private int $id_material;
         private string $name;
         private array $time_frame_list;
-    
+        
         /**
          * material constructor.
          *
@@ -50,7 +50,14 @@
             
             $this->name = $result["name"];
         }
-    
+        
+        /**
+         * @param array $time_frame_list
+         */
+        public function set_time_frame_list(array $time_frame_list): void {
+            $this->time_frame_list = $time_frame_list;
+        }
+        
         /**
          * @param database $db
          *
@@ -91,13 +98,6 @@
             return $this->name;
         }
         
-        /**
-         * @param array $time_frame_list
-         */
-        public function set_time_frame_list(array $time_frame_list): void {
-            $this->time_frame_list = $time_frame_list;
-        }
-    
         /** Log a currency count to the database
          *
          * @param database $db

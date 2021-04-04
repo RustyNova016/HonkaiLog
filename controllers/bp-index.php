@@ -1,6 +1,10 @@
 <?php
     require_once "models/BP/BP_progress.php";
     
+    /**
+     * @var database $db
+     */
+    
     $bp_db = new BP_progress($db);
     
     if (!empty($_POST["bp_level"])) {

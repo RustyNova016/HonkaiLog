@@ -1,3 +1,10 @@
+<?php
+    /**
+     * @var string $controller
+     * @var string $action
+     */
+?>
+
 <div class="row bg-white">
     <div class="container">
         <br>
