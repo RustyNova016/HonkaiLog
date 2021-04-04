@@ -1,3 +1,9 @@
+<?php
+    /**
+     * @var BP_progress $bp_db
+     */
+?>
+
 <div class="bg">
     <div class="container bg">
 

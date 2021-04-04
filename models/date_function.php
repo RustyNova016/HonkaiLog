@@ -21,7 +21,7 @@
         $now = new DateTime();
         $now_time = new DateTime($now->format('H:i:s'));
         $reset_time = new DateTime("04:00:00");
-    
+        
         $user = unserialize($_SESSION["user"]);
         
         
@@ -64,6 +64,6 @@
      *
      * @return string
      */
-    function datetime_to_SQL_time(DateTime $date_time) : string {
+    function datetime_to_SQL_time(DateTime $date_time): string {
         return $date_time->format('Y-m-d H:i:s');
     }

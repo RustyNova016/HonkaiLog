@@ -2,14 +2,14 @@
     require_once "models/material/material.php";
     
     class material_type {
-        private int $id;
-        private string $name;
         private int $display_order;
         private bool $display_type;
-        private int $parent_id;
+        private int $id;
         private bool $init;
-        private array $list_of_material;
         private array $list_of_id_material;
+        private array $list_of_material;
+        private string $name;
+        private int $parent_id;
         
         public function __construct(database $db, $id) {
             $this->id = $id;
@@ -41,7 +41,72 @@
             
             $this->init = true;
         }
-    
+        
+        /**
+         * @return int
+         */
+        public function get_display_order(): int {
+            return $this->display_order;
+        }
+        
+        /**
+         * @return int
+         */
+        public function get_id(): int {
+            return $this->id;
+        }
+        
+        /**
+         * @return array
+         */
+        public function get_list_of_id_material(): array {
+            return $this->list_of_id_material;
+        }
+        
+        /**
+         * @return array
+         */
+        public function get_list_of_material(): array {
+            return $this->list_of_material;
+        }
+        
+        /**
+         * @param $id
+         *
+         * @return mixed
+         */
+        public function get_material_with_id($id) {
+            return $this->list_of_material[$id];
+        }
+        
+        /**
+         * @return string
+         */
+        public function get_name(): string {
+            return $this->name;
+        }
+        
+        /**
+         * @return int
+         */
+        public function get_parent_id(): int {
+            return $this->parent_id;
+        }
+        
+        /**
+         * @return bool
+         */
+        public function is_display_type(): bool {
+            return $this->display_type;
+        }
+        
+        /**
+         * @return bool
+         */
+        public function is_init(): bool {
+            return $this->init;
+        }
+        
         /** Fill the $material_list parameter with the material from the database
          *
          * @param database $db
@@ -69,70 +134,5 @@
                     $this->list_of_material[$material_item1->get_id_material()] = $material_item1;
                 }
             }
-        }
-        
-        /**
-         * @return bool
-         */
-        public function is_init(): bool {
-            return $this->init;
-        }
-        
-        /**
-         * @return int
-         */
-        public function get_id(): int {
-            return $this->id;
-        }
-        
-        /**
-         * @return string
-         */
-        public function get_name(): string {
-            return $this->name;
-        }
-        
-        /**
-         * @return int
-         */
-        public function get_display_order(): int {
-            return $this->display_order;
-        }
-        
-        /**
-         * @return int
-         */
-        public function get_parent_id(): int {
-            return $this->parent_id;
-        }
-        
-        /**
-         * @return array
-         */
-        public function get_list_of_material(): array {
-            return $this->list_of_material;
-        }
-        
-        /**
-         * @return array
-         */
-        public function get_list_of_id_material(): array {
-            return $this->list_of_id_material;
-        }
-        
-        /**
-         * @param $id
-         *
-         * @return mixed
-         */
-        public function get_material_with_id($id) {
-            return $this->list_of_material[$id];
-        }
-        
-        /**
-         * @return bool
-         */
-        public function is_display_type(): bool {
-            return $this->display_type;
         }
     }

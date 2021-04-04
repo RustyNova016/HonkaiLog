@@ -3,9 +3,6 @@
     
     class time_frame {
         private $SQL;
-        private $name;
-        private int $nbr_day;
-        private $use_calendar_day;
         private $card_start;
         private $card_title;
         /** Datetime of the start of timeframe
@@ -13,7 +10,10 @@
          * @var DateTime
          */
         private DateTime $date_start;
-    
+        private $name;
+        private int $nbr_day;
+        private $use_calendar_day;
+        
         /**
          * time_frame constructor.
          *
@@ -35,7 +35,7 @@
             $this->card_start = $new_card_start;
             $this->card_title = $new_card_title;
             
-            if ($this->use_calendar_day){
+            if ($this->use_calendar_day) {
                 $this->date_start = next_reset()->modify('-' . $this->nbr_day . ' day');
             } else {
                 $now = new DateTime();
@@ -47,22 +47,8 @@
         /**
          * @return mixed
          */
-        public function getSQL() {
-            return $this->SQL;
-        }
-        
-        /**
-         * @return mixed
-         */
-        public function use_calendar_day() {
-            return $this->use_calendar_day;
-        }
-        
-        /**
-         * @return mixed
-         */
-        public function getNbrDay() {
-            return $this->nbr_day;
+        public function getCardStart() {
+            return $this->card_start;
         }
         
         /**
@@ -75,14 +61,28 @@
         /**
          * @return mixed
          */
-        public function getCardStart() {
-            return $this->card_start;
+        public function getNbrDay() {
+            return $this->nbr_day;
         }
-    
+        
+        /**
+         * @return mixed
+         */
+        public function getSQL() {
+            return $this->SQL;
+        }
+        
         /**
          * @return DateTime|bool
          */
         public function get_date_start(): DateTime|bool {
             return $this->date_start;
+        }
+        
+        /**
+         * @return mixed
+         */
+        public function use_calendar_day() {
+            return $this->use_calendar_day;
         }
     }

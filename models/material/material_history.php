@@ -10,7 +10,7 @@
         private int $net_gains;
         private int $net_loss;
         private time_frame $time_frame;
-    
+        
         /**
          * material_history constructor.
          *
@@ -26,15 +26,15 @@
             
             $this->query_material_logs($db, $id_material);
         }
-    
-    
+        
+        
         /**
          * @param database $db
          * @param int      $id_material
          *
          * @throws Exception
          */
-        function query_material_logs(database $db, int $id_material) : void {
+        function query_material_logs(database $db, int $id_material): void {
             // SQL Request
             // First, we get one value before the time frame for reference
             $request_value_before = "SELECT id
@@ -140,12 +140,12 @@
             }
             return $this->net_gains;
         }
-    
-    
+        
+        
         /** Calculate gains and losses
          *
          */
-        private function gain_loss() : void {
+        private function gain_loss(): void {
             $this->net_gains = 0;
             $this->net_loss = 0;
             $old_amount = $this->get_oldest_count();
