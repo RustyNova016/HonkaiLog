@@ -32,28 +32,28 @@
     $timespan_type = [
         [
             "name" => "Today",
-            "SQL" => "0 DAY",
+            "SQL" => "0",
             "start" => "Today",
             "nbr_day" => 1,
             "wholeday" => 1
         ],
         [
             "name" => "Last 24h",
-            "SQL" => "1 DAY",
+            "SQL" => "1",
             "start" => "In the last 24h",
             "nbr_day" => 1,
             "wholeday" => 0
         ],
         [
             "name" => "Last 7 day",
-            "SQL" => "7 DAY",
+            "SQL" => "7",
             "start" => "In the last 7 days",
             "nbr_day" => 7,
             "wholeday" => 1
         ],
         [
             "name" => "Last 30 day",
-            "SQL" => "30 DAY",
+            "SQL" => "30",
             "start" => "In the last 30 days",
             "nbr_day" => 30,
             "wholeday" => 1
@@ -95,11 +95,11 @@
             foreach ($list_of_material as $material) {
                 
                 if (!empty($_POST[$material->getId() . "_quantity"])) {
-                    $material->log_material_count($dbh, $_POST[$material->getId() . "_quantity"], "");
+                    $material->log_material_count($db, $_POST[$material->getId() . "_quantity"], "");
                 }
             }
         }
         
     }
     $_POST = array();
-    include "vue/materials-explore.php";
+    require_once "vue/materials-explore.php";

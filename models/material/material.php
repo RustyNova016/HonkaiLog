@@ -1,5 +1,6 @@
 <?php
     require_once "models/date_function.php";
+    require_once "models/info_message.php";
     
     /**
      * Class material
@@ -9,7 +10,7 @@
         private string $name;
         private array $history;
         private array $time_frame_list;
-    
+        
         /**
          * material constructor.
          *
@@ -71,19 +72,17 @@
         
         /** Log a currency count to the database
          *
-         * @param        $dbh
-         * @param        $quantity
-         * @param        $lib_change
-         * @param string $time_stamp
-         *
-         * @return array
+         * @param database $db
+         * @param int      $quantity
+         * @param string   $lib_change
          */
-        public function log_material_count($dbh, $quantity, $lib_change, $time_stamp = "CURRENT_TIMESTAMP()"): array {
-            $user = unserialize($_SESSION["user"]);
-            
-            $SQLrequest = "INSERT INTO material_count (id_user,  id_material , quantity, libchange)
+        public function log_material_count(database $db, int $quantity, string $lib_change) {
+            // SQL Request
+            $request = "INSERT INTO material_count (id_user,  id_material , quantity, libchange)
                         VALUES (:id_user, :id_material, :quantity, :libchange);";
             
+            // Values to insert
+            $user = unserialize($_SESSION["user"]);
             $values = [
                 ":id_user" => $user->get_id_user(),
                 ":id_material" => strval($this->id),
@@ -92,31 +91,31 @@
                 //":time_stamp" => $time_stamp
             ];
             
-            //var_dump($SQLrequest);
-            //var_dump($values);
+            // Execute the request
+            $result = $db->query($request, $values, false);
+            if ($result[1]) {
+                info_message("Successfully logged " . $this->name . " new count");
+            }
             
-            $sth = $dbh->prepare($SQLrequest);
-            $outp = [$sth->execute($values)];
-            
-            $this->query_material_histories($dbh);
-            
-            return $outp;
+            // And reload
+            $this->query_material_histories($db);
         }
-    
-        /**
+        
+        /** Get the info about the current material
+         *
          * @param database $db
          */
-        public function query_info(database $db) : void {
+        public function query_info(database $db): void  {
             // SQL Request
             $request = "SELECT *
                         FROM material
                         WHERE id_material = :id_material";
-    
+            
             // Values to insert
             $values = [
                 ":id_material" => $this->id
             ];
-    
+            
             // Execute the request
             $result = $db->select_unique($request, $values, false, true);
             
@@ -125,17 +124,19 @@
         
         public function query_material_histories($db) {
             $this->history = [];
-            foreach ($this->time_frame_list as $time) {
-                $this->query_material_history($db, $time);
+            foreach ($this->time_frame_list as $time_frame) {
+                array_push($this->history, new material_history($db, $time_frame, $this->id));
             }
         }
-        
+    
         /**
-         * @param            $dbh
+         * @param database   $db
          * @param time_frame $timestamp
          * @param int        $recursion_depth
+         *
+         * @throws Exception
          */
-        public function query_material_history($db, time_frame $timestamp, $recursion_depth = 0) {
+        public function query_material_history(database $db, time_frame $timestamp, $recursion_depth = 0) {
             // Wholeday:
             // 0: We take exactly $date time before
             // 1: We take take the whole day
@@ -148,7 +149,7 @@
             
             $user = unserialize($_SESSION["user"]);
             
-            if (!$timestamp->getWholeDay()) {
+            if (!$timestamp->use_calendar_day()) {
                 // We get all the logs of the materials that are after [Actual time] - [Timespan to remove]
                 
                 $SQLrequest = "SELECT quantity, time_stamp
@@ -213,7 +214,13 @@
                 ];
                 
             } else {
-                $SQLrequest = "SELECT quantity, time_stamp FROM material_count WHERE id_user = :id_user AND id_material = :id_mat AND time_stamp < NOW() ORDER BY time_stamp DESC LIMIT 1;";
+                $SQLrequest = "SELECT quantity, time_stamp
+                                FROM material_count
+                                WHERE id_user = :id_user
+                                  AND id_material = :id_mat
+                                  AND time_stamp < NOW()
+                                ORDER BY time_stamp DESC
+                                LIMIT 1;";
                 
                 $values = [
                     ":id_user" => $user->get_id_user(),
@@ -229,8 +236,8 @@
             
             if (empty($result)) {
                 if ($recursion_depth < 1) {
-                    $this->log_material_count($dbh, 0, "Init");
-                    $this->query_material_history($dbh, $timestamp, $recursion_depth + 1);
+                    $this->log_material_count($db, 0, "Init");
+                    $this->query_material_history($db, $timestamp, $recursion_depth + 1);
                 } else {
                     echo "<pre>";
                     echo "Recursion limit";
@@ -239,13 +246,5 @@
             } else {
                 array_push($this->history, new material_history($result, $timestamp));
             }
-            
-            //var_dump($result);
-            
-            //var_dump($result);
-            
-            
-            //var_dump($this->name);
-            //var_dump($this->history);
         }
     }

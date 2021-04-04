@@ -59,4 +59,11 @@
         return next_reset()->format('Y-m-d H:i:s');
     }
     
-    
+    /**
+     * @param DateTime $date_time
+     *
+     * @return string
+     */
+    function datetime_to_SQL_time(DateTime $date_time) : string {
+        return $date_time->format('Y-m-d H:i:s');
+    }

@@ -3,6 +3,7 @@
      * @var array $list_of_material_type
      * @var material_type $material_type
      * @var material $material_item
+     * @var material_history $history_time_span
      */
 ?>
 
@@ -75,8 +76,9 @@
                                     <div class="card text-white <?=$bg?> col-sm-5"
                                          style="width: auto; margin: 10px; padding:15px;">
                                         <div class="card-body" style="padding: 5px;">
-                                            <h5 class="card-title"><?=$history_time_span->getTimeFrame()->getCardTitle()?></h5>
-                                            <p class="card-text"><?=$history_time_span->getTimeFrame()->getCardStart()?>,
+                                            <h5 class="card-title"><?=$history_time_span->get_time_frame()->getCardTitle()?></h5>
+                                            
+                                            <p class="card-text"><?=$history_time_span->get_time_frame()->getCardStart()?>,
                                                 you:</p>
                                             <ul>
                                                 <li>
@@ -90,11 +92,14 @@
                                             got <?=$history_time_span->get_overall_change()?> <?=$name?>s during this
                                             period.
                                             <br> <br>
+                                            
                                             <?php
                                                 $change_average = $history_time_span->get_average_gain();
+                                                $today_overall_change = $history_time_span->get_overall_change();
+                                                
                                                 if ($change_average != -1) {
                                                     echo "On average, you got " . $change_average . " " . $name . "s per day. Which is ";
-                                                    $today_overall_change = $timespan_type[0]["overall_change"];
+                                                    
                                                     if ($change_average > $today_overall_change) {
                                                         echo "<a style='color: #ffa7a7'>more</a> than today";
                                                     } else if ($change_average == $today_overall_change) {
@@ -107,20 +112,20 @@
 
                                             <br>
                                             <button type="button" class="btn btn-primary" data-toggle="modal"
-                                                    data-target="#Modal_<?=$i?>_<?=str_replace(' ', '', $history_time_span->getTimeFrame()->getCardTitle());?>"
+                                                    data-target="#Modal_<?=$i?>_<?=str_replace(' ', '', $history_time_span->get_time_frame()->getCardTitle());?>"
                                                     style="margin-top: 20px">
                                                 More info
                                             </button>
 
                                             <div class="modal fade  bg"
-                                                 id="Modal_<?=$i?>_<?=str_replace(' ', '', $history_time_span->getTimeFrame()->getCardTitle());?>"
+                                                 id="Modal_<?=$i?>_<?=str_replace(' ', '', $history_time_span->get_time_frame()->getCardTitle());?>"
                                                  tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                                  aria-hidden="true">
                                                 <div class="modal-dialog" role="document">
                                                     <div class="modal-bg modal-content">
                                                         <div class="modal-header">
                                                             <h5 class="modal-title"
-                                                                id="exampleModalLabel"><?=$history_time_span->getTimeFrame()->getCardTitle()?></h5>
+                                                                id="exampleModalLabel"><?=$history_time_span->get_time_frame()->getCardTitle()?></h5>
                                                             <button type="button" class="close" data-dismiss="modal"
                                                                     aria-label="Close">
                                                                 <span aria-hidden="true">&times;</span>

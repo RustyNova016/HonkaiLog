@@ -1,50 +1,115 @@
 <?php
-    
+    require_once "models/material/material_log.php";
+    require_once "models/other_functions.php";
     
     class material_history {
-        private $date_start;
-        private $date_end;
-        private $timestamps;
-        private $net_gains;
-        private $net_loss;
+        private array $log_list;
+        private int $net_gains;
+        private int $net_loss;
         private time_frame $time_frame;
         
-        public function __construct($timestamps, $time_frame) {
-            $this->timestamps = $timestamps;
+        public function __construct(database $db, time_frame $time_frame, int $id_material) {
             $this->time_frame = $time_frame;
+            $this->log_list = [];
+            
+            $this->query_material_logs($db, $id_material);
         }
         
-        public function get_average_change() {
+        /**
+         *
+         * @param database $db
+         * @param          $id_material
+         *
+         * @throws ErrorException
+         */
+        function query_material_logs(database $db, $id_material) {
+            // SQL Request
+            // First, we get one value before the time frame for reference
+            $request_value_before = "SELECT id
+                                     FROM material_count
+                                     WHERE id_user = :id_user
+                                         AND id_material = :id_material
+                                         AND time_stamp < :date_start
+                                     ORDER BY time_stamp DESC
+                                     LIMIT 1;";
+            
+            $request_values_in_time_frame = "SELECT id
+                                             FROM material_count
+                                             WHERE id_user = :id_user
+                                                 AND id_material = :id_material
+                                                 AND time_stamp > :date_start
+                                             ORDER BY time_stamp;";
+            
+            // Values to insert
+            $user = unserialize($_SESSION["user"]);
+            $values = [
+                ":id_user" => $user->get_id_user(),
+                ":id_material" => strval($id_material),
+                ":date_start" => datetime_to_SQL_time($this->time_frame->get_date_start())
+            ];
+            
+            // Execute the request
+            $result = $db->select($request_value_before, $values, false, true);
+            $result_in_range = $db->select($request_values_in_time_frame, $values, false, true);
+            
+            $result = array_merge_recursive($result, $result_in_range);
+            
+            foreach ($result as $log) {
+                array_push($this->log_list, new material_log($db, $log["id"]));
+            }
+        }
+        
+        /**
+         * @return float|int
+         */
+        public function get_average_change(): float|int {
             if ($this->time_frame->getNbrDay() > 1) {
                 $overall_change_average = round($this->get_overall_change() / $this->time_frame->getNbrDay(), 2);
             } else {
                 $overall_change_average = -1;
             }
-            //var_dump($overall_change_average);
             return $overall_change_average;
         }
         
-        public function get_overall_change() {
+        /**
+         * @return int
+         */
+        public function get_overall_change(): int {
             return $this->get_current_count() - $this->get_oldest_count();
         }
         
+        /**
+         * @return int
+         */
         public function get_current_count(): int {
-            return $this->get_latest_timestamp()["quantity"];
+            return $this->get_latest_log()->get_quantity();
         }
         
-        public function get_latest_timestamp() {
-            return end($this->timestamps);
+        /**
+         * @return material_log
+         */
+        public function get_latest_log(): material_log {
+            return end($this->log_list);
         }
         
-        public function get_oldest_count() {
-            return $this->get_oldest_timestamp()["quantity"];
+        /**
+         * @return int
+         */
+        public function get_oldest_count(): int {
+            return $this->get_oldest_log()->get_quantity();
         }
         
-        public function get_oldest_timestamp() {
-            return $this->timestamps[0];
+        /**
+         * @return material_log
+         */
+        public function get_oldest_log(): material_log {
+            return $this->log_list[0];
         }
         
-        public function get_average_gain() {
+        /**
+         * @return float|int
+         */
+        public function get_average_gain(): float|int {
             if ($this->time_frame->getNbrDay() > 1) {
                 $gain_average = round($this->getNetGains() / $this->time_frame->getNbrDay(), 2);
             } else {
@@ -70,22 +135,27 @@
         private function gain_loss() {
             $this->net_gains = 0;
             $this->net_loss = 0;
-            $old_amount = $this->timestamps[0]["quantity"];
-            for ($i = 1; $i < count($this->timestamps); $i++) {
-                $amount = $this->timestamps[$i]["quantity"];
+            $old_amount = $this->get_oldest_count();
+    
+            /** @var material_log $log */
+            foreach ($this->log_list as $log){
+                $amount = $log->get_quantity();
                 $diff = $amount - $old_amount;
-                
+    
                 if ($diff > 0) {
                     $this->net_gains += $diff;
-                } elseif ($diff < 0) {
+                } else if ($diff < 0) {
                     $this->net_loss += $diff;
                 }
-                
+    
                 $old_amount = $amount;
             }
         }
         
-        public function get_average_loss() {
+        /**
+         * @return float|int
+         */
+        public function get_average_loss(): float|int {
             if ($this->time_frame->getNbrDay() > 1) {
                 $gain_loss = round($this->getNetLoss() / $this->time_frame->getNbrDay(), 2);
             } else {
@@ -104,18 +174,11 @@
             }
             return $this->net_loss;
         }
-        
+    
         /**
-         * @return DateTime
+         * @return time_frame
          */
-        public function getDateEnd(): DateTime {
-            return $this->date_end;
-        }
-        
-        /**
-         * @return mixed
-         */
-        public function getTimeFrame() {
+        public function get_time_frame(): time_frame {
             return $this->time_frame;
         }
     }

@@ -1,5 +1,11 @@
 <?php
-    function find_material_type_child(int $id_current, $list_of_material_type){
+    /**
+     * @param int   $id_current
+     * @param array $list_of_material_type
+     *
+     * @return array
+     */
+    function find_material_type_child(int $id_current, array $list_of_material_type): array {
         $list_of_child_id = [];
         
         foreach ($list_of_material_type as $material_type) { // for each material of the list
