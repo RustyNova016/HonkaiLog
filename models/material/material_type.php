@@ -63,7 +63,7 @@
                     $this->list_of_id_material[$new_id_material] = $new_id_material;
                     
                     $material_item1 = new material($new_id_material, $db, $material_history_time_frame);
-                    $this->list_of_material[$material_item1->getId()] = $material_item1;
+                    $this->list_of_material[$material_item1->get_id_material()] = $material_item1;
                 }
             }
         }

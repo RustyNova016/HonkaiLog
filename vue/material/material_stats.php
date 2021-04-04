@@ -18,9 +18,9 @@
             
             <?php
             foreach ($material_type->get_list_of_material() as $material_item) {
-                $i = $material_item->getId();
-                $name = $material_item->getName();
-                $current_count = $material_item->getCurrentCount();
+                $i = $material_item->get_id_material();
+                $name = $material_item->get_name();
+                $current_count = $material_item->get_current_count();
                 $current_count_formated = number_format(floatval($current_count));
                 ?>
 
@@ -29,12 +29,12 @@
                     <div class="row g-3 align-items-center">
 
                         <div class="row g-3 align-items-center" style="padding-left: 40px; margin-top: 40px; margin-bottom: 20px">
-                            <input name="id_material" type="hidden" value="<?=$material_item->getId()?>">
+                            <input name="id_material" type="hidden" value="<?=$material_item->get_id_material()?>">
 
                             <label style="min-width: 300px">You
                                 got <?=$current_count_formated?> <?=$name?></label>
                             <div class="col-auto">
-                                <input name="<?=$material_item->getId()?>_quantity" type="input" class="form-control"
+                                <input name="<?=$material_item->get_id_material()?>_quantity" type="input" class="form-control"
                                        value="<?=$current_count?>">
                             </div>
                             <!--
@@ -60,7 +60,7 @@
                         <div class="collapse row justify-content-between" id="collapse<?=$i?>"
                              style="padding-top: 20px;">
                             <?php
-                                foreach ($material_item->getHistory() as $history_time_span) {
+                                foreach ($material_item->get_history() as $history_time_span) {
                                     if ($history_time_span->get_overall_change() < 0) {
                                         $bg = "text-white bg-danger";
                                     } else if ($history_time_span->get_overall_change() == 0) {
