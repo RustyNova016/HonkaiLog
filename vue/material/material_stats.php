@@ -1,4 +1,12 @@
 <?php
+    /**
+     * @var array $list_of_material_type
+     * @var material_type $material_type
+     * @var material $material_item
+     */
+?>
+
+<?php
     foreach ($list_of_material_type as $material_type) {
         if (($material_type->is_display_type()) and (count($material_type->get_list_of_material()) > 0)) {
             
