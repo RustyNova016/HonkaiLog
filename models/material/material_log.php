@@ -32,7 +32,7 @@
             // SQL Request
             $request = "SELECT *
                         FROM material_count
-                        WHERE id = :id_log";
+                        WHERE id_log = :id_log";
             
             // Values to insert
             $values = [
