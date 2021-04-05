@@ -1,4 +1,6 @@
-<footer class="text-center" style="padding: 5px;">					
+</div>
+</div>
+<footer class="text-center" style="padding: 5px;">
 			<div class="container">
 
 				<div class="row">	
