@@ -1,27 +1,32 @@
+:root {
+    --success: #1DA040;
+    --cyber-blue: rgb(38, 201, 221);
+}
+
 body {
     background-color: #282F3F;
 }
 
 html, body {
-    margin: 0;
     height: 100%;
+    margin: 0;
 }
 
 .background-div {
-    background-repeat: no-repeat;
     background-attachment: fixed;
-    background-size: cover;
     background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
-.background-color-trans{
+.background-color-trans {
     background-color: #282F3FE0;
 }
 
 .wrapper {
     display: flex;
-    flex-direction: column;
     flex: 1;
+    flex-direction: column;
     min-height: 100vh;
 }
 
@@ -40,8 +45,8 @@ html, body {
 }
 
 .title {
-    padding-top: 20px;
     padding-bottom: 15px;
+    padding-top: 20px;
 }
 
 myModal.in {
@@ -55,9 +60,9 @@ myModal.in {
 
 pre {
     background-color: #FFFFFF;
-    color: #000000;
-    border-radius: 15px;
     border: 5px solid rgba(255, 0, 63, 1);
+    border-radius: 15px;
+    color: #000000;
 }
 
 .sticky {
@@ -66,7 +71,51 @@ pre {
 }
 
 .footer-image {
-    border-right: 2px solid #FFF;
     border-left: 2px solid #FFF;
     border-radius: 5px;
+    border-right: 2px solid #FFF;
+}
+
+.material {
+    margin: 40px 0px;
+    padding: 0px 50px;
+}
+
+.material-stats {
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgb(75, 83, 84);
+    border-radius: 15px;
+    margin: 0px;
+    padding: 10px;
+}
+
+.material-type {
+    background-color: rgba(26, 31, 41, 0.3);
+    border: solid var(--cyber-blue);
+    border-radius: 15px;
+    border-width: 3px 0px;
+    margin-bottom: 40px;
+    padding: 30px;
+}
+
+.bg-success-custom {
+    background-color: var(--success);
+    border-color: var(--success);
+}
+
+.btn-outline-success:hover {
+    background-color: var(--success);
+    border-color: var(--success);
+    color: #FFF;
+}
+
+.btn-outline-success {
+    border-color: var(--success);
+    color: var(--success);
+}
+
+.btn-check:active + .btn-outline-success, .btn-check:checked + .btn-outline-success, .btn-outline-success.active, .btn-outline-success.dropdown-toggle.show, .btn-outline-success:active {
+    background-color: var(--success) !important;
+    border-color: var(--success) !important;
+    color: #FFF;
 }
