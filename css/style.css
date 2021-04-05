@@ -8,11 +8,21 @@ html, body {
 }
 
 .background-div {
-    background-color: #282F3FE0;
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
     background-position: center;
+}
+
+.background-color-trans{
+    background-color: #282F3FE0;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 100vh;
 }
 
 .navbar {
@@ -38,6 +48,11 @@ myModal.in {
     z-index: 999999;
 }
 
+.footer {
+    background-color: #111111;
+    margin-top: auto;
+}
+
 pre {
     background-color: #FFFFFF;
     color: #000000;
@@ -48,4 +63,10 @@ pre {
 .sticky {
     position: sticky;
     top: 10px;
+}
+
+.footer-image {
+    border-right: 2px solid #FFF;
+    border-left: 2px solid #FFF;
+    border-radius: 5px;
 }
