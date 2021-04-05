@@ -117,7 +117,8 @@
         public function query_material_list(database $db, array $material_history_time_frame) {
             $request = "SELECT id_material
                         FROM material
-                        WHERE id_material_type = :id_material_type";
+                        WHERE id_material_type = :id_material_type
+                        ORDER BY display_order";
             
             $values = [
                 ":id_material_type" => $this->id
