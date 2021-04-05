@@ -11,7 +11,7 @@
         foreach ($list_of_material_type as $material_type) { // for each material of the list
             
             // If the material is the child of the target material
-            if ($material_type->get_parent_id() == $list_of_material_type[$id_current]->get_id()){
+            if ($material_type->get_parent_id() == $list_of_material_type[$id_current]->get_id()) {
                 
                 // We add it to the list
                 array_push($list_of_child_id, $material_type->get_id());
@@ -28,13 +28,13 @@
             $find_material_type_child = find_material_type_child($child_id, $list_of_material_type);
             $result_array = $result_array + $find_material_type_child;
         }
-    
+        
         // We add +1 to the depth of all the childs
         $add_depth = [];
         foreach ($result_array as $id_child => $depth) {
             $add_depth[$id_child] = $depth + 1;
         }
-
+        
         // We return the result
         return $add_depth;
     }

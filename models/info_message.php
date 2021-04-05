@@ -5,12 +5,14 @@
      * @param bool $dismissible
      */
     function info_message($message, $color = null, $dismissible = true) {
+        $color_css = "";
+        $b_color = "";
+        
         if ($color == null) {
             $b_color = "alert-success";
         } else if ($color = "error" or $color = "danger") {
             $b_color = "alert-danger";
         } else {
-            $b_color = "";
             $color_css = $color;
         }
         

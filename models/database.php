@@ -8,12 +8,26 @@
             $this->dbh = $dbh;
         }
         
+        /**
+         * @return PDO
+         */
+        public function getDbh(): PDO {
+            return $this->dbh;
+        }
+        
+        /**
+         * @param PDO $dbh
+         */
+        public function setDbh(PDO $dbh): void {
+            $this->dbh = $dbh;
+        }
+        
         /** Select from the database
          *
          * @param string $SQL_request
-         * @param array $values
-         * @param bool $debug
-         * @param bool $output_only
+         * @param array  $values
+         * @param bool   $debug
+         * @param bool   $output_only
          *
          * @return array [$fetchall, $sth, $success]
          */
@@ -23,7 +37,7 @@
             $success = $result[1];
             $fetchall = $sth->fetchall();
             
-            if($debug){
+            if ($debug) {
                 var_dump($fetchall);
             }
             
@@ -36,8 +50,8 @@
         
         /** Execute a SQL query
          *
-         * @param $SQL_request
-         * @param $values
+         * @param       $SQL_request
+         * @param       $values
          * @param false $debug
          *
          * @return array [$sth, $success]
@@ -56,9 +70,9 @@
         /** Select an unique value from the database
          *
          * @param string $SQL_request
-         * @param array $values
-         * @param bool $debug
-         * @param bool $output_only
+         * @param array  $values
+         * @param bool   $debug
+         * @param bool   $output_only
          *
          * @return array [$fetchall, $sth, $success]
          */
@@ -67,7 +81,7 @@
             $sth = $result[0];
             $success = $result[1];
             $fetchall = $sth->fetchall()[0];
-    
+            
             if ($debug) {
                 var_dump($fetchall);
             }
@@ -77,19 +91,5 @@
             } else {
                 return [$fetchall, $sth, $success];
             }
-        }
-        
-        /**
-         * @return PDO
-         */
-        public function getDbh(): PDO {
-            return $this->dbh;
-        }
-        
-        /**
-         * @param PDO $dbh
-         */
-        public function setDbh(PDO $dbh): void {
-            $this->dbh = $dbh;
         }
     }
