@@ -19,7 +19,7 @@
             <?php
             foreach ($material_type->get_list_of_material() as $material_item) {
                 $i = $material_item->get_id_material();
-                $name = $material_item->get_name();
+                $material_name = $material_item->get_name();
                 $current_count = $material_item->get_current_count();
                 $current_count_formated = number_format(floatval($current_count));
                 ?>
@@ -32,7 +32,7 @@
                             <input name="id_material" type="hidden" value="<?=$material_item->get_id_material()?>">
 
                             <label style="min-width: 300px">You
-                                got <?=$current_count_formated?> <?=$name?></label>
+                                got <?=$current_count_formated?> <?=$material_name?></label>
                             <div class="col-auto">
                                 <input name="<?=$material_item->get_id_material()?>_quantity" type="input" class="form-control"
                                        value="<?=$current_count?>">
@@ -82,14 +82,14 @@
                                                 you:</p>
                                             <ul>
                                                 <li>
-                                                    Gained <?=$history_time_span->getNetGains()?> <?=$name?>s
+                                                    Gained <?=$history_time_span->getNetGains()?> <?=$material_name?>s
                                                 </li>
                                                 <li>
-                                                    Spent <?=$history_time_span->getNetLoss()?> <?=$name?>s
+                                                    Spent <?=$history_time_span->getNetLoss()?> <?=$material_name?>s
                                                 </li>
                                             </ul>
                                             Overall, you
-                                            got <?=$history_time_span->get_overall_change()?> <?=$name?>s during this
+                                            got <?=$history_time_span->get_overall_change()?> <?=$material_name?>s during this
                                             period.
                                             <br> <br>
                                             
@@ -98,7 +98,7 @@
                                                 $today_overall_change = $history_time_span->get_overall_change();
                                                 
                                                 if ($change_average != -1) {
-                                                    echo "On average, you got " . $change_average . " " . $name . "s per day. Which is ";
+                                                    echo "On average, you got " . $change_average . " " . $material_name . "s per day. Which is ";
                                                     
                                                     if ($change_average > $today_overall_change) {
                                                         echo "<a style='color: #ffa7a7'>more</a> than today";
@@ -116,62 +116,9 @@
                                                     style="margin-top: 20px">
                                                 More info
                                             </button>
-
-                                            <div class="modal fade  bg"
-                                                 id="Modal_<?=$i?>_<?=str_replace(' ', '', $history_time_span->get_time_frame()->getCardTitle());?>"
-                                                 tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                                                 aria-hidden="true">
-                                                <div class="modal-dialog" role="document">
-                                                    <div class="modal-bg modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title"
-                                                                id="exampleModalLabel"><?=$history_time_span->get_time_frame()->getCardTitle()?></h5>
-                                                            <button type="button" class="close" data-dismiss="modal"
-                                                                    aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <?=$name?> counts:
-                                                            <ul>
-                                                                <li>
-                                                                    Gained <?=$history_time_span->getNetGains()?>
-                                                                    <?=$name?>s
-                                                                </li>
-                                                                <li>
-                                                                    Spent <?=$history_time_span->getNetLoss()?>
-                                                                    <?=$name?>s
-                                                                </li>
-                                                                <li>In
-                                                                    total, <?=$history_time_span->get_overall_change()?>
-                                                                    <?=$name?>s
-                                                                </li>
-                                                            </ul>
-                                                            
-                                                            <?=$name?> counts / day:
-                                                            <ul>
-                                                                <li>
-                                                                    Gained <?=$history_time_span->get_average_gain()?>
-                                                                    <?=$name?>s / day
-                                                                </li>
-                                                                <li>
-                                                                    Spent <?=$history_time_span->get_average_loss()?>
-                                                                    <?=$name?>s / day
-                                                                </li>
-                                                                <li>In
-                                                                    average, <?=$history_time_span->get_average_change()?>
-                                                                    <?=$name?>s / day
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary"
-                                                                    data-dismiss="modal">Close
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            <?php
+                                                require "vue/material/material_stats/info_modal.php"
+                                            ?>
                                         </div>
                                     </div>
                                     <?php
