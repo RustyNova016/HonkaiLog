@@ -22,12 +22,13 @@
             $dismissible_css = "";
         }
         ?>
-        <div class="container">
-            <div class="alert <?=$b_color?> <?=$dismissible_css?> fade show" role="alert" style=" margin: 25px 0px;
-        <?=$color_css?>">
+        <div style="padding-top: 1px;">
+            <div class="alert <?=$b_color?> <?=$dismissible_css?> fade show" role="alert"
+                 style="margin: 25px 0px;<?=$color_css?>">
                 <?=$message?>
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
+                </button>
             </div>
         </div>
         

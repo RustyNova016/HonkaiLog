@@ -38,3 +38,5 @@ $background = $background_array[array_rand($background_array, 1)]   ;
 
 <div class="background-div" style="background-image: url(/honkailog/img/background/<?=$background ?>.png);">
     <div class="background-div">
+        <div class="bg">
+            <div class="container bg">
