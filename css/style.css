@@ -1,6 +1,7 @@
 :root {
     --success: #1DA040;
     --cyber-blue: rgb(38, 201, 221);
+    --primary-blue: #0D6EFD;
 }
 
 body {
@@ -96,6 +97,12 @@ pre {
     border-width: 3px 0px;
     margin-bottom: 40px;
     padding: 30px;
+}
+
+.btn-primary {
+    color: #FFF;
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
 }
 
 .bg-success-custom {
