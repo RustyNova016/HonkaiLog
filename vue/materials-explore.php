@@ -13,7 +13,7 @@
 ?>
 
 <div style="margin-top: 50px">
-    <h1>Statistics:</h1>
+    
     <?php
         include "vue/material/material_stats.php"
     ?>
