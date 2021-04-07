@@ -14,7 +14,7 @@
             
             ?>
 
-            <div class="material-type">
+            <div class="content-card">
                 <h2>
                     Material type: <?=$material_type->get_name()?>
                 </h2>

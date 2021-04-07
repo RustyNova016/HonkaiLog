@@ -90,7 +90,7 @@ pre {
     padding: 10px;
 }
 
-.material-type {
+.content-card {
     background-color: rgba(26, 31, 41, 0.3);
     border: solid var(--cyber-blue);
     border-radius: 15px;
