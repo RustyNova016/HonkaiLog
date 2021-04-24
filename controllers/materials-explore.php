@@ -62,6 +62,23 @@
             "start" => "In the last 30 days",
             "nbr_day" => 30,
             "wholeday" => 1
+        ],/**
+        [
+            "name" => "Last version",
+            "SQL" => "365 DAY",
+            "start" => "In the last version",
+            "nbr_day" => 365,
+            "date_start" => new DateTime("2021-03-05"),
+            "wholeday" => 1
+        ],*/
+        [
+            "name" => "Last version",
+            "SQL" => "365 DAY",
+            "start" => "In the last version",
+            "nbr_day" => 365,
+            "date_start" => new DateTime("2021-04-22"),
+            "wholeday" => 1,
+            "show_average" => true
         ],
         [
             "name" => "Last year",
@@ -81,7 +98,8 @@
             $time_array["nbr_day"],
             $time_array["wholeday"],
             $time_array["start"],
-            $time_array["name"]
+            $time_array["name"],
+            $time_array
         );
         //var_dump($new_time_frame);
         array_push($time_frame_list, $new_time_frame);
