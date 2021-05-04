@@ -1,15 +1,29 @@
 <h1 class="title">Add an account</h1>
+        <div class="content-card">
 
-<form action="/honkailog/user/add" method=post>
+            <form action="/honkailog/user/add" method=post>
+                <div class="col-auto" style="margin-top: 20px">
+                    <label class="forms-labels">Username</label>
+                    <input name="username" type="text" class="form-control form-control-lg" id="honkailog_user"
+                           placeholder="Username"
+                           required>
+                </div>
 
-    <div class="mb-3">
-        <label for="exampleInputPassword1" class="form-label">Username</label>
-        <input name="name" type="input" class="form-control" id="exampleInputPassword1">
-        <label for="exampleInputPassword1" class="form-label">Level</label>
-        <input name="level" type="input" class="form-control" id="exampleInputPassword1">
-        <label for="exampleInputPassword1" class="form-label">Password</label>
-        <input name="password" type="input" class="form-control" id="exampleInputPassword1">
+                <div class="col-auto" style="margin-top: 20px">
+                    <label class="forms-labels">Password</label>
+                    <input name="password" type="password" class="form-control form-control-lg"
+                           id="honkailog_user_password"
+                           placeholder="Password" required>
+                </div>
+
+                <div class="col-auto" style="margin-top: 20px">
+                    <label class="forms-labels">Level</label>
+                    <input name="level" type="text" class="form-control form-control-lg" id="honkailog_user_level"
+                           placeholder="Level" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="margin-top: 20px">Submit</button>
+            </form>
+
+        </div>
     </div>
-
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+</div>
