@@ -3,10 +3,11 @@
 session_start();
 //$_SESSION = [];
 
-include "global/connection.php";
-include "global/user.php";
-include "templates/header.php";
-include "templates/menu.php";
+require_once "global/connection.php";
+require_once "global/user.php";
+require_once "models/info_message.php";
+require_once "templates/header.php";
+require_once "templates/menu.php";
 
 if(isset($_GET["p"]))
 {
@@ -52,6 +53,6 @@ if(!@include($page))
     include("controllers/404-index.php");
 }
 
-include "templates/footer.php";
+require_once "templates/footer.php";
 $dbh = null;
 ?>

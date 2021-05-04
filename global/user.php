@@ -5,29 +5,31 @@
         private string $username;
         private int $id_user;
         private int $user_level;
-        private $db;
+        private int $reset_hour;
+        private database $db;
         private bool $logged_in;
         
-        public function __construct($db, $username) {
+        public function __construct(database $db, $username) {
             $this->db = $db;
             $this->username = $username;
             $this->logged_in = false;
         }
-    
+        
         public function login($password) {
-            $SQL_request = "SELECT id_user, level
+            $request = "SELECT id_user, level, reset_hour
                             FROM user
                             WHERE name = :username
-                              AND password = SHA1(:password);";
+                                AND password = SHA1(:password);";
             
             $values = [
                 ":username" => $this->username,
                 ":password" => $password
             ];
             
-            $result = $this->db->select($SQL_request, $values)[0];
+            $result = $this->db->select_unique($request, $values);
             $this->id_user = $result["id_user"];
             $this->user_level = $result["level"];
+            $this->reset_hour = $result["reset_hour"];
             
             $this->logged_in = true;
         }
@@ -38,7 +40,7 @@
         public function get_id_user(): int {
             return $this->id_user;
         }
-    
+        
         /**
          * @return string
          */
@@ -52,22 +54,29 @@
         public function get_user_level(): int {
             return $this->user_level;
         }
-    
+        
         /**
          * @return bool
          */
         public function isLogged_in(): bool {
             return $this->logged_in;
         }
-    
+        
+        /**
+         * @return int
+         */
+        public function get_reset_hour(): int {
+            return $this->reset_hour;
+        }
+        
         /**
          * @param database $db
          */
         public function setDb(database $db): void {
             $this->db = $db;
         }
-    
+        
         public function unset_db() {
-            $this->db = null;
+            unset($this->db);
         }
     }

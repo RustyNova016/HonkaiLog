@@ -1,43 +1,50 @@
-<div class="bg">
-    <div class="container bg">
+<?php
+    /**
+     * @var BP_progress $bp_db
+     */
+?>
 
-        <h1 class="title">Battle pass</h1>
+<h1 class="title">Battle pass</h1>
 
-        <form action="/honkailog/bp/" method=post>
-            <div class="row">
+<div class="content-card">
 
-                <input type="hidden" name="bp_level" value="true">
+    <form action="/honkailog/bp/" method=post>
+        <div class="row">
 
-                <div class="col-md-6">
-                    <label class="form-label">BP level</label>
-                    <input type="input" class="form-control" name="bp_level" value="<?=$bp_levels->getBPLevel() ?>" />
-                </div>
+            <input type="hidden" name="bp_level" value="true">
 
-                <div class="col-md-6">
-                    <label class="form-label">BP XP</label>
-                    <input type="input" class="form-control" name="bp_xp" value="<?=$bp_levels->getBPXP() ?>" />
-                </div>
-
-                <!-- TODO: Put it to the right -->
-                <div class="d-flex">
-                    <button class="btn btn-primary" type="submit" style="">Submit</button>
-                </div>
+            <div class="col-md-6">
+                <label class="form-label">BP level</label>
+                <input type="input" class="form-control" name="bp_level"
+                       value="<?=$bp_db->get_current_bp_level()?>"/>
             </div>
-        </form>
 
-        <h1 style="margin-top: 20px">Stats:</h1>
+            <div class="col-md-6">
+                <label class="form-label">BP XP</label>
+                <input type="input" class="form-control" name="bp_xp" value="<?=$bp_db->get_current_bp_xp()?>"/>
+            </div>
+
+            <!-- TODO: Put it to the right -->
+            <div style="margin-top: 20px; margin-left: 20px">
+                <button class="btn btn-primary" type="submit" style="">Submit</button>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+<div class="content-card">
+    <h1>Statistics:</h1>
+
+    <div style="padding-left: 10px; margin-top: 20px">
         <p>
-            Today, you got <?=$bp_levels->get_today_bp() ?> BPs, which is
-            <?php
-            if ($bp_levels->get_today_bp() < $bp_levels->get_bp_per_day_current()){
-                echo "<a style='color: #ffa7a7'>less</a>";
-            } elseif($bp_levels->get_today_bp() < $bp_levels->get_bp_per_day_current()){
-                echo "<a style='color: #7eff76'>equal</a>";
-            } else{
-                echo "<a style='color: #7eff76'>more</a>";
-            }
-            ?>
-            than the BP per day (<?=$bp_levels->get_bp_per_day_current() ?> BP) needed to finish it with the current count.<br>
+            Today, you got <?=$bp_db->get_today_bp()?> BPs.
+            The current BP per day needed to finish it is:
         </p>
+        <ul>
+            <li>Vanguard BP: <?=$bp_db->get_bp_per_day_left("vanguard")?>BP/day</li>
+            <li>Knight BP: <?=$bp_db->get_bp_per_day_left("knight")?>BP/day</li>
+            <li>Paladin BP: <?=$bp_db->get_bp_per_day_left("paladin")?>BP/day</li>
+        </ul>
     </div>
 </div>
