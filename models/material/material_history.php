@@ -122,7 +122,7 @@
          * @return float|int
          */
         public function get_average_gain(): float|int {
-            if ($this->time_frame->getNbrDay() > 1) {
+            if ($this->time_frame->get_show_average()) {
                 $gain_average = round($this->getNetGains() / $this->time_frame->getNbrDay(), 2);
             } else {
                 $gain_average = -1;
