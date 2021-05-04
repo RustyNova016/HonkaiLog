@@ -81,9 +81,9 @@
             "show_average" => true
         ],
         [
-            "name" => "Last year",
+            "name" => "Last 365 days",
             "SQL" => "365 DAY",
-            "start" => "In the last year",
+            "start" => "In the last 365 days",
             "nbr_day" => 365,
             "wholeday" => 1
         ]
