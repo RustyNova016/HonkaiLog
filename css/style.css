@@ -36,7 +36,12 @@ pre {
     border: 5px solid rgba(255, 0, 63, 1);
 }
 
-.sticky {
-  position: sticky;
-  top: 10px;
+.btn-check:active + .btn-outline-success, .btn-check:checked + .btn-outline-success, .btn-outline-success.active, .btn-outline-success.dropdown-toggle.show, .btn-outline-success:active {
+    background-color: var(--success) !important;
+    border-color: var(--success) !important;
+    color: #FFF;
+}
+
+.forms-labels {
+    margin-bottom: 5px;
 }
