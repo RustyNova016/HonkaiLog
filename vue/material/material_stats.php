@@ -16,7 +16,7 @@
 
             <div class="content-card">
                 <h2>
-                    Material type: <?=$material_type->get_name()?>
+                    <?=$material_type->get_name()?>
                 </h2>
                 
                 <?php
@@ -28,10 +28,11 @@
                         ?>
                         <div class="material">
                             <form action="#m_<?=$i?>_<?=$material_name?>" method=post>
+                                <a class="anchor" id="m_<?=$i?>_<?=$material_name?>"></a>
 
                                 <!-- Material header -->
                                 <div class="row justify-content-evenly">
-                                    <div class="col-5" id="m_<?=$i?>_<?=$material_name?>">
+                                    <div class="col-5">
                                         <input name="id_material" type="hidden"
                                                value="<?=$material_item->get_id_material()?>">
                                         <label style="min-width: 300px">You
