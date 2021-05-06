@@ -1,19 +1,19 @@
 <?php
     require_once "models/info_message.php";
+    require_once "models/other_functions.php";
     
     /**
      * @var database $db
      */
     
     if (!empty($_POST)) {
-        $user = new user($db, $_POST["username"]);
+        $user = new user($_POST["username"]);
         
-        $user->login($_POST["password"]);
         
-        if ($user->isLogged_in()) {
-            $user->unset_db();
+        if ($user->login($db, $_POST["password"])) {
             $_SESSION["user"] = serialize($user);
-            info_message("Successfully logged as " . $user->get_username());
+            $link = '';
+            redirect($link);
         } else {
             info_message("Username or password incorrect. Please try again", "danger");
         }

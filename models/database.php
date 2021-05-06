@@ -92,4 +92,24 @@
                 return [$fetchall, $sth, $success];
             }
         }
+        
+        
+        public function add_user(user $user, string $password){
+            // SQL Request
+            $request = "INSERT INTO user (name , password, level)
+                        VALUES (:name, :password, :level);";
+    
+            // Values to insert
+            $values = [
+                ":name" => $user->get_username(),
+                ":password" => $password,
+                ":level" => $user->get_user_level()
+            ];
+    
+            // Execute the request
+            $result = $this->query($request, $values, false);
+            if ($result[1]) {
+                //info_message("Successfully logged new " . $this->name . " count");
+            }
+        }
     }
