@@ -1,15 +1,30 @@
 <?php
+    /**
+     * @var PDO      $dbh
+     * @var database $db
+     */
+    
 //echo "<pre>";
 //print_r($_POST);
 //echo "</pre>";
     
-    include "models/add_user.php";
-    if (!empty($_POST)) {
-        if (!empty($_POST)) {
-            var_dump($_POST);
-            add_user($dbh, $_POST["name"], $_POST["level"], $_POST["password"]);
-        }
-    }
+    require_once "models/add_user.php";
+    require_once "models/other_functions.php";
     
-    include "vue/user-add.php"
+    /**
+     * @param string $link
+     */
+    
+    if (!empty($_POST)) {
+            var_dump($_POST);
+            
+            $user = new user($_POST["username"], $_POST["level"]);
+            
+            $db->add_user($user, $_POST["password"]);
+    
+            $link = 'user/index';
+            redirect($link);
+    } else {
+        include "vue/user-add.php";
+    }
 ?>

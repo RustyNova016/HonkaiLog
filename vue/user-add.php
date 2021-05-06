@@ -1,4 +1,7 @@
-<h1 class="title">Add an account</h1>
+<div class="bg">
+    <div class="container bg">
+
+        <h1 class="title">Add an account</h1>
         <div class="content-card">
 
             <form action="/honkailog/user/add" method=post>
