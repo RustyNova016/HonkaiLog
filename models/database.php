@@ -112,4 +112,27 @@
                 //info_message("Successfully logged new " . $this->name . " count");
             }
         }
+    
+    
+        public function log_material_count(material_log $mat_log) {
+            // SQL Request
+            $request = "INSERT INTO material_count (id_user,  id_material , quantity, libchange)
+                        VALUES (:id_user, :id_material, :quantity, :libchange);";
+        
+            // Values to insert
+            $user = unserialize($_SESSION["user"]);
+            $values = [
+                ":id_user" => $user->get_id_user(),
+                ":id_material" => strval($this->id_material),
+                ":quantity" => $quantity,
+                ":libchange" => $lib_change//,
+                //":time_stamp" => $time_stamp
+            ];
+        
+            // Execute the request
+            $result = $db->query($request, $values, false);
+            if ($result[1]) {
+                info_message("Successfully logged new " . $this->name . " count");
+            }
+        }
     }
