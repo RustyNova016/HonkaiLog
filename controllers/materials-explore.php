@@ -5,7 +5,12 @@
     require_once "models/material/material.php";
     require_once "models/material/material_history.php";
     require_once "models/material/time_frame.php";
+    require_once "models/other_functions.php";
     
+    if (empty($_SESSION["user"])){
+        login_redirect("material/explore");
+    }
+
     /**
      * @var PDO      $dbh
      * @var database $db

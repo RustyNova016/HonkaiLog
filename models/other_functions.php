@@ -12,3 +12,14 @@
         echo '<meta http-equiv="refresh" content="0;url=' . $str . '" >';
         die();
     }
+
+    function login_redirect(string $current_page_link) : void {
+        redirect("user?redirect=".$current_page_link);
+    }
+
+    function add_redirect(string $link){
+        if (!(empty($_REQUEST["redirect"]))){
+            $link .= "&redirect=".$_REQUEST["redirect"];
+        }
+        return $link;
+    }

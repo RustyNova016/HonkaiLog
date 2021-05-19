@@ -1,5 +1,10 @@
 <?php
     require_once "models/BP/BP_progress.php";
+    require_once "models/other_functions.php";
+
+    if (empty($_SESSION["user"])){
+        login_redirect("bp");
+    }
     
     /**
      * @var database $db
