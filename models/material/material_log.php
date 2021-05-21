@@ -9,18 +9,15 @@
         private string|null $libchange;
         private int $quantity;
         private DateTime $time_stamp;
-        
+    
         /**
          * material_log constructor.
          *
-         * @param $db
-         * @param $id_log
+         * @param int $id_log
          *
-         * @throws Exception
          */
-        public function __construct($db, $id_log) {
+        public function __construct(int $id_log) {
             $this->id_log = $id_log;
-            $this->query_info($db);
         }
         
         /**
@@ -72,5 +69,19 @@
          */
         public function get_time_stamp_SQL(): string {
             return $this->time_stamp->format('Y-m-d H:i:s');
+        }
+    
+        /**
+         * @param int $quantity
+         */
+        public function set_quantity(int $quantity): void {
+            $this->quantity = $quantity;
+        }
+    
+        /**
+         * @param DateTime $time_stamp
+         */
+        public function set_time_stamp(DateTime $time_stamp): void {
+            $this->time_stamp = $time_stamp;
         }
     }

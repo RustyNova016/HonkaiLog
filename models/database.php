@@ -92,4 +92,47 @@
                 return [$fetchall, $sth, $success];
             }
         }
+        
+        
+        public function add_user(user_class $user, string $password){
+            // SQL Request
+            $request = "INSERT INTO user (name , password, level)
+                        VALUES (:name, SHA1(:password), :level);";
+    
+            // Values to insert
+            $values = [
+                ":name" => $user->get_username(),
+                ":password" => $password,
+                ":level" => $user->get_user_level()
+            ];
+    
+            // Execute the request
+            $result = $this->query($request, $values, false);
+            if ($result[1]) {
+                //info_message("Successfully logged new " . $this->name . " count");
+            }
+        }
+    
+    
+        public function log_material_count(material_log $mat_log) {
+            // SQL Request
+            $request = "INSERT INTO material_count (id_user,  id_material , quantity, libchange)
+                        VALUES (:id_user, :id_material, :quantity, :libchange);";
+        
+            // Values to insert
+            $user = unserialize($_SESSION["user"]);
+            $values = [
+                ":id_user" => $user->get_id_user(),
+                ":id_material" => strval($this->id_material),
+                ":quantity" => $quantity,
+                ":libchange" => $lib_change//,
+                //":time_stamp" => $time_stamp
+            ];
+        
+            // Execute the request
+            $result = $db->query($request, $values, false);
+            if ($result[1]) {
+                info_message("Successfully logged new " . $this->name . " count");
+            }
+        }
     }

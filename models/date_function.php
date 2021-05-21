@@ -1,15 +1,23 @@
 <?php
     /**
-     * @param $earlier
-     * @param $later
+     * @param string|DateTime $earlier
+     * @param string|DateTime $later
      *
      * @return string
      * @throws Exception
      */
-    function diff_whole_days($earlier, $later): string {
-        $future = new DateTime($later); //Future date.
-        $timefromdb = new DateTime($earlier);
-        $timeleft = $future->diff($timefromdb);
+    function diff_whole_days(string|DateTime $earlier, string|DateTime $later): string {
+        
+        
+        if (gettype($earlier) == "string"){
+            $earlier = new DateTime($earlier);
+        }
+        
+        if (gettype($later) == "string"){
+            $later = new DateTime($later); //Future date.
+        }
+        
+        $timeleft = $later->diff($earlier);
         return $timeleft->format('%a');
     }
     
@@ -66,4 +74,8 @@
      */
     function datetime_to_SQL_time(DateTime $date_time): string {
         return $date_time->format('Y-m-d H:i:s');
+    }
+    
+    function get_last_monday_date() : DateTime{
+        return strtotime("last Monday");
     }

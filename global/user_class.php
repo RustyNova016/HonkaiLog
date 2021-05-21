@@ -1,21 +1,20 @@
 <?php
     
     
-    class user {
+    class user_class {
         private string $username;
         private int $id_user;
         private int $user_level;
         private int $reset_hour;
-        private database $db;
         private bool $logged_in;
         
-        public function __construct(database $db, $username) {
-            $this->db = $db;
+        public function __construct(string $username, int $level=-1) {
             $this->username = $username;
+            $this->user_level = $level;
             $this->logged_in = false;
         }
         
-        public function login($password) {
+        public function login($db, $password) {
             $request = "SELECT id_user, level, reset_hour
                             FROM user
                             WHERE name = :username
@@ -26,12 +25,21 @@
                 ":password" => $password
             ];
             
-            $result = $this->db->select_unique($request, $values);
-            $this->id_user = $result["id_user"];
-            $this->user_level = $result["level"];
-            $this->reset_hour = $result["reset_hour"];
+            $result = $db->select_unique($request, $values);
             
-            $this->logged_in = true;
+            if (empty($result)){
+                return false;
+            } else {
+                $this->id_user = $result["id_user"];
+                $this->user_level = $result["level"];
+                $this->reset_hour = $result["reset_hour"];
+    
+                return true;
+            }
+        }
+
+        public function __toString(){
+            return $this->username;
         }
         
         /**
@@ -67,16 +75,5 @@
          */
         public function get_reset_hour(): int {
             return $this->reset_hour;
-        }
-        
-        /**
-         * @param database $db
-         */
-        public function setDb(database $db): void {
-            $this->db = $db;
-        }
-        
-        public function unset_db() {
-            unset($this->db);
         }
     }

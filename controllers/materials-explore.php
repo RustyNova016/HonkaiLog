@@ -5,13 +5,18 @@
     require_once "models/material/material.php";
     require_once "models/material/material_history.php";
     require_once "models/material/time_frame.php";
+    require_once "models/other_functions.php";
     
+    if (empty($_SESSION["user"])){
+        login_redirect("material/explore");
+    }
+
     /**
      * @var PDO      $dbh
      * @var database $db
      */
     
-    // We get the list of the ids of the materials
+    // We get the list of the ids of the materials types
     $material_DB = new material_db($dbh);
     $list_of_id_material_type = $material_DB->get_material_types();
     
@@ -62,11 +67,28 @@
             "start" => "In the last 30 days",
             "nbr_day" => 30,
             "wholeday" => 1
+        ],/**
+        [
+            "name" => "Last version",
+            "SQL" => "365 DAY",
+            "start" => "In the last version",
+            "nbr_day" => 365,
+            "date_start" => new DateTime("2021-03-05"),
+            "wholeday" => 1
+        ],*/
+        [
+            "name" => "Last version",
+            "SQL" => "365 DAY",
+            "start" => "In the last version",
+            "nbr_day" => 365,
+            "date_start" => new DateTime("2021-04-22"),
+            "wholeday" => 1,
+            "show_average" => true
         ],
         [
-            "name" => "Last year",
+            "name" => "Last 365 days",
             "SQL" => "365 DAY",
-            "start" => "In the last year",
+            "start" => "In the last 365 days",
             "nbr_day" => 365,
             "wholeday" => 1
         ]
@@ -81,7 +103,8 @@
             $time_array["nbr_day"],
             $time_array["wholeday"],
             $time_array["start"],
-            $time_array["name"]
+            $time_array["name"],
+            $time_array
         );
         //var_dump($new_time_frame);
         array_push($time_frame_list, $new_time_frame);
@@ -101,13 +124,16 @@
                 /**
                  * @var  material $material
                  */
-                
-                if (!empty($_POST[$material->get_id_material() . "_quantity"])) {
-                    $material->log_material_count($db, $_POST[$material->get_id_material() . "_quantity"], "");
+    
+                $new_quantity = $_POST[$material->get_id_material() . "_quantity"];
+                if (!empty($new_quantity)) {
+                    $material->log_material_count($db, $new_quantity, "");
                 }
             }
         }
-        
     }
+    
+    
+    
     $_POST = array();
     require_once "vue/materials-explore.php";

@@ -16,7 +16,7 @@
 
             <div class="content-card">
                 <h2>
-                    Material type: <?=$material_type->get_name()?>
+                    <?=$material_type->get_name()?>
                 </h2>
                 
                 <?php
@@ -27,7 +27,8 @@
                         $current_count_formated = number_format(floatval($current_count));
                         ?>
                         <div class="material">
-                            <form action="#" method=post>
+                            <form action="#m_<?=$i?>_<?=$material_name?>" method=post>
+                                <a class="anchor" id="m_<?=$i?>_<?=$material_name?>"></a>
 
                                 <!-- Material header -->
                                 <div class="row justify-content-evenly">
@@ -121,7 +122,9 @@
                                                                 
                                                                 <?php
                                                                     $change_average = $history_time_span->get_average_gain();
-                                                                    $today_overall_change = $history_time_span->get_overall_change();
+                                                                    $today_overall_change =
+                                                                        $material_item->get_history()
+                                                                        [0]->get_overall_change();
                                                                     
                                                                     if ($change_average != -1) {
                                                                         echo "On average, you got " . $change_average . " " . $material_name . "s per day. Which is ";
@@ -164,9 +167,11 @@
                                                        data-bs-target="#collapse<?=$i?>"
                                                        aria-expanded="false"
                                                        aria-controls="collapse<?=$i?>">
-
+                                                
+                                                
                                                 <label class="btn btn-outline-success dropdown-toggle"
                                                        for="btn-check-outlined_<?=$i?>">Close statistics</label><br>
+                                                
                                             </div>
                                         </div>
                                     </div>
