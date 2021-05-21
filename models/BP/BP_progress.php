@@ -79,6 +79,13 @@
             
             // Execute the request
             $result = $db->select_unique($request, $values, false, true);
+
+            if (empty($result)){
+                $result = [
+                    'xp_count' => "0",
+                ];
+            }
+
             array_push($this->history, $result);
             $this->yesterday_log = $result;
         }

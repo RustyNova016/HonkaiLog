@@ -20,34 +20,61 @@
             <div class="modal-body">
                 <?=$material_name?> counts:
                 <ul>
+                    <?php
+
+                    ?>
                     <li>
                         Gained <?=$history_time_span->getNetGains()?>
                         <?=$material_name?>s
                     </li>
+                    <?php
+
+                    ?>
                     <li>
                         Spent <?=$history_time_span->getNetLoss()?>
                         <?=$material_name?>s
                     </li>
+                    <?php
+
+                    ?>
                     <li>In
                         total, <?=$history_time_span->get_overall_change()?>
                         <?=$material_name?>s
                     </li>
+                    <?php
+
+                    ?>
                 </ul>
                 
                 <?=$material_name?> counts / day:
                 <ul>
+                    <?php
+
+                        if (!($history_time_span->get_average_gain() == -1)){
+                    ?>
                     <li>
                         Gained <?=$history_time_span->get_average_gain()?>
                         <?=$material_name?>s / day
                     </li>
+                    <?php
+                        }
+                    if (!($history_time_span->get_average_loss() == -1)){
+                    ?>
                     <li>
                         Spent <?=$history_time_span->get_average_loss()?>
                         <?=$material_name?>s / day
                     </li>
+                    <?php
+                    }
+                    if (!($history_time_span->get_average_change() == -1)){
+                    ?>
                     <li>In
                         average, <?=$history_time_span->get_average_change()?>
                         <?=$material_name?>s / day
                     </li>
+                    <?php
+                    }
+                    ?>
                 </ul>
             </div>
             <div class="modal-footer">
