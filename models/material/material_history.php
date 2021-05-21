@@ -1,6 +1,7 @@
 <?php
     require_once "models/material/material_log.php";
     require_once "models/other_functions.php";
+    require_once "models/Exceptions/EmptyResultException.php";
     
     /**
      * Class material_history
@@ -20,11 +21,9 @@
          *
          * @throws Exception
          */
-        public function __construct(database $db, time_frame $time_frame, int $id_material) {
+        public function __construct(database $db, time_frame $time_frame) {
             $this->time_frame = $time_frame;
             $this->log_list = [];
-            
-            $this->query_material_logs($db, $id_material);
         }
         
         
@@ -66,8 +65,14 @@
             
             $result = array_merge_recursive($result, $result_in_range);
             
+            if (empty($result)) {
+                throw new EmptyResultException("");
+            }
+            
             foreach ($result as $log) {
-                array_push($this->log_list, new material_log($db, $log["id_log"]));
+                $matz_log = new material_log($log["id_log"]);
+                $matz_log->query_info($db);
+                array_push($this->log_list, $matz_log);
             }
         }
         
@@ -101,7 +106,12 @@
          * @return material_log
          */
         public function get_latest_log(): material_log {
-            return end($this->log_list);
+            try {
+                return end($this->log_list);
+            } catch (TypeError) {
+                throw new EmptyLogsException();
+            }
+            
         }
         
         /**

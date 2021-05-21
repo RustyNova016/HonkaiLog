@@ -1,7 +1,7 @@
 <?php
     
     
-    class user {
+    class user_class {
         private string $username;
         private int $id_user;
         private int $user_level;
@@ -36,6 +36,10 @@
     
                 return true;
             }
+        }
+
+        public function __toString(){
+            return $this->username;
         }
         
         /**

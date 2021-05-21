@@ -5,13 +5,18 @@
     require_once "models/material/material.php";
     require_once "models/material/material_history.php";
     require_once "models/material/time_frame.php";
+    require_once "models/other_functions.php";
     
+    if (empty($_SESSION["user"])){
+        login_redirect("material/explore");
+    }
+
     /**
      * @var PDO      $dbh
      * @var database $db
      */
     
-    // We get the list of the ids of the materials
+    // We get the list of the ids of the materials types
     $material_DB = new material_db($dbh);
     $list_of_id_material_type = $material_DB->get_material_types();
     
@@ -119,13 +124,16 @@
                 /**
                  * @var  material $material
                  */
-                
-                if (!empty($_POST[$material->get_id_material() . "_quantity"])) {
-                    $material->log_material_count($db, $_POST[$material->get_id_material() . "_quantity"], "");
+    
+                $new_quantity = $_POST[$material->get_id_material() . "_quantity"];
+                if (!empty($new_quantity)) {
+                    $material->log_material_count($db, $new_quantity, "");
                 }
             }
         }
-        
     }
+    
+    
+    
     $_POST = array();
     require_once "vue/materials-explore.php";

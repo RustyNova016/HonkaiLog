@@ -66,7 +66,15 @@
         public function query_material_histories(database $db): void {
             $this->history = [];
             foreach ($this->time_frame_list as $time_frame) {
-                array_push($this->history, new material_history($db, $time_frame, $this->id_material));
+                $mat_history = new material_history($db, $time_frame);
+                try {
+                    $mat_history->query_material_logs($db, $this->id_material);
+                } catch (EmptyResultException $e) {
+                    $this->log_material_count($db, 0, "Init", false);
+                    $mat_history->query_material_logs($db, $this->id_material);
+                }
+                
+                array_push($this->history, $mat_history);
             }
         }
         
@@ -106,7 +114,7 @@
          *
          * @throws Exception
          */
-        public function log_material_count(database $db, int $quantity, string $lib_change) {
+        public function log_material_count(database $db, int $quantity, string $lib_change, bool $output=true) {
             // SQL Request
             $request = "INSERT INTO material_count (id_user,  id_material , quantity, libchange)
                         VALUES (:id_user, :id_material, :quantity, :libchange);";
@@ -123,7 +131,7 @@
             
             // Execute the request
             $result = $db->query($request, $values, false);
-            if ($result[1]) {
+            if (($result[1]) && $output) {
                 info_message("Successfully logged new " . $this->name . " count");
             }
             
