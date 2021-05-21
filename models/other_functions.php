@@ -23,3 +23,27 @@
         }
         return $link;
     }
+
+    function send_to_JS($data, $name){
+        $data = strval($data)
+
+        ?>
+        <div id="<?=$name?>" style="display: none;">
+            <?php
+                echo htmlspecialchars($data); /* You have to escape because the result
+                                           will not be valid HTML otherwise. */
+            ?>
+        </div>
+        <?php
+    }
+
+    function send_to_JS_json($data, $name){
+        ?>
+        <div id="<?=$name?>" style="display: none;">
+            <?php
+                echo json_encode($data); /* You have to escape because the result
+                                           will not be valid HTML otherwise. */
+            ?>
+        </div>
+        <?php
+    }

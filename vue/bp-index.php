@@ -4,6 +4,8 @@
      */
 ?>
 
+<script src="/honkailog/js/BP_XP.js" defer></script>
+
 <h1 class="title">Battle pass</h1>
 
 <div class="content-card">
@@ -15,18 +17,25 @@
 
             <div class="col-md-6">
                 <label class="form-label">BP level</label>
-                <input type="input" class="form-control" name="bp_level"
+                <input type="number"
+                       id="BP_level_input"
+                       class="form-control"
+                       name="bp_level"
                        value="<?=$bp_db->get_current_bp_level()?>"/>
             </div>
 
             <div class="col-md-6">
                 <label class="form-label">BP XP</label>
-                <input type="input" class="form-control" name="bp_xp" value="<?=$bp_db->get_current_bp_xp()?>"/>
+                <input type="number"
+                       id="BP_xp_input"
+                       class="form-control"
+                       name="bp_xp"
+                       value="<?=$bp_db->get_current_bp_xp()?>"/>
             </div>
 
             <!-- TODO: Put it to the right -->
-            <div style="margin-top: 20px; margin-left: 20px">
-                <button class="btn btn-primary" type="submit" style="">Submit</button>
+            <div class="d-grid gap-2" style="margin-top: 20px">
+                <button class="btn" type="submit" style="" id="log_bp">Log BP count</button>
             </div>
         </div>
     </form>
@@ -38,13 +47,17 @@
 
     <div style="padding-left: 10px; margin-top: 20px">
         <p>
-            Today, you got <?=$bp_db->get_today_bp()?> BPs.
+            Today, you got <span id="today_bp"></span> BPs.
             The current BP per day needed to finish it is:
         </p>
         <ul>
-            <li>Vanguard BP: <?=$bp_db->get_bp_per_day_left("vanguard")?>BP/day</li>
-            <li>Knight BP: <?=$bp_db->get_bp_per_day_left("knight")?>BP/day</li>
-            <li>Paladin BP: <?=$bp_db->get_bp_per_day_left("paladin")?>BP/day</li>
+            <?php
+                foreach ($bp_db->get_seasons() as $season) {
+            ?>
+                <li><?=$season->get_bp_type()?> BP: <span id="<?=$season->get_bp_type()?>_BP_day"></span></li>
+            <?php
+                }
+            ?>
         </ul>
     </div>
 </div>

@@ -105,6 +105,11 @@ pre {
     border-color: var(--primary-blue);
 }
 
+.btn-success {
+    color: #FFF;
+    background-color: var(--success);
+}
+
 .bg-success-custom {
     background-color: var(--success);
     border-color: var(--success);

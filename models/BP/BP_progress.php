@@ -198,4 +198,20 @@
             
             $this->query_history($db);
         }
+
+        /**
+         * @return \BP_season[]
+         */
+        public function get_seasons(): array
+        {
+            return $this->seasons;
+        }
+
+        /**
+         * @return array
+         */
+        public function get_yesterday_count(): string
+        {
+            return $this->yesterday_log["xp_count"];
+        }
     }
