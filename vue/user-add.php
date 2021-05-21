@@ -5,6 +5,14 @@
         <div class="content-card">
 
             <form action="/honkailog/user/add" method=post>
+                <?php
+                    if (!(empty($_GET["redirect"]))){
+                        echo '<input name="redirect" type="hidden" placeholder='.$_GET["redirect"].'>';
+                    }
+                ?>
+
+                <input name="action" type="hidden" value="add_info"/>
+
                 <div class="col-auto" style="margin-top: 20px">
                     <label class="forms-labels">Username</label>
                     <input name="username" type="text" class="form-control form-control-lg" id="honkailog_user"
