@@ -2,6 +2,10 @@
     --success: #1DA040;
     --cyber-blue: rgb(38, 201, 221);
     --primary-blue: #0D6EFD;
+    --input-group-background: #e9ecef;
+    --input-group-background-checked: #343a40;
+    --input-group-border: #ced4da;
+    --text-dark: #212529;
 }
 
 body {
@@ -130,4 +134,14 @@ pre {
 anchor {
     padding-top: 50px;
     margin-top: -50px;
+}
+
+.btn-input-group {
+    border-color: var(--input-group-border);
+    color: var(--text-dark);
+    background-color: var(--input-group-background);
+}
+
+.btn-check:checked+.btn-outline-input-group{
+    background-color: var(--input-group-background-checked);
 }

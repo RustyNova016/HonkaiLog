@@ -4,7 +4,7 @@ session_start();
 //$_SESSION = [];
 
 require_once "global/connection.php";
-require_once "global/user.php";
+require_once "global/user_class.php";
 require_once "models/info_message.php";
 require_once "templates/header.php";
 require_once "templates/menu.php";
