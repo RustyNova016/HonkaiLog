@@ -1,8 +1,14 @@
+"use strict";
 var input_LV = document.getElementById("BP_level_input");
 var input_XP = document.getElementById("BP_xp_input");
 var today_bp = document.getElementById("today_bp");
 var log_button = document.getElementById("log_bp");
-var DOM_data = document.getElementById("DOM_data").innerHTML;
+var DOM_data_Element = document.getElementById("DOM_data");
+if (typeof DOM_data_Element === null) {
+    alert("Something went wrong. Please refresh the page");
+    console.error("DOM_data not found.");
+}
+var DOM_data = DOM_data_Element.innerHTML;
 var data_json = JSON.parse(DOM_data);
 function get_bp_current() {
     return calculate_bp(+input_LV.value, +input_XP.value);
@@ -44,9 +50,15 @@ function refresh_today_bp() {
         today_bp.innerHTML = "0";
     }
 }
+function changes_exist() {
+    var diff = get_bp_current() - data_json.current_bp;
+    var change_exist = diff !== 0;
+    return change_exist;
+}
 function check_submit_button() {
     var diff = get_bp_current() - data_json.current_bp;
-    if (diff <= 0) {
+    var change_exist = diff <= 0;
+    if (change_exist) {
         log_button.classList.remove("btn-success");
         log_button.classList.add("btn-outline-success");
     }
@@ -54,7 +66,7 @@ function check_submit_button() {
         log_button.classList.remove("btn-outline-success");
         log_button.classList.add("btn-success");
     }
-    log_button.disabled = diff <= 0;
+    log_button.disabled = change_exist;
 }
 function calculate_bp(bp_level, bp_xp) {
     return bp_level * 1000 + bp_xp;
@@ -79,5 +91,15 @@ for (var _i = 0, _a = data_json.types; _i < _a.length; _i++) {
 // Create listener that triggers on change of the inputs
 input_LV.addEventListener("input", input_handler);
 input_XP.addEventListener("input", input_handler);
+// Event listener for the 'beforeunload' event
+window.addEventListener('beforeunload', function prevent_unsave(e) {
+    // Check if any of the input fields are filled
+    if (changes_exist()) {
+        // Cancel the event and show alert that
+        // the unsaved changes would be lost
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});
 input_handler();
 //# sourceMappingURL=BP_XP.js.map

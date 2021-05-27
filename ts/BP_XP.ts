@@ -5,7 +5,14 @@ const today_bp: HTMLElement = document.getElementById("today_bp") as HTMLElement
 
 const log_button: HTMLButtonElement = document.getElementById("log_bp") as HTMLButtonElement;
 
-let DOM_data: string = document.getElementById("DOM_data").innerHTML;
+let DOM_data_Element: HTMLElement = document.getElementById("DOM_data")!;
+
+if (typeof DOM_data_Element === null){
+    alert("Something went wrong. Please refresh the page");
+    console.error("DOM_data not found.");
+}
+
+const DOM_data: string = DOM_data_Element.innerHTML;
 const data_json: any = JSON.parse(DOM_data);
 
 function get_bp_current(): number {
@@ -23,7 +30,7 @@ class bp_type {
     constructor(name: string, goal: number) {
         this.name = name;
         this.bp_goal = goal;
-        this.out = document.getElementById(this.name + "_BP_day");
+        this.out = document.getElementById(this.name + "_BP_day")!;
     }
 
     refresh(): void {
@@ -63,10 +70,18 @@ function refresh_today_bp(): void {
     }
 }
 
+function changes_exist(): boolean {
+    let diff: number = get_bp_current() - data_json.current_bp;
+
+    let change_exist: boolean = diff !== 0;
+    return change_exist;
+}
+
 function check_submit_button(): void {
     let diff: number = get_bp_current() - data_json.current_bp;
 
-    if (diff <= 0){
+    let change_exist: boolean = diff <= 0;
+    if (change_exist){
         log_button.classList.remove("btn-success");
         log_button.classList.add("btn-outline-success");
     } else {
@@ -74,7 +89,7 @@ function check_submit_button(): void {
         log_button.classList.add("btn-success");
     }
 
-    log_button.disabled = diff <= 0;
+    log_button.disabled = change_exist;
 }
 
 function calculate_bp(bp_level: number, bp_xp: number): number {
@@ -107,5 +122,17 @@ for (let bpType of data_json.types) {
 input_LV.addEventListener("input", input_handler);
 input_XP.addEventListener("input", input_handler);
 
+// Event listener for the 'beforeunload' event
+window.addEventListener('beforeunload', function prevent_unsave (e) {
+
+    // Check if any of the input fields are filled
+    if (changes_exist()) {
+
+        // Cancel the event and show alert that
+        // the unsaved changes would be lost
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});
 
 input_handler();
