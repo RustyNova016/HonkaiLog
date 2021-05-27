@@ -6,7 +6,7 @@
 
 <script src="/honkailog/js/BP_XP.js" defer></script>
 
-<h1 class="title">Battle pass</h1>
+<h1 class="title">Battle Pass</h1>
 
 <div class="content-card">
 
