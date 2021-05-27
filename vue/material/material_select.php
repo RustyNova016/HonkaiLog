@@ -22,7 +22,7 @@
                 }
                 ?>
                 <li>
-                    <a class="dropdown-item" href='/honkailog/materials/explore/<?=$material_type->get_id()?>'>
+                    <a class="dropdown-item" href='/honkailog/material/explore/<?=$material_type->get_id()?>'>
                         <?php
                             $i = 2;
                             if ($hierachical_material_types_id[$material_type->get_id()] > 1) {

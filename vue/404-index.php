@@ -18,3 +18,8 @@
         <a class="btn btn-primary btn-lg" style="margin-bottom: 20px" href="/honkailog/">Return home</a>
     </div>
 </div>
+
+<script>
+    console.log("<?=$page?> not found.");
+    console.log("Parameters: <?=$controller?> - <?=$action?>");
+</script>

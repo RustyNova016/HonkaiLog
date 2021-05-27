@@ -45,8 +45,23 @@ else
     $action = "index";
 }
 
+$aliases = [
+    "materials" => "material",
+    "mat" => "material"
+];
+
+if (!empty($aliases[$controller])){
+    $controller = $aliases[$controller];
+}
 
 $page = "controllers/".$controller."-".$action.".php";
+
+    $indexes = ["material"];
+
+    if (in_array($controller, $indexes)){
+        $page = "controllers/".$controller."-index.php";
+    }
+
 //echo $page;
 if(!@include($page))
 {

@@ -136,4 +136,4 @@
     
     
     $_POST = array();
-    require_once "vue/materials-explore.php";
+    require_once "vue/material-explore.php";
