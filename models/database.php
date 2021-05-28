@@ -47,16 +47,16 @@
                 return [$fetchall, $sth, $success];
             }
         }
-        
+
         /** Execute a SQL query
          *
-         * @param       $SQL_request
-         * @param       $values
-         * @param false $debug
+         * @param string $SQL_request
+         * @param array  $values
+         * @param false  $debug
          *
          * @return array [$sth, $success]
          */
-        public function query($SQL_request, $values, $debug = false) {
+        public function query(string $SQL_request, array $values, $debug = false) {
             if ($debug) {
                 var_dump($SQL_request);
                 var_dump($values);
