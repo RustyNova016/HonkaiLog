@@ -6,6 +6,7 @@
     class BP_season {
         private string $bp_type;
         private DateTime $date_end;
+        private DateTime $date_end_gains;
         private DateTime $date_start;
         private int $id;
         private int $level_max;
@@ -48,6 +49,7 @@
             
             $this->id = $result["id"];
             $this->date_start = new DateTime($result["date_start_user"]);
+            $this->date_end_gains = new DateTime($result["date_end_gains"]);
             $this->date_end = new DateTime($result["date_end_user"]);
             $this->total_days = $result["total_days"];
             $this->level_max = $result["level_max_" . $this->bp_type];
@@ -84,9 +86,19 @@
             return intval(
                 diff_whole_days(
                     $today_date->format('Y-m-d H:i:s'),
-                    $this->date_end->format('Y-m-d H:i:s')
+                    $this->date_end_gains->format('Y-m-d H:i:s')
                 )
             );
+        }
+        
+        public function get_weeks_left(): int {
+            $new_week_num = get_new_week_num($this->date_end);
+    
+            if ($new_week_num != 0) {
+                $new_week_num -= 1;
+            }
+            
+            return $new_week_num;
         }
         
         /**

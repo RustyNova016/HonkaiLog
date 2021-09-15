@@ -20,6 +20,8 @@
         "current_bp" => $bp_db->get_current_bp(),
         "yesterday_bp" => $bp_db->get_yesterday_count(),
         "days_left" => $bp_db->get_seasons()["vanguard"]->get_day_left(),
+        "weeks_left" => $bp_db->get_seasons()["vanguard"]->get_weeks_left(),
+        "weekly_limit" => 12000,
         "types" => []
     ];
 

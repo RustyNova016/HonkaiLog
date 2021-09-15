@@ -75,7 +75,7 @@
             "nbr_day" => 365,
             "date_start" => new DateTime("2021-03-05"),
             "wholeday" => 1
-        ],*/
+        ],
         [
             "name" => "Last version",
             "SQL" => "365 DAY",
@@ -84,12 +84,28 @@
             "date_start" => new DateTime("2021-04-22"),
             "wholeday" => 1,
             "show_average" => true
+        ],*/
+        [
+            "name" => "Last version",
+            "SQL" => "365 DAY",
+            "start" => "In the last version",
+            "nbr_day" => 365,
+            "date_start" => new DateTime("2021-08-12"),
+            "wholeday" => 1,
+            "show_average" => true
         ],
         [
             "name" => "Last 365 days",
             "SQL" => "365 DAY",
             "start" => "In the last 365 days",
             "nbr_day" => 365,
+            "wholeday" => 1
+        ],
+        [
+            "name" => "All time",
+            "SQL" => "365 DAY",
+            "start" => "In the last 365 days",
+            "nbr_day" => 9999,
             "wholeday" => 1
         ]
     ];

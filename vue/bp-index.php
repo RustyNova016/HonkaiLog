@@ -54,7 +54,13 @@
             <?php
                 foreach ($bp_db->get_seasons() as $season) {
             ?>
-                <li><?=$season->get_bp_type()?> BP: <span id="<?=$season->get_bp_type()?>_BP_day"></span></li>
+                <li>
+                    <?=$season->get_bp_type()?> BP: <span id="<?=$season->get_bp_type()?>_BP_day"></span>
+                    <ul>
+                        <li><span id="<?=$season->get_bp_type()?>_bp_per_day_bonuses"></span></li>
+                        <li><span id="<?=$season->get_bp_type()?>_weekly_limit"></span></li>
+                    </ul>
+                </li>
             <?php
                 }
             ?>

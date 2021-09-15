@@ -14,18 +14,48 @@ function get_bp_current() {
     return calculate_bp(+input_LV.value, +input_XP.value);
 }
 var bp_type = /** @class */ (function () {
-    function bp_type(name, goal) {
+    function bp_type(name, goal, bp_per_week) {
         this.name = name;
         this.bp_goal = goal;
-        this.out = document.getElementById(this.name + "_BP_day");
+        this.bp_bonus_per_week = bp_per_week;
+        this.out_bp_per_day = document.getElementById(this.name + "_BP_day");
+        this.out_bp_per_day_bonus = document.getElementById(this.name + "_bp_per_day_bonuses");
+        this.out_daily_limit = document.getElementById(this.name + "_weekly_limit");
     }
     bp_type.prototype.refresh = function () {
         var bp_per_day = calculate_BP_per_day_left(get_bp_current(), this.bp_goal, data_json.days_left);
         if (bp_per_day !== 0) {
-            this.out.innerHTML = String(bp_per_day) + " BP/day.";
+            this.out_bp_per_day.innerHTML = String(bp_per_day) + " BP/day.";
         }
         else {
-            this.out.innerHTML = "Done !";
+            this.out_bp_per_day.innerHTML = "Done !";
+        }
+        if (get_today_bp_gain() >= bp_per_day) {
+            this.out_bp_per_day.setAttribute("style", "color:green;");
+        }
+        else {
+            this.out_bp_per_day.setAttribute("style", "color:red;");
+        }
+        var bp_per_day_bonuses = calculate_BP_per_day_left(get_bp_current() + (data_json.weeks_left * this.bp_bonus_per_week), this.bp_goal, data_json.days_left);
+        if (bp_per_day_bonuses !== 0) {
+            this.out_bp_per_day_bonus.innerHTML = "With weekly BP bonuses: " + String(bp_per_day_bonuses) + " BP/day.";
+        }
+        else {
+            this.out_bp_per_day_bonus.innerHTML = "Done !";
+        }
+        if (get_today_bp_gain() >= bp_per_day_bonuses) {
+            this.out_bp_per_day_bonus.setAttribute("style", "color:green;");
+        }
+        else {
+            this.out_bp_per_day_bonus.setAttribute("style", "color:red;");
+        }
+        var daily_limit = data_json.weekly_limit / 7;
+        var weekly_daily = calculate_BP_per_day_left(get_bp_current() + (data_json.weeks_left * this.bp_bonus_per_week), this.bp_goal, data_json.weeks_left * 7);
+        if (weekly_daily < daily_limit) {
+            this.out_daily_limit.innerHTML = "Finishing is still possible within the weekly limit (" + String(daily_limit) + "BP/day limit, " + String(weekly_daily) + " needed)";
+        }
+        else {
+            this.out_daily_limit.innerHTML = "Finishing is impossible within the weekly limit (" + String(daily_limit) + "BP/day limit, " + String(weekly_daily) + " needed)";
         }
     };
     return bp_type;
@@ -41,14 +71,11 @@ function refresh_all_bp_type() {
         bpType.refresh();
     }
 }
+function get_today_bp_gain() {
+    return get_bp_current() - data_json.yesterday_bp;
+}
 function refresh_today_bp() {
-    var bp_diff = get_bp_current() - data_json.yesterday_bp;
-    if (bp_diff >= 0) {
-        today_bp.innerHTML = "" + bp_diff;
-    }
-    else {
-        today_bp.innerHTML = "0";
-    }
+    today_bp.innerHTML = "" + get_today_bp_gain();
 }
 function changes_exist() {
     var diff = get_bp_current() - data_json.current_bp;
@@ -86,7 +113,7 @@ function get_remaining_bp(bp_current, bp_max) {
 var bp_types = [];
 for (var _i = 0, _a = data_json.types; _i < _a.length; _i++) {
     var bpType = _a[_i];
-    bp_types.push(new bp_type(bpType.name, bpType.bp_goal));
+    bp_types.push(new bp_type(bpType.name, bpType.bp_goal, 2000));
 }
 // Create listener that triggers on change of the inputs
 input_LV.addEventListener("input", input_handler);

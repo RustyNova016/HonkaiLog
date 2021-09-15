@@ -47,3 +47,37 @@
         </div>
         <?php
     }
+    
+    function get_new_week_num($date_end): int {
+        $marching_date = new DateTime(); // Set to today
+        $new_week_num = 0;
+            while (
+                getIntval($marching_date, $date_end) > 0
+            ) {
+                $daynum = date("N", $marching_date->getTimestamp());
+                
+            
+                if ($daynum == 1) {
+                    $new_week_num += 1;
+                }
+                
+                $marching_date->add(new DateInterval('P1D'));
+            }
+            return $new_week_num;
+        }
+    
+    /**
+     * @param DateTime $marching_date
+     * @param $date_end
+     * @return int
+     * @throws Exception
+     */
+    function getIntval(DateTime $marching_date, $date_end): int {
+        $intval = intval(
+            diff_whole_days(
+                $marching_date->format('Y-m-d H:i:s'),
+                $date_end->format('Y-m-d H:i:s')
+            )
+        );
+        return $intval;
+    }
