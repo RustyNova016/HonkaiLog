@@ -15,25 +15,25 @@
         /**
          * material_history constructor.
          *
-         * @param database   $db
+         * @param Database_core   $db
          * @param time_frame $time_frame
          * @param int        $id_material
          *
          * @throws Exception
          */
-        public function __construct(database $db, time_frame $time_frame) {
+        public function __construct(Database_core $db, time_frame $time_frame) {
             $this->time_frame = $time_frame;
             $this->log_list = [];
         }
         
         
         /**
-         * @param database $db
+         * @param Database_core $db
          * @param int      $id_material
          *
          * @throws Exception
          */
-        function query_material_logs(database $db, int $id_material): void {
+        function query_material_logs(Database_core $db, int $id_material): void {
             // SQL Request
             // First, we get one value before the time frame for reference
             $request_value_before = "SELECT id_log

@@ -13,11 +13,11 @@
         /**
          * BP_progress constructor.
          *
-         * @param database $db
+         * @param Database_core $db
          *
          * @throws Exception
          */
-        public function __construct(database $db) {
+        public function __construct(Database_core $db) {
             $this->seasons = [
                 "vanguard" => new BP_season($db, "vanguard"),
                 "knight" => new BP_season($db, "knight"),
@@ -29,11 +29,11 @@
         
         /** Get the history of BP
          *
-         * @param database $db
+         * @param Database_core $db
          *
          * @throws Exception
          */
-        function query_history(database $db) {
+        function query_history(Database_core $db) {
             // SQL Request
             $request = "SELECT *
                         FROM bp_season_progress
@@ -55,11 +55,11 @@
         }
         
         /**
-         * @param database $db
+         * @param Database_core $db
          *
          * @throws Exception
          */
-        function query_bp_progress_yesterday(database $db,) {
+        function query_bp_progress_yesterday(Database_core $db,) {
             // SQL Request
             $request = "SELECT *
                         FROM bp_season_progress
@@ -169,13 +169,13 @@
         
         /** Log the current bp count into the database
          *
-         * @param database $db
+         * @param Database_core $db
          * @param int      $bp_level
          * @param int      $bp_xp
          *
          * @throws Exception
          */
-        public function insert_bp_log(database $db, int $bp_level, int $bp_xp) {
+        public function insert_bp_log(Database_core $db, int $bp_level, int $bp_xp) {
             $request = "INSERT INTO `bp_season_progress` (`id`, `id_season`, `id_user`, `xp_count`, `time_stamp`)
                         VALUES (NULL, :id_season, :id_user, :xp_count, CURRENT_TIMESTAMP());";
             

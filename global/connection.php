@@ -8,7 +8,7 @@
         $dbh = new PDO('mysql:host=' . $server . ';dbname=' . $database, $user, $pass);
         $dbh->query("SET CHARACTER SET utf8");
         $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $db = new database($dbh);
+        $db = new Database_core($dbh);
         
     } catch (PDOException $e) {
         print "Error!: " . $e->getMessage() . "<br/>";

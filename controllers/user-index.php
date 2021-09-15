@@ -4,7 +4,7 @@
     require_once "models/other_functions.php";
 
     /**
-     * @var database $db
+     * @var Database_core $db
      */
 
 

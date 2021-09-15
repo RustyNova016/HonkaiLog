@@ -3,7 +3,10 @@
 session_start();
 //$_SESSION = [];
 
-require_once "global/connection.php";
+require_once "core/Database_core.php";
+
+$db_core = Database_core::get_database_core();
+
 require_once "global/user_class.php";
 require_once "models/info_message.php";
 require_once "templates/header.php";

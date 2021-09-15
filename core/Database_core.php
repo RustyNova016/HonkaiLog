@@ -1,11 +1,50 @@
 <?php
     
     
-    class database {
+    class Database_core {
+        /**
+         * @var Database_core
+         * @access private
+         * @static
+         */
+        private static $_instance = null;
+        
         private PDO $dbh;
         
-        public function __construct($dbh) {
+        public function __construct(PDO $dbh) {
             $this->dbh = $dbh;
+        }
+    
+        /** Return the database_core singleton
+         *
+         * @param PDO|null $PDO_object
+         * @return Database_core
+         */
+        public static function get_database_core(PDO $PDO_object = null) : Database_core {
+            // Preparing the PDO
+            if (is_null($PDO_object)) {
+                $server = "localhost";
+                $user = "root";
+                $pass = "";
+                $database = "honkailog";
+
+                try {
+                    $PDO_object = new PDO('mysql:host=' . $server . ';dbname=' . $database, $user, $pass);
+                    $PDO_object->query("SET CHARACTER SET utf8");
+                    $PDO_object->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                    
+                } catch (PDOException $e) {
+                    print "Error!: " . $e->getMessage() . "<br/>";
+                    die();
+                }
+            }
+            
+            // First time generation
+            if (is_null(self::$_instance)) {
+                self::$_instance = new Database_core($PDO_object);
+            }
+            
+            return self::$_instance;
         }
         
         /**
@@ -25,9 +64,9 @@
         /** Select from the database
          *
          * @param string $SQL_request
-         * @param array  $values
-         * @param bool   $debug
-         * @param bool   $output_only
+         * @param array $values
+         * @param bool $debug
+         * @param bool $output_only
          *
          * @return array [$fetchall, $sth, $success]
          */
@@ -70,9 +109,9 @@
         /** Select an unique value from the database
          *
          * @param string $SQL_request
-         * @param array  $values
-         * @param bool   $debug
-         * @param bool   $output_only
+         * @param array $values
+         * @param bool $debug
+         * @param bool $output_only
          *
          * @return array [$fetchall, $sth, $success]
          */
@@ -94,31 +133,31 @@
         }
         
         
-        public function add_user(user_class $user, string $password){
+        public function add_user(user_class $user, string $password) {
             // SQL Request
             $request = "INSERT INTO user (name , password, level)
                         VALUES (:name, SHA1(:password), :level);";
-    
+            
             // Values to insert
             $values = [
                 ":name" => $user->get_username(),
                 ":password" => $password,
                 ":level" => $user->get_user_level()
             ];
-    
+            
             // Execute the request
             $result = $this->query($request, $values, false);
             if ($result[1]) {
                 //info_message("Successfully logged new " . $this->name . " count");
             }
         }
-    
-    
-        public function log_material_count(material_log $mat_log) {
+        
+        
+        /*public function log_material_count(material_log $mat_log) {
             // SQL Request
             $request = "INSERT INTO material_count (id_user,  id_material , quantity, libchange)
                         VALUES (:id_user, :id_material, :quantity, :libchange);";
-        
+            
             // Values to insert
             $user = unserialize($_SESSION["user"]);
             $values = [
@@ -128,11 +167,11 @@
                 ":libchange" => $lib_change//,
                 //":time_stamp" => $time_stamp
             ];
-        
+            
             // Execute the request
             $result = $db->query($request, $values, false);
             if ($result[1]) {
                 info_message("Successfully logged new " . $this->name . " count");
             }
-        }
+        }*/
     }

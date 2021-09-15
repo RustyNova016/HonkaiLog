@@ -21,11 +21,11 @@
         }
         
         /**
-         * @param database $db
+         * @param Database_core $db
          *
          * @throws Exception
          */
-        function query_info(database $db) {
+        function query_info(Database_core $db) {
             // SQL Request
             $request = "SELECT *
                         FROM material_count

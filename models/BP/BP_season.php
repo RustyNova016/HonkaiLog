@@ -15,15 +15,15 @@
         /**
          * BP_season constructor.
          *
-         * @param database $db
+         * @param Database_core $db
          * @param string   $bp_type
          */
-        public function __construct(database $db, string $bp_type) {
+        public function __construct(Database_core $db, string $bp_type) {
             $this->bp_type = $bp_type;
             $this->query_info($db);
         }
         
-        function query_info(database $db) {
+        function query_info(Database_core $db) {
             // SQL Request
             $request = "SELECT bp_season.*,
                             DATE_ADD(date_start, INTERVAL :reset_hour HOUR) AS date_start_user,

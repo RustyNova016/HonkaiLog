@@ -32,9 +32,9 @@
         
         /** Get the info about the current material
          *
-         * @param database $db
+         * @param Database_core $db
          */
-        public function query_info(database $db): void {
+        public function query_info(Database_core $db): void {
             // SQL Request
             $request = "SELECT *
                         FROM material
@@ -59,11 +59,11 @@
         }
         
         /**
-         * @param database $db
+         * @param Database_core $db
          *
          * @throws Exception
          */
-        public function query_material_histories(database $db): void {
+        public function query_material_histories(Database_core $db): void {
             $this->history = [];
             foreach ($this->time_frame_list as $time_frame) {
                 $mat_history = new material_history($db, $time_frame);
@@ -108,13 +108,13 @@
         
         /** Log a currency count to the database
          *
-         * @param database $db
+         * @param Database_core $db
          * @param int      $quantity
          * @param string   $lib_change
          *
          * @throws Exception
          */
-        public function log_material_count(database $db, int $quantity, string $lib_change, bool $output=true) {
+        public function log_material_count(Database_core $db, int $quantity, string $lib_change, bool $output=true) {
             // SQL Request
             $request = "INSERT INTO material_count (id_user,  id_material , quantity, libchange)
                         VALUES (:id_user, :id_material, :quantity, :libchange);";

@@ -11,7 +11,7 @@
         private string $name;
         private int $parent_id;
         
-        public function __construct(database $db, $id) {
+        public function __construct(Database_core $db, $id) {
             $this->id = $id;
             $this->init = false;
             $this->list_of_material = [];
@@ -21,9 +21,9 @@
         
         /** Get all the information from the database
          *
-         * @param database $db
+         * @param Database_core $db
          */
-        public function query_info(database $db) {
+        public function query_info(Database_core $db) {
             $SQL_Request = "SELECT *
                            FROM material_type
                            WHERE id_material_type = :id_material_type";
@@ -109,12 +109,12 @@
         
         /** Fill the $material_list parameter with the material from the database
          *
-         * @param database $db
+         * @param Database_core $db
          * @param array    $material_history_time_frame
          *
          * @throws Exception
          */
-        public function query_material_list(database $db, array $material_history_time_frame) {
+        public function query_material_list(Database_core $db, array $material_history_time_frame) {
             $request = "SELECT id_material
                         FROM material
                         WHERE id_material_type = :id_material_type

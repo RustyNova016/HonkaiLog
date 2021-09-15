@@ -13,7 +13,7 @@
 
     /**
      * @var PDO      $dbh
-     * @var database $db
+     * @var Database_core $db
      */
     
     // We get the list of the ids of the materials types

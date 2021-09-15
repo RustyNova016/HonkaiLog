@@ -7,7 +7,7 @@
     }
     
     /**
-     * @var database $db
+     * @var Database_core $db
      */
     
     $bp_db = new BP_progress($db);
