@@ -28,9 +28,7 @@
     <div class="footer-bottom text-center" style="">
         <p style="color: #FFFFFF"> HonkaiLog © 2021 |
             Graphical assets used are owned by
-            <a href="https://honkaiimpact3.mihoyo.com/">
-                miHoYo
-            </a>
+            <a href="https://honkaiimpact3.mihoyo.com/">miHoYo</a>
             and
             <a href="https://www.pixiv.net/en/users/38516621">
                 RustyNova

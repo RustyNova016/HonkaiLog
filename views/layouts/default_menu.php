@@ -1,15 +1,16 @@
 <?php
-    $json = file_get_contents("img/background/background.json");
+    $json = file_get_contents("img/background/background.json"); // TODO: WEBROOT this
     $background_array = json_decode($json, true);
     $background = $background_array[array_rand($background_array, 1)];
 ?>
 
 <div class="background-div background-color-trans" style="background-image: url(/honkailog/img/background/<?=$background?>.png);">
+<!--    TODO: WEBROOT this-->
     <div class="wrapper background-color-trans">
 
         <nav class="navbar navbar-expand-lg navbar-dark" style="">
             <div class="container-fluid">
-                <a class="navbar-brand" href="#">Honkai log</a>
+                <a class="navbar-brand" href="#">Honkai Log</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                         data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false"
                         aria-label="Toggle navigation">
@@ -23,7 +24,7 @@
                     </div>
                 </div>
                 <div class="d-flex">
-                    <?php
+                    <?php /*
                         if (empty($_SESSION["user"])) {
                             
                             ?>
@@ -34,7 +35,7 @@
                             ?>
                             <a class="nav-link" href="/honkailog/user"><?=$user->get_username()?></a>
                             <?php
-                        }
+                        }*/
                     ?>
 
                 </div>

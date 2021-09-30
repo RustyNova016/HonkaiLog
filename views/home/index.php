@@ -1,3 +1,3 @@
 <div>
-    Content here
+    <h1>Welcome to Honkai Log !</h1>
 </div>
