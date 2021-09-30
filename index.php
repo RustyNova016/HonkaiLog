@@ -28,10 +28,10 @@
     
     $controller_path = ROOT . 'controllers/' . $controller . '.php';
     
-    if (file_exists($controller_path)){
+    if (file_exists($controller_path)) {
         require_once $controller_path;
     } else {
-        echo "404: ".$controller." doesn't exist";
+        echo "404: " . $controller . " doesn't exist";
         die();
     }
     
@@ -42,8 +42,15 @@
     if (method_exists($controller, $action)) {
         $controller->$action();
     } else {
-        echo "404: ".$action." doesn't exist";
-        die();
+        $failpage_path = ROOT . 'controllers/failpage.php';
+        if (file_exists($failpage_path)) {
+            require_once $failpage_path;
+            $fail_controller = new failpage();
+            $fail_controller->page_404();
+        } else {
+            echo "404: " . $action . " doesn't exist";
+            die();
+        }
     }
 
 ?>
