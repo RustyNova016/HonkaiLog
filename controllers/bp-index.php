@@ -1,5 +1,7 @@
 <?php
     require_once "models/BP/BP_progress.php";
+
+    var_dump("This page is completly broken and require serious rework. Just ignore it for now");
     
     /**
      * @var database $db

@@ -2,7 +2,7 @@
     require_once "models/material_db.php";
     require_once "models/material/material_type.php";
     require_once "models/material/find_material_type_child.php";
-    require_once "models/material/material.php";
+    require_once "models/material/MaterialClass.php";
     require_once "models/material/material_history.php";
     require_once "models/material/time_frame.php";
     
@@ -117,7 +117,7 @@
             $list_of_material = $material_type->get_list_of_material();
             foreach ($list_of_material as $material) {
                 /**
-                 * @var  material $material
+                 * @var  material_class $material
                  */
     
                 $new_quantity = $_POST[$material->get_id_material() . "_quantity"];

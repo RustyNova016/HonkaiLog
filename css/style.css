@@ -1,8 +1,8 @@
-:root {
-    --success: #1DA040;
-    --cyber-blue: rgb(38, 201, 221);
-    --primary-blue: #0D6EFD;
-}
+    :root {
+        --success: #1DA040;
+        --cyber-blue: rgb(38, 201, 221);
+        --primary-blue: #0D6EFD;
+    }
 
 body {
     background-color: #282F3F;

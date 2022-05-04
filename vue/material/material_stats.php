@@ -2,7 +2,7 @@
     /**
      * @var array            $list_of_material_type
      * @var material_type    $material_type
-     * @var material         $material_item
+     * @var material_class         $material_item
      * @var material_history $history_time_span
      */
 ?>
