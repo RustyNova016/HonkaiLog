@@ -5,7 +5,7 @@
     /**
      * Class material
      */
-    class material {
+    class material_class {
         private array $history;
         private int $id_material;
         private string $name;

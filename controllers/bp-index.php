@@ -5,7 +5,9 @@
     if (empty($_SESSION["user"])){
         login_redirect("bp");
     }
-    
+
+    var_dump("This page is completly broken and require serious rework. Just ignore it for now");
+
     /**
      * @var database $db
      */

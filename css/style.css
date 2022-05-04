@@ -2,6 +2,10 @@
     --success: #1DA040;
     --cyber-blue: rgb(38, 201, 221);
     --primary-blue: #0D6EFD;
+    --input-group-background: #e9ecef;
+    --input-group-background-checked: #343a40;
+    --input-group-border: #ced4da;
+    --text-dark: #212529;
 }
 
 body {

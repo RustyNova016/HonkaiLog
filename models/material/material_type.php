@@ -1,5 +1,5 @@
 <?php
-    require_once "models/material/material.php";
+    require_once "models/material/MaterialClass.php";
     
     class material_type {
         private int $display_order;
@@ -131,9 +131,13 @@
                     $new_id_material = $material_item["id_material"];
                     $this->list_of_id_material[$new_id_material] = $new_id_material;
                     
-                    $material_item1 = new material($new_id_material, $db, $material_history_time_frame);
+                    $material_item1 = new material_class($new_id_material, $db, $material_history_time_frame);
+                    //var_dump($material_item1);
+                    //var_dump($material_item1->get_history());
                     $this->list_of_material[$material_item1->get_id_material()] = $material_item1;
                 }
             }
+            
+            //var_dump($this->list_of_material);
         }
     }

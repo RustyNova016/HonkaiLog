@@ -6,7 +6,7 @@
      * @return string
      * @throws Exception
      */
-    function diff_whole_days(string|DateTime $earlier, string|DateTime $later): string {
+    function diff_whole_days(string|DateTime $earlier, string|DateTime $later): string { // TODO: Tidy this up
         
         
         if (gettype($earlier) == "string"){
@@ -30,16 +30,17 @@
         $now_time = new DateTime($now->format('H:i:s'));
         $reset_time = new DateTime("04:00:00");
         
-        $user = unserialize($_SESSION["user"]);
+        //$user = unserialize($_SESSION["user"]);
         
         
-        $next_reset = $now->setTime($user->get_reset_hour(), 0, 0);
+        //$next_reset = $now->setTime($user->get_reset_hour(), 0, 0);
         
-        if ($now_time > $reset_time) {
-            $next_reset = $next_reset->modify('+1 day');
-        }
+        //if ($now_time > $reset_time) {
+        //    $next_reset = $next_reset->modify('+1 day');
+        //}
         
-        return $next_reset;
+        //return $next_reset;
+        return $reset_time;
     }
     
     /**
