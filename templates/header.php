@@ -28,11 +28,6 @@
     <link rel="stylesheet" href="/honkailog/CSS/style.css">
 
     <title>HonkaiLog - Captain on the bridge!</title>
-
-    <style>
-
-    </style>
-
 </head>
 
 
