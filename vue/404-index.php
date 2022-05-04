@@ -5,6 +5,10 @@
      */
 ?>
 
+<script>
+    console.log("<?=$page?> not found.")
+</script>
+
 <div class="row">
     <div class="container">
         <br>
