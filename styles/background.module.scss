@@ -1,3 +1,5 @@
+@import "colors";
+
 .backgroundDiv {
     background-attachment: fixed;
     background-position: center;
@@ -8,7 +10,7 @@
 }
 
 .backgroundColorTrans {
-    background-color: #282F3FE0;
+    background-color: $main-bg-color;
     min-height: 100vh;
 }
 
