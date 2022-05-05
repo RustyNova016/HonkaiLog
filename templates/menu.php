@@ -1,5 +1,5 @@
 <?php
-    $json = file_get_contents("img/background/background.json");
+    $json = file_get_contents("images/background/background.json");
     $background_array = json_decode($json, true);
     $background = $background_array[array_rand($background_array, 1)];
 ?>

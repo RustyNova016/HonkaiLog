@@ -19,11 +19,12 @@
   border-top: 1px solid #eaeaea;
   justify-content: center;
   align-items: center;
-}
-.footer a {
-  justify-content: center;
-  align-items: center;
-  flex-grow: 1;
+
+  a {
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+  }
 }
 
 .title a:hover,
@@ -36,10 +37,11 @@
   margin: 0;
   line-height: 1.15;
   font-size: 5rem;
-}
-.title a {
-  color: #0070f3;
-  text-decoration: none;
+
+  a {
+    color: #0070f3;
+    text-decoration: none;
+  }
 }
 
 .title,
@@ -58,7 +60,8 @@
   border-radius: 5px;
   padding: 0.75rem;
   font-size: 1.1rem;
-  font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
+  font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
+  Bitstream Vera Sans Mono, Courier New, monospace;
 }
 
 .grid {
@@ -110,5 +113,3 @@
     flex-direction: column;
   }
 }
-
-/*# sourceMappingURL=Home.module.css.map */
