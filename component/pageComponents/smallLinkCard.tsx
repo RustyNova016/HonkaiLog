@@ -11,7 +11,6 @@ export function SmallLinkCard(props: { title: string, description?: string, link
                     <div className={HomeStyles.cardPicDiv}>
                         <Image src={props.imagelink} width={150} height={150}/>
                     </div>
-
                 </Col> : null}
                 <Col>
                     <h2><u>{props.title}</u></h2>

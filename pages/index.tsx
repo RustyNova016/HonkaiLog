@@ -18,8 +18,6 @@ const Home: NextPage = () => {
                         <p className={styles.description}>
                             A website to keep track of your progress in the game Honkai Impact 3rd
                         </p>
-
-
                     </Fade>
                     <Fade direction={"up"} cascade={true} className={styles.grid} delay={1000}>
                         <SmallLinkCard link={"404"} title={"Material History"}
@@ -27,12 +25,11 @@ const Home: NextPage = () => {
                                        imagelink={"/images/icons/HonkaiCube.png"}/>
                         <SmallLinkCard link={"404"} title={"Battlepass Checker"}
                                        description={"Not sure if you can finish the battlepass in time? Use this tool to find out"}
-                        imagelink={"/images/icons/BP.png"}/>
+                                       imagelink={"/images/icons/BP.png"}/>
                     </Fade>
                 </main>
             </GenericPageLayout>
         </>
-
     )
 }
 

@@ -4,7 +4,13 @@ export function Background(props: {
     style?: React.CSSProperties;
     children: React.ReactNode;
 }) {
-    const backgroundPics = ["3rd_anniversary.png", "dark_lord.png"]
+    const backgroundPics = ["3rd_anniversary.png",
+        "the_deep.png",
+        "haxxor_bunny.png",
+        "honkai_quest.png",
+        "stygian_hall.png",
+        "dark_lord.png"
+    ]
 
     return (
         <div
