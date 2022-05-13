@@ -1,7 +1,7 @@
 <?php
     
     
-    class user_class {
+    class user {
         private string $username;
         private int $id_user;
         private int $user_level;

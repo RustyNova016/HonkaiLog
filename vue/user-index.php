@@ -2,7 +2,7 @@
     <div class="container bg">
         <?php
         /**
-         * @var user_class $usera
+         * @var user $usera
          */
             $usera = unserialize($_SESSION["user"]);
 

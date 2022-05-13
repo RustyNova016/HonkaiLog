@@ -154,6 +154,26 @@
                                                                         } else {
                                                                             echo "<a style='color: #7eff76'>less</a> than today";
                                                                         }
+
+                                                                        echo "<br> <br>";
+
+                                                                        $str = "Hard pity achived in: ";
+
+                                                                        $crystals_before_pity = 28000 - (20*280);
+                                                                        $pity_days_remaining = ceil($crystals_before_pity / max(1, $change_average));
+
+                                                                        // Add pity days to today's date
+                                                                        $today = new DateTime();
+                                                                        $today->add(new DateInterval("P" . $pity_days_remaining . "D"));
+
+
+                                                                        $str .= $pity_days_remaining . " days (" . $today->format("d/m/y") . ")";
+
+                                                                        echo $str;
+                                                                        echo "<br>";
+                                                                        $week_remaining = $pity_days_remaining / 7;
+                                                                        echo "Aka, " . ceil($week_remaining) . " weeks, ~" . ceil($pity_days_remaining/30) . " months, " . $week_remaining/7 . " versions";
+
                                                                     }
                                                                 ?>
 

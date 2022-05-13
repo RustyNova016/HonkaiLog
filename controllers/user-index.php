@@ -19,7 +19,7 @@
         include "vue/user-add.php";
 
     } else if ($action == "add_info") {
-        $user = new user_class($_POST["username"], $_POST["level"]);
+        $user = new user($_POST["username"], $_POST["level"]);
 
         $db->add_user($user, $_POST["password"]);
 
@@ -29,7 +29,7 @@
         include "vue/user-login.php";
 
     } else if ($action == "login_info") {
-        $user = new user_class($_POST["username"]);
+        $user = new user($_POST["username"]);
 
         if ($user->login($db, $_POST["password"])) {
             $_SESSION["user"] = serialize($user);

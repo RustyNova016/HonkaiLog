@@ -94,7 +94,7 @@
         }
         
         
-        public function add_user(user_class $user, string $password){
+        public function add_user(user $user, string $password){
             // SQL Request
             $request = "INSERT INTO user (name , password, level)
                         VALUES (:name, SHA1(:password), :level);";

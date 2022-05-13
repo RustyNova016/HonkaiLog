@@ -81,7 +81,7 @@
             "SQL" => "365 DAY",
             "start" => "In the last version",
             "nbr_day" => 365,
-            "date_start" => new DateTime("2021-04-22"),
+            "date_start" => new DateTime("2022-04-7"),
             "wholeday" => 1,
             "show_average" => true
         ],
