@@ -1,28 +1,37 @@
 {
-  "name": "honkailog",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "bootstrap": "^5.1.3",
-    "next": "12.1.6",
-    "react": "18.1.0",
-    "react-awesome-reveal": "^3.8.1",
-    "react-bootstrap": "^2.3.1",
-    "react-dom": "18.1.0"
-  },
-  "devDependencies": {
-    "@types/node": "17.0.31",
-    "@types/react": "18.0.8",
-    "@types/react-dom": "18.0.3",
-    "eslint": "8.14.0",
-    "eslint-config-next": "12.1.6",
-    "sass": "^1.51.0",
-    "typescript": "4.6.4"
-  }
+    "name": "honkailog",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint"
+    },
+    "dependencies": {
+        "bootstrap": "^5.1.3",
+        "mysql2": "^2.3.3",
+        "next": "12.1.6",
+        "react": "18.1.0",
+        "react-awesome-reveal": "^3.8.1",
+        "react-bootstrap": "^2.3.1",
+        "react-dom": "18.1.0",
+        "sequelize": "^6.20.1",
+        "next-auth": "^4.3.4"
+    },
+    "devDependencies": {
+        "@types/node": "17.0.38",
+        "@types/react": "18.0.8",
+        "@types/react-dom": "18.0.3",
+        "eslint": "8.14.0",
+        "eslint-config-next": "12.1.6",
+        "sass": "^1.51.0",
+        "sequelize-cli": "^6.4.1",
+        "typescript": "4.6.4"
+    },
+    "browser": {
+        "fs": false,
+        "path": false,
+        "os": false
+    }
 }
