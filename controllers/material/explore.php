@@ -38,6 +38,14 @@
     }
     // Get the children
     $get_children_id = find_material_type_child($id_selected_mat_type, $list_of_material_type);
+
+
+    // Create a datetime object of the 6 may 2019
+    $startdate= new DateTime("2019-05-06");
+
+    // Get the number of day between the start date and today
+    $interval = date_diff($startdate, new DateTime());
+    $nb_days = $interval->format('%a');
     
     $timespan_type = [
         [
@@ -81,7 +89,7 @@
             "SQL" => "365 DAY",
             "start" => "In the last version",
             "nbr_day" => 365,
-            "date_start" => new DateTime("2022-04-7"),
+            "date_start" => new DateTime("2022-05-19"),
             "wholeday" => 1,
             "show_average" => true
         ],
@@ -90,6 +98,13 @@
             "SQL" => "365 DAY",
             "start" => "In the last 365 days",
             "nbr_day" => 365,
+            "wholeday" => 1
+        ],
+        [
+            "name" => "All time",
+            "SQL" => $nb_days." DAY",
+            "start" => "In the last 365 days",
+            "nbr_day" => $nb_days,
             "wholeday" => 1
         ]
     ];
