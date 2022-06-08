@@ -1,0 +1,25 @@
+.backgroundDiv {
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 100vh;
+}
+
+.backgroundColorTrans {
+  background-color: #282F3FE0;
+  min-height: 100vh;
+}
+
+.footerWarper {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.footerPush {
+  min-height: 100vh;
+}
+
+/*# sourceMappingURL=background.module.css.map */
