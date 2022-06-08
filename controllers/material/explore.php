@@ -67,14 +67,14 @@
             "SQL" => "7",
             "start" => "In the last 7 days",
             "nbr_day" => 7,
-            "wholeday" => 1
+            "wholeday" => 0
         ],
         [
             "name" => "Last 30 day",
             "SQL" => "30",
             "start" => "In the last 30 days",
             "nbr_day" => 30,
-            "wholeday" => 1
+            "wholeday" => 0
         ],/**
         [
             "name" => "Last version",
@@ -92,6 +92,13 @@
             "date_start" => new DateTime("2022-05-19"),
             "wholeday" => 1,
             "show_average" => true
+        ],
+        [
+            "name" => "Last 3 months",
+            "SQL" => "90",
+            "start" => "In the last 3 months",
+            "nbr_day" => 90,
+            "wholeday" => 0
         ],
         [
             "name" => "Last 365 days",
