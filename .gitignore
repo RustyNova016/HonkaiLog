@@ -1,2 +1,4 @@
 /.idea
 .sql
+/node_modules/
+/.next/
