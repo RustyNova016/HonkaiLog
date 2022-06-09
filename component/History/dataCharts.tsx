@@ -1,6 +1,5 @@
 import {Dispatch, SetStateAction, useContext, useState} from "react";
 import {Button, ButtonGroup} from "react-bootstrap";
-import {getChartData} from "../../tools/Charts/ChartTools";
 import {removeDaysFromToday} from "../../tools/miscs";
 import {PageTitle} from "../pageComponents/Theme/Theme";
 import ContentDiv from "../pageComponents/ContentDiv";
@@ -9,8 +8,22 @@ import {IMaterialCountAPIResponse} from "../../pages/api/material/count/[id]";
 import {HistoryContext} from "../../pages/history/[id]";
 import {LoadingComponent} from "../App Components/LoadingComponent";
 
-export function TimestampButton(props: { dayValue: number, label: string, action: Dispatch<SetStateAction<Date>> }) {
-    return <Button onClick={event => props.action(removeDaysFromToday(props.dayValue))}>{props.label}</Button>;
+export function TimestampButton(props: { dayValue: number | null, label: string, action: Dispatch<SetStateAction<Date>> }) {
+    const history = useContext(HistoryContext);
+
+    if (history === undefined) {
+        return <LoadingComponent/>
+    }
+
+    return <Button onClick={
+        event => {
+            if (props.dayValue !== null) {
+                return props.action(removeDaysFromToday(props.dayValue))
+            } else {
+                return props.action(new Date(history.getOldestLog().log_date))
+            }
+        }
+    }>{props.label}</Button>;
 }
 
 export interface DataChartsProps {
@@ -18,7 +31,7 @@ export interface DataChartsProps {
 }
 
 export function DataCharts(props: DataChartsProps) {
-    const [lowerDate, setLowerDate] = useState(removeDaysFromToday(1));
+    const [lowerDate, setLowerDate] = useState<Date>(removeDaysFromToday(1));
     const [upperDate, setUpperDate] = useState(new Date());
     const history = useContext(HistoryContext);
 
@@ -40,12 +53,13 @@ export function DataCharts(props: DataChartsProps) {
             <TimestampButton dayValue={90} label={"90 days"} action={setLowerDate}/>
             <TimestampButton dayValue={180} label={"180 days"} action={setLowerDate}/>
             <TimestampButton dayValue={365} label={"365 days"} action={setLowerDate}/>
+            <TimestampButton dayValue={null} label={"All Time"} action={setLowerDate}/>
         </ButtonGroup>
 
         <p>Showing count from the {lowerDate.toLocaleString()} to {upperDate.toLocaleString()}</p>
 
         <div style={{height: "75vh"}}>
-            <MaterialHistoryGraph series={getChartData(history, lowerDate)}/>
+            <MaterialHistoryGraph series={history.createChartData(lowerDate)}/>
         </div>
     </ContentDiv>;
 }
