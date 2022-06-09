@@ -1,10 +1,9 @@
 import {PointTooltip, ResponsiveLine, Serie} from "@nivo/line";
-import Material from "../../database/material";
-import styles from "./MaterialHistoryGraph.module.scss";
+import {IMaterialDBResponse} from "../../database/material";
 import ContentDiv from "../pageComponents/ContentDiv";
 
 export interface MaterialHistoryGraphProps {
-    material: Material,
+    material: IMaterialDBResponse,
     series: Serie[]
 }
 
