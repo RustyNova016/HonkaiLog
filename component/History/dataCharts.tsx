@@ -15,7 +15,6 @@ export function DataCharts(props: { materialLogs: IMaterialLogs }) {
     const [lowerDate, setLowerDate] = useState(removeDaysFromToday(1));
     const [upperDate, setUpperDate] = useState(new Date());
 
-
     return <ContentDiv sides={true}>
         <PageTitle title={"Data Charts"}></PageTitle>
         <ButtonGroup className="mb-2">
