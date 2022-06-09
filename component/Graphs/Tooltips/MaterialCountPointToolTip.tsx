@@ -1,5 +1,5 @@
 import {PointTooltipProps} from "@nivo/line";
-import ContentDiv from "../../pageComponents/ContentDiv";
+import ContentDiv from "../../Layout/ContentDiv";
 import {useContext} from "react";
 import {LoadingComponent} from "../../App Components/LoadingComponent";
 import {HistoryContext} from "../../pages/History/MaterialHistoryIDData";

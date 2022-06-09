@@ -3,7 +3,7 @@ import styles from '../styles/Home.module.scss'
 import {GenericPageLayout} from "../component/pageComponents/GenericPageLayout";
 import {Fade} from "react-awesome-reveal";
 import {SmallLinkCard} from "../component/pageComponents/smallLinkCard";
-import {PageContainer} from "../component/pageComponents/pageContainer";
+import {PageContainer} from "../component/Layout/pageContainer";
 
 
 const Home: NextPage = () => {

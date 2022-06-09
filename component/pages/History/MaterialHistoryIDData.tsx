@@ -4,7 +4,7 @@ import {useMaterialLogs} from "../../../tools/Database/Data Hooks/useMaterialLog
 import {LoadingComponent} from "../../App Components/LoadingComponent";
 import {Col, Container} from "react-bootstrap";
 import {PageTitle} from "../../pageComponents/Theme/Theme";
-import ContentDiv from "../../pageComponents/ContentDiv";
+import ContentDiv from "../../Layout/ContentDiv";
 import {ErrorBoundary} from "react-error-boundary";
 import {ErrorFallback, ErrorHandler} from "../../App Components/ErrorFallback";
 import {DataCharts} from "./DataCharts";

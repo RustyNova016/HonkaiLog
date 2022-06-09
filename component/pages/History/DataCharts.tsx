@@ -2,7 +2,7 @@ import {Dispatch, SetStateAction, useContext, useState} from "react";
 import {Button, ButtonGroup} from "react-bootstrap";
 import {removeDaysFromToday} from "../../../tools/miscs";
 import {PageTitle} from "../../pageComponents/Theme/Theme";
-import ContentDiv from "../../pageComponents/ContentDiv";
+import ContentDiv from "../../Layout/ContentDiv";
 import {MaterialHistoryGraph} from "./MaterialHistoryGraph";
 import {IMaterialCountAPIResponse} from "../../../pages/api/material/count/[id]";
 import {LoadingComponent} from "../../App Components/LoadingComponent";
