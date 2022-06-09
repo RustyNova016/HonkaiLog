@@ -1,11 +1,10 @@
-import {IMaterialLogs} from "../../pages/api/material/count/[id]";
 import {PointTooltip, ResponsiveLine, Serie} from "@nivo/line";
+import Material from "../../database/material";
+import styles from "./MaterialHistoryGraph.module.scss";
 
 export interface MaterialHistoryGraphProps {
-    logs: IMaterialLogs,
+    material: Material,
     series: Serie[]
-    dateFrom?: Date,
-    dateTo?: Date,
 }
 
 
@@ -13,11 +12,8 @@ export function MaterialHistoryGraph(props: MaterialHistoryGraphProps) {
     const PointToolTip: PointTooltip = (props1) => {
         const date = new Date(props1.point.data.x);
         return (<>
-                <div style={{
-                    color: "white",
-                    backgroundColor: "#2b2b2b"
-                }}>
-                    <p>Count: {props1.point.data.y} {props.logs.name} <br/> {date.toLocaleString()}</p>
+                <div className={styles.PointToolTip}>
+                    <p><>Count: {props1.point.data.y} {props.material.name} <br/> {date.toLocaleString()}</></p>
                 </div>
             </>
 

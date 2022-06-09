@@ -2,6 +2,7 @@ import {DBModel} from "../tools/Database/DBModel";
 import {DataTypes} from "sequelize";
 import sequelize from "../tools/Database/SequelizeConnection";
 import database from "./database";
+import User from "./user";
 
 class Material extends DBModel<Material> {
     declare id: number;
@@ -28,3 +29,8 @@ Material.init({
 })
 
 export default Material;
+
+/** Type of a responce from the API */
+export interface Material_response extends Material {
+
+}

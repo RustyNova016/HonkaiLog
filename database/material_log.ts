@@ -6,6 +6,7 @@ import database from "./database";
 class Material_log extends DBModel<Material_log> {
     declare id: number;
     declare count: number;
+    declare log_date: Date;
 
     static associate(models: typeof database) {
         Material_log.belongsTo(models.Material);
@@ -22,6 +23,10 @@ Material_log.init({
     },
     count: {
         type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    log_date: {
+        type: DataTypes.DATE,
         allowNull: false,
     }
 }, {
