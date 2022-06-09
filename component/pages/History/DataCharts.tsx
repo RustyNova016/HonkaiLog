@@ -39,10 +39,7 @@ export function DataCharts(props: DataChartsProps) {
         return <LoadingComponent/>
     }
 
-    // TODO: All time option
-
-    // TODO: Tell when there's 1, or lower, points
-
+    let series = history.createChartData(lowerDate);
 
     return <ContentDiv sides={true}>
         <PageTitle title={"Data Charts"}></PageTitle>
@@ -58,8 +55,6 @@ export function DataCharts(props: DataChartsProps) {
 
         <p>Showing count from the {lowerDate.toLocaleString()} to {upperDate.toLocaleString()}</p>
 
-        <div style={{height: "75vh"}}>
-            <MaterialHistoryGraph series={history.createChartData(lowerDate)}/>
-        </div>
+        <MaterialHistoryGraph series={series}/>
     </ContentDiv>;
 }
