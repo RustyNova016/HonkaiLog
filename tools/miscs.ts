@@ -8,6 +8,10 @@ export function removeDaysFromToday(days: number): Date {
     return removeDaysFromDate(new Date(), days);
 }
 
-export function toTimestamp(strDate: string) {
-    return Date.parse(strDate);
+export function toTimestamp(date: string|Date) {
+    if (typeof date === "string") {
+         return Date.parse(date);
+    } else {
+        return date.getTime();
+    }
 }

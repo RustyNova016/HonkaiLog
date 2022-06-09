@@ -1,19 +1,26 @@
 import {IMaterialCountAPIResponse} from "../../pages/api/material/count/[id]";
-import {IMaterialLogDBResponse} from "../../database/material_log";
 import {toTimestamp} from "../miscs";
 import {Serie} from "@nivo/line";
-import {convertLogsToChartpoints} from "../Charts/ChartTools";
+import {MaterialHistoryLog} from "./MaterialHistoryLog";
 
-export class MaterialHistory implements IMaterialCountAPIResponse {
-    Material_logs: IMaterialLogDBResponse[];
+export interface IMaterialHistory extends Omit<IMaterialCountAPIResponse, 'Material_logs'> {
+    Material_logs: MaterialHistoryLog[];
+}
+
+export class MaterialHistory implements IMaterialHistory {
+    Material_logs: MaterialHistoryLog[] = [];
     id: number;
     name: string;
 
     constructor(materialCount: IMaterialCountAPIResponse) {
-        // TODO create log class
-        this.Material_logs = materialCount.Material_logs.sort((a: IMaterialLogDBResponse, b: IMaterialLogDBResponse) => {
+        materialCount.Material_logs.map((log) => {
+            this.Material_logs.push(new MaterialHistoryLog(log));
+        })
+
+        this.Material_logs.sort((a, b) => {
             return toTimestamp(a.log_date) - toTimestamp(b.log_date)
-        });
+        })
+
         this.id = materialCount.id;
         this.name = materialCount.name;
     }
@@ -50,3 +57,4 @@ export class MaterialHistory implements IMaterialCountAPIResponse {
         }]
     }
 }
+
