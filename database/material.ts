@@ -4,7 +4,12 @@ import sequelize from "../tools/Database/SequelizeConnection";
 import database from "./database";
 import User from "./user";
 
-class Material extends DBModel<Material> {
+export interface IMaterialDBResponse {
+    id: number;
+    name: string;
+}
+
+class Material extends DBModel<Material> implements IMaterialDBResponse {
     declare id: number;
     declare name: string;
 
@@ -29,8 +34,3 @@ Material.init({
 })
 
 export default Material;
-
-/** Type of a responce from the API */
-export interface Material_response extends Material {
-
-}

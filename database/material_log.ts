@@ -3,10 +3,16 @@ import {DataTypes} from "sequelize";
 import sequelize from "../tools/Database/SequelizeConnection";
 import database from "./database";
 
-class Material_log extends DBModel<Material_log> {
+export interface IMaterialLogDBResponse {
+    id: number;
+    count: number;
+    log_date: string;
+}
+
+class Material_log extends DBModel<Material_log> implements IMaterialLogDBResponse {
     declare id: number;
     declare count: number;
-    declare log_date: Date;
+    declare log_date: string;
 
     static associate(models: typeof database) {
         Material_log.belongsTo(models.Material);

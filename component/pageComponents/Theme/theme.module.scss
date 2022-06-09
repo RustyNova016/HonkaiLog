@@ -1,3 +1,20 @@
+@import "styles/colors";
+
 .pageTitle {
-  color: white;
+  color: $main-text-color;
+  border-color: $main-text-color;
+  border-width: 0px 0px 3px 3px;
+  border-style: solid;
+
+  size: 50px;
+
+  margin: 10px;
+  margin-bottom: 20px;
+  margin-left: 5px;
+
+  padding: 10px;
+  padding-top: 5px;
+  padding-right: 25px;
+
+  width: fit-content;
 }

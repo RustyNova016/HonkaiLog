@@ -3,13 +3,16 @@ import {GenericPageLayout} from "../../component/pageComponents/GenericPageLayou
 import {Navigation} from "../../component/pageComponents/header/Navigation";
 import {useRouter} from "next/router";
 import {useMaterialLogs} from "../../tools/Database/Data Hooks/useMaterialLogs";
-import {Container, Spinner} from "react-bootstrap";
+import {Container} from "react-bootstrap";
 import {PageTitle} from "../../component/pageComponents/Theme/Theme";
 import {DataCharts} from "../../component/History/dataCharts";
 import {ErrorBoundary} from "react-error-boundary";
 import {ErrorFallback, ErrorHandler} from "../../component/App Components/ErrorFallback";
+import ContentDiv from "../../component/pageComponents/ContentDiv";
+import {LoadingComponent} from "../../component/App Components/LoadingComponent";
 
-export default function MatHistoryId() {
+
+export default function MatHistoryIdPageContainer() {
     const session = useSession();
     const router = useRouter()
 
@@ -27,37 +30,43 @@ export default function MatHistoryId() {
         id = "1";
     }
 
+    return <>
+        <GenericPageLayout pushFooter={false}>
+            <Navigation/>
+            <MatHistoryDataLayer MaterialID={parseInt(id)}/>
+        </GenericPageLayout>
+    </>
+}
 
-    let id1 = parseInt(id);
-    const {isError, isLoading, materialLogs} = useMaterialLogs(id1);
+export interface MatHistoryIdPageProps {
+    MaterialID: number;
+}
 
-    console.log({isError, isLoading, materialLogs})
 
+export function MatHistoryDataLayer(props: MatHistoryIdPageProps) {
+    const {isError, isLoading, materialLogs} = useMaterialLogs(props.MaterialID);
 
-    if (isLoading) {
-        return <div><Spinner animation="border"/>Loading...</div>;
+    if (isLoading || materialLogs === undefined) {
+        return <LoadingComponent/>;
     }
 
     if (isError) {
         return <div>Error!</div>;
     }
 
-    if (materialLogs === undefined) {
-        return <div>No logs?</div>;
-    }
-
     return <>
-        <GenericPageLayout pushFooter={false}>
-            <Navigation/>
-            <Container>
-                <PageTitle title={materialLogs.name + " history"}></PageTitle>
 
-                <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
-                    <DataCharts materialLogs={materialLogs}/>
-                </ErrorBoundary>
+        <Container>
+            <PageTitle title={materialLogs.name + " history"}></PageTitle>
 
-            </Container>
-        </GenericPageLayout>
+            <ContentDiv sides={true}>
+                <p>You have {}</p>
+            </ContentDiv>
+
+            <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
+                <DataCharts materialLogs={materialLogs}/>
+            </ErrorBoundary>
+
+        </Container>
     </>
 }
-

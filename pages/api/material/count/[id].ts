@@ -1,10 +1,10 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import database from "../../../../database/database";
-import Material from "../../../../database/material";
-import Material_log from "../../../../database/material_log";
+import {IMaterialDBResponse} from "../../../../database/material";
+import {IMaterialLogDBResponse} from "../../../../database/material_log";
 
-export interface IMaterialLogs extends Material {
-    Material_logs: Material_log[];
+export interface IMaterialCountAPIResponse extends IMaterialDBResponse {
+    Material_logs: IMaterialLogDBResponse[];
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

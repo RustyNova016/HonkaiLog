@@ -1,8 +1,8 @@
-import {IMaterialLogs} from "../../pages/api/material/count/[id]";
+import {IMaterialCountResponse} from "../../pages/api/material/count/[id]";
 import {Serie} from "@nivo/line";
 import {toTimestamp} from "../miscs";
 
-export function convertLogsToChartpoints(logs: IMaterialLogs, dateLowerBound: Date, dateUpperBound: Date) {
+export function convertLogsToChartpoints(logs: IMaterialCountResponse, dateLowerBound: Date, dateUpperBound: Date) {
     const countData: { x: number, y: number }[] = [];
 
     logs.Material_logs.forEach(log => {
@@ -20,7 +20,7 @@ export function convertLogsToChartpoints(logs: IMaterialLogs, dateLowerBound: Da
     }]
 }
 
-export function getChartData(logs: IMaterialLogs, dateFrom?: Date, dateTo?: Date): Serie[] {
+export function getChartData(logs: IMaterialCountResponse, dateFrom?: Date, dateTo?: Date): Serie[] {
     const dateLowerBound = dateFrom || new Date(logs.Material_logs[0].log_date);
     const dateUpperBound = dateTo || new Date(logs.Material_logs[logs.Material_logs.length - 1].log_date);
 

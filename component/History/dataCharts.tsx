@@ -1,7 +1,7 @@
 import {Dispatch, SetStateAction, useState} from "react";
 import {Button, ButtonGroup} from "react-bootstrap";
 import {getChartData} from "../../tools/Charts/ChartTools";
-import {IMaterialLogs} from "../../pages/api/material/count/[id]";
+import {IMaterialCountResponse} from "../../pages/api/material/count/[id]";
 import {removeDaysFromToday} from "../../tools/miscs";
 import {PageTitle} from "../pageComponents/Theme/Theme";
 import ContentDiv from "../pageComponents/ContentDiv";
@@ -11,7 +11,7 @@ export function TimestampButton(props: { dayValue: number, label: string, action
     return <Button onClick={event => props.action(removeDaysFromToday(props.dayValue))}>{props.label}</Button>;
 }
 
-export function DataCharts(props: { materialLogs: IMaterialLogs }) {
+export function DataCharts(props: { materialLogs: IMaterialCountResponse }) {
     const [lowerDate, setLowerDate] = useState(removeDaysFromToday(1));
     const [upperDate, setUpperDate] = useState(new Date());
 
