@@ -1,19 +1,35 @@
-import {Dispatch, SetStateAction, useState} from "react";
+import {Dispatch, SetStateAction, useContext, useState} from "react";
 import {Button, ButtonGroup} from "react-bootstrap";
 import {getChartData} from "../../tools/Charts/ChartTools";
 import {removeDaysFromToday} from "../../tools/miscs";
 import {PageTitle} from "../pageComponents/Theme/Theme";
 import ContentDiv from "../pageComponents/ContentDiv";
-import {MaterialHistoryGraph} from "./materialHistoryGraph";
+import {MaterialHistoryGraph} from "./MaterialHistoryGraph";
 import {IMaterialCountAPIResponse} from "../../pages/api/material/count/[id]";
+import {HistoryContext} from "../../pages/history/[id]";
+import {LoadingComponent} from "../App Components/LoadingComponent";
 
 export function TimestampButton(props: { dayValue: number, label: string, action: Dispatch<SetStateAction<Date>> }) {
     return <Button onClick={event => props.action(removeDaysFromToday(props.dayValue))}>{props.label}</Button>;
 }
 
-export function DataCharts(props: { materialLogs: IMaterialCountAPIResponse }) {
+export interface DataChartsProps {
+    materialLogs: IMaterialCountAPIResponse;
+}
+
+export function DataCharts(props: DataChartsProps) {
     const [lowerDate, setLowerDate] = useState(removeDaysFromToday(1));
     const [upperDate, setUpperDate] = useState(new Date());
+    const history = useContext(HistoryContext);
+
+    if (history === undefined) {
+        return <LoadingComponent/>
+    }
+
+    // TODO: All time option
+
+    // TODO: Tell when there's 1, or lower, points
+
 
     return <ContentDiv sides={true}>
         <PageTitle title={"Data Charts"}></PageTitle>
@@ -29,9 +45,7 @@ export function DataCharts(props: { materialLogs: IMaterialCountAPIResponse }) {
         <p>Showing count from the {lowerDate.toLocaleString()} to {upperDate.toLocaleString()}</p>
 
         <div style={{height: "75vh"}}>
-            <MaterialHistoryGraph
-                material={props.materialLogs}
-                series={getChartData(props.materialLogs, lowerDate)}/>
+            <MaterialHistoryGraph series={getChartData(history, lowerDate)}/>
         </div>
     </ContentDiv>;
 }

@@ -3,16 +3,18 @@ import {GenericPageLayout} from "../../component/pageComponents/GenericPageLayou
 import {Navigation} from "../../component/pageComponents/header/Navigation";
 import {useRouter} from "next/router";
 import {useMaterialLogs} from "../../tools/Database/Data Hooks/useMaterialLogs";
-import {Container} from "react-bootstrap";
+import {Col, Container} from "react-bootstrap";
 import {PageTitle} from "../../component/pageComponents/Theme/Theme";
 import {DataCharts} from "../../component/History/dataCharts";
 import {ErrorBoundary} from "react-error-boundary";
 import {ErrorFallback, ErrorHandler} from "../../component/App Components/ErrorFallback";
 import ContentDiv from "../../component/pageComponents/ContentDiv";
 import {LoadingComponent} from "../../component/App Components/LoadingComponent";
+import {MaterialHistory} from "../../tools/Database/MaterialHistory";
+import {createContext} from "react";
 
 
-export default function MatHistoryIdPageContainer() {
+export default function MaterialHistoryIDPage() {
     const session = useSession();
     const router = useRouter()
 
@@ -42,6 +44,8 @@ export interface MatHistoryIdPageProps {
     MaterialID: number;
 }
 
+export const HistoryContext = createContext<MaterialHistory|undefined>(undefined as MaterialHistory | undefined);
+
 
 export function MatHistoryDataLayer(props: MatHistoryIdPageProps) {
     const {isError, isLoading, materialLogs} = useMaterialLogs(props.MaterialID);
@@ -54,19 +58,25 @@ export function MatHistoryDataLayer(props: MatHistoryIdPageProps) {
         return <div>Error!</div>;
     }
 
+    const history = new MaterialHistory(materialLogs);
+
     return <>
+        <HistoryContext.Provider value={history}>
+            <Container>
+                <PageTitle title={materialLogs.name + " history"}></PageTitle>
 
-        <Container>
-            <PageTitle title={materialLogs.name + " history"}></PageTitle>
+                <ContentDiv sides={true}>
+                    <Col>
+                        <p>You have currently have {history.getCurrentCount()} {history.name}</p>
+                    </Col>
 
-            <ContentDiv sides={true}>
-                <p>You have {}</p>
-            </ContentDiv>
+                </ContentDiv>
 
-            <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
-                <DataCharts materialLogs={materialLogs}/>
-            </ErrorBoundary>
+                <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
+                    <DataCharts materialLogs={materialLogs}/>
+                </ErrorBoundary>
 
-        </Container>
+            </Container>
+        </HistoryContext.Provider>
     </>
 }

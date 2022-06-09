@@ -1,24 +1,11 @@
-import {PointTooltip, ResponsiveLine, Serie} from "@nivo/line";
-import {IMaterialDBResponse} from "../../database/material";
-import ContentDiv from "../pageComponents/ContentDiv";
+import {ResponsiveLine, Serie} from "@nivo/line";
+import {MaterialCountPointToolTip} from "../Graphs/Tooltips/MaterialCountPointToolTip";
 
 export interface MaterialHistoryGraphProps {
-    material: IMaterialDBResponse,
     series: Serie[]
 }
 
-
 export function MaterialHistoryGraph(props: MaterialHistoryGraphProps) {
-    const PointToolTip: PointTooltip = (props1) => {
-        const date = new Date(props1.point.data.x);
-        return (<>
-                <ContentDiv sides={true}>
-                    <p><>Count: {props1.point.data.y} {props.material.name} <br/> {date.toLocaleString()}</>
-                    </p>
-                </ContentDiv>
-            </>
-        )
-    };
 
     return <ResponsiveLine
         data={props.series}
@@ -63,7 +50,7 @@ export function MaterialHistoryGraph(props: MaterialHistoryGraphProps) {
         enableArea={true}
         areaOpacity={0.15}
         useMesh={true}
-        tooltip={PointToolTip}
+        tooltip={MaterialCountPointToolTip}
         legends={[
             {
                 anchor: 'bottom-right',
