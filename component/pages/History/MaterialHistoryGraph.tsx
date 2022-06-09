@@ -1,5 +1,5 @@
 import {ResponsiveLine, Serie} from "@nivo/line";
-import {MaterialCountPointToolTip} from "../Graphs/Tooltips/MaterialCountPointToolTip";
+import {MaterialCountPointToolTip} from "../../Graphs/Tooltips/MaterialCountPointToolTip";
 
 export interface MaterialHistoryGraphProps {
     series: Serie[]

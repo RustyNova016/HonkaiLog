@@ -1,12 +1,12 @@
 import {Dispatch, SetStateAction, useContext, useState} from "react";
 import {Button, ButtonGroup} from "react-bootstrap";
-import {removeDaysFromToday} from "../../tools/miscs";
-import {PageTitle} from "../pageComponents/Theme/Theme";
-import ContentDiv from "../pageComponents/ContentDiv";
+import {removeDaysFromToday} from "../../../tools/miscs";
+import {PageTitle} from "../../pageComponents/Theme/Theme";
+import ContentDiv from "../../pageComponents/ContentDiv";
 import {MaterialHistoryGraph} from "./MaterialHistoryGraph";
-import {IMaterialCountAPIResponse} from "../../pages/api/material/count/[id]";
-import {HistoryContext} from "../../pages/history/[id]";
-import {LoadingComponent} from "../App Components/LoadingComponent";
+import {IMaterialCountAPIResponse} from "../../../pages/api/material/count/[id]";
+import {LoadingComponent} from "../../App Components/LoadingComponent";
+import {HistoryContext} from "./MaterialHistoryIDData";
 
 export function TimestampButton(props: { dayValue: number | null, label: string, action: Dispatch<SetStateAction<Date>> }) {
     const history = useContext(HistoryContext);

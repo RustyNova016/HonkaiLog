@@ -1,8 +1,8 @@
 import {PointTooltipProps} from "@nivo/line";
 import ContentDiv from "../../pageComponents/ContentDiv";
-import {HistoryContext} from "../../../pages/history/[id]";
 import {useContext} from "react";
 import {LoadingComponent} from "../../App Components/LoadingComponent";
+import {HistoryContext} from "../../pages/History/MaterialHistoryIDData";
 
 export function MaterialCountPointToolTip(props: PointTooltipProps) {
     const history = useContext(HistoryContext);
