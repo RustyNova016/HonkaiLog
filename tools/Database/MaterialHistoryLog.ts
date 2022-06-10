@@ -14,4 +14,8 @@ export class MaterialHistoryLog implements IMaterialHistoryLog {
         this.log_date = new Date(materialLog.log_date);
         this.count = materialLog.count;
     }
+
+    static getDelta(log1: MaterialHistoryLog, log2: MaterialHistoryLog): number {
+        return log2.count - log1.count;
+    }
 }

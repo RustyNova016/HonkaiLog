@@ -44,7 +44,27 @@ export class MaterialHistory implements IMaterialHistory {
         return this.Material_logs[0];
     }
 
-    createCountGraphData(dateFrom?: Date, dateTo?: Date): Serie[] {
+    getGraphData(graphType: GraphType, dateFrom?: Date, dateTo?: Date): Serie[] {
+        switch (graphType) {
+            case "count":
+                return this.generateCountGraphData(dateFrom, dateTo);
+
+            case "gains":
+                return this.generateAnalyticGraphData(dateFrom, dateTo);
+
+            default:
+                return [];
+        }
+    }
+
+    /** Returns the timeframe of the history. If no date is given, the timeframe is from the oldest log to the latest log.*/
+    private getTimeframe(dateFrom: Date | undefined, dateTo: Date | undefined) {
+        const dateLowerBound = dateFrom || this.getOldestLog().log_date;
+        const dateUpperBound = dateTo || this.getLatestLog().log_date;
+        return {dateLowerBound, dateUpperBound};
+    }
+
+    private generateCountGraphData(dateFrom?: Date, dateTo?: Date): Serie[] {
         let getCountDatum: DatumConstructor = (dateLowerBound, dateUpperBound) => {
             const countData: LogDatum[] = [];
 
@@ -65,9 +85,8 @@ export class MaterialHistory implements IMaterialHistory {
         return [this.createSeries("count", getCountDatum, dateFrom, dateTo)];
     }
 
-    createSeries(name: string, data: DatumConstructor, dateFrom?: Date, dateTo?: Date): Serie {
-        const dateLowerBound = dateFrom || this.getOldestLog().log_date;
-        const dateUpperBound = dateTo || this.getLatestLog().log_date;
+    private createSeries(name: string, data: DatumConstructor, dateFrom?: Date, dateTo?: Date): Serie {
+        const {dateLowerBound, dateUpperBound} = this.getTimeframe(dateFrom, dateTo);
 
         return {
             id: name,
@@ -75,12 +94,82 @@ export class MaterialHistory implements IMaterialHistory {
         }
     }
 
-    getGraphData(graphType: GraphType, dateFrom?: Date, dateTo?: Date): Serie[] {
-        switch (graphType) {
-            case "count":
-                return this.createCountGraphData(dateFrom, dateTo);
-            default:
-                return [];
+    private generateAnalyticGraphData(dateFrom?: Date, dateTo?: Date): Serie[] {
+        const generateDeltaDatum: DatumConstructor = (dateLowerBound, dateUpperBound) => {
+            const deltaData: LogDatum[] = [];
+
+            this.Material_logs.forEach((log, index) => {
+                if (index === 0) {
+                    return;
+                }
+
+                if (new Date(log.log_date) >= dateLowerBound && new Date(log.log_date) <= dateUpperBound) {
+                    deltaData.push(
+                        {
+                            x: toTimestamp(log.log_date),
+                            y: MaterialHistoryLog.getDelta(this.Material_logs[index - 1], log)
+                        }
+                    )
+                }
+            })
+
+            return deltaData;
         }
+        const generateGainDatum: DatumConstructor = (dateLowerBound, dateUpperBound) => {
+            const gainData: LogDatum[] = [];
+
+            this.Material_logs.forEach((log, index) => {
+                if (index === 0) {
+                    return;
+                }
+
+                if (new Date(log.log_date) >= dateLowerBound && new Date(log.log_date) <= dateUpperBound) {
+                    let delta = MaterialHistoryLog.getDelta(this.Material_logs[index - 1], log);
+                    if (delta < 0) {
+                        delta = 0;
+                    }
+
+                    gainData.push(
+                        {
+                            x: toTimestamp(log.log_date),
+                            y: delta
+                        }
+                    )
+                }
+            })
+
+            return gainData;
+        }
+        const generateLossDatum: DatumConstructor = (dateLowerBound, dateUpperBound) => {
+            const lossData: LogDatum[] = [];
+
+            this.Material_logs.forEach((log, index) => {
+                if (index === 0) {
+                    return;
+                }
+
+                if (new Date(log.log_date) >= dateLowerBound && new Date(log.log_date) <= dateUpperBound) {
+                    let delta = MaterialHistoryLog.getDelta(this.Material_logs[index - 1], log);
+                    if (delta > 0) {
+                        delta = 0;
+                    }
+
+                    lossData.push(
+                        {
+                            x: toTimestamp(log.log_date),
+                            y: delta
+                        }
+                    )
+                }
+            })
+
+            return lossData;
+        }
+
+        return [
+            this.createSeries("Delta", generateDeltaDatum, dateFrom, dateTo),
+            this.createSeries("Gains", generateGainDatum, dateFrom, dateTo),
+            this.createSeries("Losses", generateLossDatum, dateFrom, dateTo),
+        ];
     }
 }
