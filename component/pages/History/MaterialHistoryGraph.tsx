@@ -1,15 +1,19 @@
 import {ResponsiveLine, Serie} from "@nivo/line";
 import {MaterialCountPointToolTip} from "../../Graphs/Tooltips/MaterialCountPointToolTip";
+import {Alert} from "react-bootstrap";
 
 export interface MaterialHistoryGraphProps {
     series: Serie[]
 }
 
+function NoDataErrorComponent() {
+    return <Alert variant={"danger"} style={{margin: "10px"}}>No data to display.</Alert>;
+}
+
 export function MaterialHistoryGraph(props: MaterialHistoryGraphProps) {
-    console.log(props.series)
-    if (props.series[0].data.length < 2) {
-        return <p>No data to display</p>
-    }
+    if (props.series === undefined) { return <NoDataErrorComponent/> }
+    if (props.series.length === 0) { return <NoDataErrorComponent/> }
+    if (props.series[0]?.data.length < 2) { return <NoDataErrorComponent/> }
 
     return <div style={{height: "75vh"}}>
         <ResponsiveLine

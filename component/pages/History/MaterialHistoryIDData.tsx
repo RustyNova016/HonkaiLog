@@ -52,7 +52,7 @@ export function MaterialHistoryIDData(props: MaterialHistoryIDDataProps) {
                 </ContentDiv>
 
                 <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
-                    <DataCharts materialLogs={materialLogs}/>
+                    <DataCharts/>
                 </ErrorBoundary>
 
             </Container>

@@ -1,60 +1,44 @@
-import {Dispatch, SetStateAction, useContext, useState} from "react";
-import {Button, ButtonGroup} from "react-bootstrap";
+import {useContext, useState} from "react";
+import {Col, Row} from "react-bootstrap";
 import {removeDaysFromToday} from "../../../tools/miscs";
 import {PageTitle} from "../../pageComponents/Theme/Theme";
 import ContentDiv from "../../Layout/ContentDiv";
 import {MaterialHistoryGraph} from "./MaterialHistoryGraph";
-import {IMaterialCountAPIResponse} from "../../../pages/api/material/count/[id]";
 import {LoadingComponent} from "../../App Components/LoadingComponent";
 import {HistoryContext} from "./MaterialHistoryIDData";
-
-export function TimestampButton(props: { dayValue: number | null, label: string, action: Dispatch<SetStateAction<Date>> }) {
-    const history = useContext(HistoryContext);
-
-    if (history === undefined) {
-        return <LoadingComponent/>
-    }
-
-    return <Button onClick={
-        event => {
-            if (props.dayValue !== null) {
-                return props.action(removeDaysFromToday(props.dayValue))
-            } else {
-                return props.action(new Date(history.getOldestLog().log_date))
-            }
-        }
-    }>{props.label}</Button>;
-}
+import {TimeFrameSelect} from "./TimeFrameSelect";
+import {SelectGraphType} from "./SelectGraphType";
 
 export interface DataChartsProps {
-    materialLogs: IMaterialCountAPIResponse;
 }
 
+export type GraphType = "count" | "gains";
+
 export function DataCharts(props: DataChartsProps) {
-    const [lowerDate, setLowerDate] = useState<Date>(removeDaysFromToday(1));
-    const [upperDate, setUpperDate] = useState(new Date());
     const history = useContext(HistoryContext);
 
     if (history === undefined) {
         return <LoadingComponent/>
     }
 
-    let series = history.createChartData(lowerDate);
+    const [lowerDate, setLowerDate] = useState<Date>(removeDaysFromToday(1));
+    const [upperDate, setUpperDate] = useState(new Date());
+    const [graphType, setGraphType] = useState<GraphType>("count");
 
     return <ContentDiv sides={true}>
         <PageTitle title={"Data Charts"}></PageTitle>
-        <ButtonGroup className="mb-2">
-            <TimestampButton dayValue={1} label={"1 day"} action={setLowerDate}/>
-            <TimestampButton dayValue={7} label={"7 days"} action={setLowerDate}/>
-            <TimestampButton dayValue={30} label={"30 days"} action={setLowerDate}/>
-            <TimestampButton dayValue={90} label={"90 days"} action={setLowerDate}/>
-            <TimestampButton dayValue={180} label={"180 days"} action={setLowerDate}/>
-            <TimestampButton dayValue={365} label={"365 days"} action={setLowerDate}/>
-            <TimestampButton dayValue={null} label={"All Time"} action={setLowerDate}/>
-        </ButtonGroup>
+        <Row>
+            <Col lg={6}>
+                <TimeFrameSelect dateHook={setLowerDate}/>
+            </Col>
+            <Col lg={6}>
+                <SelectGraphType graphTypeHook={setGraphType} history={history}/>
+            </Col>
+        </Row>
+
 
         <p>Showing count from the {lowerDate.toLocaleString()} to {upperDate.toLocaleString()}</p>
 
-        <MaterialHistoryGraph series={series}/>
+        <MaterialHistoryGraph series={history.getGraphData(graphType, lowerDate, upperDate)}/>
     </ContentDiv>;
 }
