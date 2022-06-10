@@ -2,7 +2,7 @@ import {createContext} from "react";
 import {MaterialHistory} from "../../../tools/Database/MaterialHistory";
 import {useMaterialLogs} from "../../../tools/Database/Data Hooks/useMaterialLogs";
 import {LoadingComponent} from "../../App Components/LoadingComponent";
-import {Col, Container} from "react-bootstrap";
+import {Button, Col, Container, FormControl, InputGroup, Row} from "react-bootstrap";
 import {PageTitle} from "../../pageComponents/Theme/Theme";
 import ContentDiv from "../../Layout/ContentDiv";
 import {ErrorBoundary} from "react-error-boundary";
@@ -34,9 +34,20 @@ export function MaterialHistoryIDData(props: MaterialHistoryIDDataProps) {
                 <PageTitle title={materialLogs.name + " history"}></PageTitle>
 
                 <ContentDiv sides={true}>
-                    <Col>
-                        <p>You have currently have {history.getCurrentCount()} {history.name}</p>
-                    </Col>
+                    <PageTitle title={materialLogs.name + " count"}></PageTitle>
+                    <Row>
+                        <Col lg={6}>
+                            <p>You have currently have {history.getCurrentCount()} {history.name}</p>
+                        </Col>
+                        <Col lg={6}>
+                            <InputGroup className="mb-3">
+                                <FormControl value={history.getCurrentCount()}></FormControl>
+                                <Button id="button-addon2">
+                                    Save
+                                </Button>
+                            </InputGroup>
+                        </Col>
+                    </Row>
 
                 </ContentDiv>
 
