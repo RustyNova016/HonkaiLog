@@ -3,9 +3,10 @@ import {toTimestamp} from "../miscs";
 import {Serie} from "@nivo/line";
 import {MaterialHistoryLog} from "./MaterialHistoryLog";
 import {GraphType} from "../../component/pages/History/DataCharts";
+import {MaterialHistoryLogCollection} from "./MaterialHistoryLogCollection";
 
 export interface IMaterialHistory extends Omit<IMaterialCountAPIResponse, 'Material_logs'> {
-    Material_logs: MaterialHistoryLog[];
+    material_logs: MaterialHistoryLog[];
 }
 
 export type DatumConstructor = (dateLowerBound: Date, dateUpperBound: Date) => LogDatum[]
@@ -14,34 +15,15 @@ export type LogDatum = {
     y: number;
 }
 
-export class MaterialHistory implements IMaterialHistory {
-    Material_logs: MaterialHistoryLog[] = [];
+export class MaterialHistory extends MaterialHistoryLogCollection implements IMaterialHistory {
     id: number;
     name: string;
 
     constructor(materialCount: IMaterialCountAPIResponse) {
-        materialCount.Material_logs.map((log) => {
-            this.Material_logs.push(new MaterialHistoryLog(log));
-        })
-
-        this.Material_logs.sort((a, b) => {
-            return toTimestamp(a.log_date) - toTimestamp(b.log_date)
-        })
+        super(MaterialHistoryLogCollection.DBResponseToLogCollection(materialCount.Material_logs));
 
         this.id = materialCount.id;
         this.name = materialCount.name;
-    }
-
-    getCurrentCount(): number {
-        return this.getLatestLog().count;
-    }
-
-    getLatestLog() {
-        return this.Material_logs[this.Material_logs.length - 1];
-    }
-
-    getOldestLog() {
-        return this.Material_logs[0];
     }
 
     getGraphData(graphType: GraphType, dateFrom?: Date, dateTo?: Date): Serie[] {
@@ -50,25 +32,70 @@ export class MaterialHistory implements IMaterialHistory {
                 return this.generateCountGraphData(dateFrom, dateTo);
 
             case "gains":
-                return this.generateAnalyticGraphData(dateFrom, dateTo);
+                return this.generateGainsGraphData(dateFrom, dateTo);
+
+            case "averages":
+                return this.generateAveragesGraphData(dateFrom, dateTo);
 
             default:
                 return [];
         }
     }
 
-    /** Returns the timeframe of the history. If no date is given, the timeframe is from the oldest log to the latest log.*/
-    private getTimeframe(dateFrom: Date | undefined, dateTo: Date | undefined) {
-        const dateLowerBound = dateFrom || this.getOldestLog().log_date;
-        const dateUpperBound = dateTo || this.getLatestLog().log_date;
-        return {dateLowerBound, dateUpperBound};
+    private createSeries(name: string, data: DatumConstructor, dateFrom?: Date, dateTo?: Date): Serie {
+        const {dateLowerBound, dateUpperBound} = this.getTimeframe(dateFrom, dateTo);
+
+        return {
+            id: name,
+            data: data(dateLowerBound, dateUpperBound).sort((a, b) => a.x - b.x)
+        }
+    }
+
+    private generateAveragesGraphData(dateFrom?: Date, dateTo?: Date): Serie[] {
+        const generateAverageDeltaDatum: DatumConstructor = (dateLowerBound, dateUpperBound) => {
+            const averageData: LogDatum[] = [];
+            const logs = this.getLogsBetween(dateLowerBound, dateUpperBound);
+
+            logs.material_logs.forEach((log, index) => {
+                if (index === 0) {return;} // Cannot apply average to first log
+
+                averageData.push({
+                    x: toTimestamp(log.log_date),
+                    y: logs.getAverageDeltaOfPeriod(dateLowerBound, log.log_date)
+                })
+            })
+
+            return averageData;
+        };
+
+        const generateAverageGainDatum: DatumConstructor = (dateLowerBound, dateUpperBound) => {
+            const averageData: LogDatum[] = [];
+            const logs = this.getLogsBetween(dateLowerBound, dateUpperBound);
+
+
+            logs.material_logs.forEach((log, index) => {
+                if (index === 0) {return;} // Cannot apply average to first log
+
+                averageData.push({
+                    x: toTimestamp(log.log_date),
+                    y: logs.getAverageGainOfPeriod(dateLowerBound, log.log_date)
+                })
+            })
+
+            return averageData;
+        };
+
+        return [
+            //this.createSeries("Average Delta", generateAverageDeltaDatum, dateFrom, dateTo),
+            this.createSeries("Average Gain", generateAverageGainDatum, dateFrom, dateTo)
+        ];
     }
 
     private generateCountGraphData(dateFrom?: Date, dateTo?: Date): Serie[] {
         let getCountDatum: DatumConstructor = (dateLowerBound, dateUpperBound) => {
             const countData: LogDatum[] = [];
 
-            this.Material_logs.forEach((log) => {
+            this.material_logs.forEach((log) => {
                 if (new Date(log.log_date) >= dateLowerBound && new Date(log.log_date) <= dateUpperBound) {
                     countData.push(
                         {
@@ -85,20 +112,12 @@ export class MaterialHistory implements IMaterialHistory {
         return [this.createSeries("count", getCountDatum, dateFrom, dateTo)];
     }
 
-    private createSeries(name: string, data: DatumConstructor, dateFrom?: Date, dateTo?: Date): Serie {
-        const {dateLowerBound, dateUpperBound} = this.getTimeframe(dateFrom, dateTo);
-
-        return {
-            id: name,
-            data: data(dateLowerBound, dateUpperBound).sort((a, b) => a.x - b.x)
-        }
-    }
-
-    private generateAnalyticGraphData(dateFrom?: Date, dateTo?: Date): Serie[] {
+    //TODO: Redo this
+    private generateGainsGraphData(dateFrom?: Date, dateTo?: Date): Serie[] {
         const generateDeltaDatum: DatumConstructor = (dateLowerBound, dateUpperBound) => {
             const deltaData: LogDatum[] = [];
 
-            this.Material_logs.forEach((log, index) => {
+            this.material_logs.forEach((log, index) => {
                 if (index === 0) {
                     return;
                 }
@@ -107,7 +126,7 @@ export class MaterialHistory implements IMaterialHistory {
                     deltaData.push(
                         {
                             x: toTimestamp(log.log_date),
-                            y: MaterialHistoryLog.getDelta(this.Material_logs[index - 1], log)
+                            y: MaterialHistoryLog.getDelta(this.material_logs[index - 1], log)
                         }
                     )
                 }
@@ -118,13 +137,13 @@ export class MaterialHistory implements IMaterialHistory {
         const generateGainDatum: DatumConstructor = (dateLowerBound, dateUpperBound) => {
             const gainData: LogDatum[] = [];
 
-            this.Material_logs.forEach((log, index) => {
+            this.material_logs.forEach((log, index) => {
                 if (index === 0) {
                     return;
                 }
 
                 if (new Date(log.log_date) >= dateLowerBound && new Date(log.log_date) <= dateUpperBound) {
-                    let delta = MaterialHistoryLog.getDelta(this.Material_logs[index - 1], log);
+                    let delta = MaterialHistoryLog.getDelta(this.material_logs[index - 1], log);
                     if (delta < 0) {
                         delta = 0;
                     }
@@ -143,13 +162,13 @@ export class MaterialHistory implements IMaterialHistory {
         const generateLossDatum: DatumConstructor = (dateLowerBound, dateUpperBound) => {
             const lossData: LogDatum[] = [];
 
-            this.Material_logs.forEach((log, index) => {
+            this.material_logs.forEach((log, index) => {
                 if (index === 0) {
                     return;
                 }
 
                 if (new Date(log.log_date) >= dateLowerBound && new Date(log.log_date) <= dateUpperBound) {
-                    let delta = MaterialHistoryLog.getDelta(this.Material_logs[index - 1], log);
+                    let delta = MaterialHistoryLog.getDelta(this.material_logs[index - 1], log);
                     if (delta > 0) {
                         delta = 0;
                     }
@@ -172,4 +191,6 @@ export class MaterialHistory implements IMaterialHistory {
             this.createSeries("Losses", generateLossDatum, dateFrom, dateTo),
         ];
     }
+
+
 }

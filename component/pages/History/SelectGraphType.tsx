@@ -20,6 +20,10 @@ export function SelectGraphType(props: SelectGraphTypeProps) {
                 props.graphTypeHook("gains")
             }}>{props.history.name} gains
             </option>
+            <option onClick={() => {
+                props.graphTypeHook("averages")
+            }}>{props.history.name} averages
+            </option>
         </Form.Select>
     </>;
 }

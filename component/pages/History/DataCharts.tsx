@@ -12,7 +12,7 @@ import {SelectGraphType} from "./SelectGraphType";
 export interface DataChartsProps {
 }
 
-export type GraphType = "count" | "gains";
+export type GraphType = "count" | "gains" | "averages";
 
 export function DataCharts(props: DataChartsProps) {
     const history = useContext(HistoryContext);
