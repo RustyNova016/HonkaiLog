@@ -3,7 +3,7 @@ import {MaterialHistory} from "../../../tools/Database/MaterialHistory";
 import {useMaterialLogs} from "../../../tools/Database/Data Hooks/useMaterialLogs";
 import {LoadingComponent} from "../../App Components/LoadingComponent";
 import {Button, Col, Container, FormControl, InputGroup, Row} from "react-bootstrap";
-import {PageTitle} from "../../pageComponents/Theme/Theme";
+import {SectionTitle} from "../../pageComponents/Theme/Theme";
 import ContentDiv from "../../Layout/ContentDiv";
 import {ErrorBoundary} from "react-error-boundary";
 import {ErrorFallback, ErrorHandler} from "../../App Components/ErrorFallback";
@@ -31,10 +31,10 @@ export function MaterialHistoryIDData(props: MaterialHistoryIDDataProps) {
     return <>
         <HistoryContext.Provider value={history}>
             <Container>
-                <PageTitle title={materialLogs.name + " history"}></PageTitle>
+                <SectionTitle title={materialLogs.name + " history"}></SectionTitle>
 
                 <ContentDiv sides={true}>
-                    <PageTitle title={materialLogs.name + " count"}></PageTitle>
+                    <SectionTitle title={materialLogs.name + " count"}></SectionTitle>
                     <Row>
                         <Col lg={6}>
                             <p>You have currently have {history.getCurrentCount()} {history.name}</p>

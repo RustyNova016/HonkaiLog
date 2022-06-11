@@ -1,4 +1,4 @@
-import styles from "./PageContainer.module.scss";
+import styles from "./CSS/PageContainer.module.scss";
 
 export function PageContainer(props: { children: React.ReactNode }) {
     return (

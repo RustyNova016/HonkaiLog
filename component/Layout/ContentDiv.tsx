@@ -1,5 +1,5 @@
 import {PropsWithChildren} from "react";
-import styles from "./ContentDiv.module.scss";
+import styles from "./CSS/ContentDiv.module.scss";
 
 interface IContentDivProps {
     top?: boolean;

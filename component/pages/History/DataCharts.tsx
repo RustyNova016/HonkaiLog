@@ -1,7 +1,7 @@
 import {useContext, useState} from "react";
 import {Col, Row} from "react-bootstrap";
 import {removeDaysFromToday} from "../../../tools/miscs";
-import {PageTitle} from "../../pageComponents/Theme/Theme";
+import {SectionTitle} from "../../pageComponents/Theme/Theme";
 import ContentDiv from "../../Layout/ContentDiv";
 import {MaterialHistoryGraph} from "./MaterialHistoryGraph";
 import {LoadingComponent} from "../../App Components/LoadingComponent";
@@ -26,7 +26,7 @@ export function DataCharts(props: DataChartsProps) {
     const [graphType, setGraphType] = useState<GraphType>("count");
 
     return <ContentDiv sides={true}>
-        <PageTitle title={"Data Charts"}></PageTitle>
+        <SectionTitle title={"Data Charts"}></SectionTitle>
         <Row>
             <Col lg={6}>
                 <TimeFrameSelect dateHook={setLowerDate}/>

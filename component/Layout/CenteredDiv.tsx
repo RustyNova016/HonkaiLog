@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import style from "./CenteredDiv.module.scss";
+import style from "./CSS/CenteredDiv.module.scss";
 
 /** A component that centers its contents. */
 export function CenteredDiv(props: {

@@ -1,14 +1,14 @@
 import Link from "next/link";
-import HomeStyles from "../../styles/Home.module.scss";
+import style from "./CSS/SmallLinkCard.module.scss";
 import {Col, Row} from "react-bootstrap";
 import Image from "next/image";
 
 export function SmallLinkCard(props: { title: string, description?: string, link: string, imagelink?: string }) {
     return <Link href={props.link}>
-        <div className={HomeStyles.card}>
+        <div className={style.card}>
             <Row>
                 {props.imagelink ? <Col md={3}>
-                    <div className={HomeStyles.cardPicDiv}>
+                    <div className={style.cardPicDiv}>
                         <Image src={props.imagelink} width={150} height={150}/>
                     </div>
                 </Col> : null}

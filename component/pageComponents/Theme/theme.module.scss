@@ -1,6 +1,6 @@
 @import "styles/colors";
 
-.pageTitle {
+.sectionTitle {
   color: $main-text-color;
   border-color: $main-text-color;
   border-width: 0px 0px 3px 3px;
@@ -17,4 +17,12 @@
   padding-right: 25px;
 
   width: fit-content;
+}
+
+.pageTitle {
+  color: $main-text-color;
+  margin: 0;
+  line-height: 1.15;
+  font-size: 5rem;
+  text-align: center;
 }

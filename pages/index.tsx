@@ -2,8 +2,9 @@ import type {NextPage} from 'next'
 import styles from '../styles/Home.module.scss'
 import {GenericPageLayout} from "../component/pageComponents/GenericPageLayout";
 import {Fade} from "react-awesome-reveal";
-import {SmallLinkCard} from "../component/pageComponents/smallLinkCard";
-import {PageContainer} from "../component/Layout/pageContainer";
+import {SmallLinkCard} from "../component/Layout/SmallLinkCard";
+import {PageContainer} from "../component/Layout/PageContainer";
+import {PageTitle} from "../component/pageComponents/Theme/Theme";
 
 
 const Home: NextPage = () => {
@@ -11,9 +12,7 @@ const Home: NextPage = () => {
             <GenericPageLayout pushFooter={true}>
                 <PageContainer>
                     <Fade direction={"down"} cascade={true}>
-                        <h1 className={styles.title}>
-                            <b>Welcome to HonkaiLog!</b>
-                        </h1>
+                        <PageTitle title={"Welcome to HonkaiLog!"}/>
 
                         <p className={styles.description}>
                             A website to keep track of your progress in the game Honkai Impact 3rd
