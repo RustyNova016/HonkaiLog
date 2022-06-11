@@ -2,12 +2,13 @@ import {createContext} from "react";
 import {MaterialHistory} from "../../../tools/Database/MaterialHistory";
 import {useMaterialLogs} from "../../../tools/Database/Data Hooks/useMaterialLogs";
 import {LoadingComponent} from "../../App Components/LoadingComponent";
-import {Button, Col, Container, FormControl, InputGroup, Row} from "react-bootstrap";
+import {Col, Container, Row} from "react-bootstrap";
 import {PageTitle, SectionTitle} from "../../pageComponents/Theme/Theme";
 import ContentDiv from "../../Layout/ContentDiv";
 import {ErrorBoundary} from "react-error-boundary";
 import {ErrorFallback, ErrorHandler} from "../../App Components/ErrorFallback";
 import {DataCharts} from "./DataCharts";
+import {MaterialCountInput} from "./MaterialCountInput";
 
 export interface MaterialHistoryIDDataProps {
     MaterialID: number;
@@ -40,12 +41,7 @@ export function MaterialHistoryIDData(props: MaterialHistoryIDDataProps) {
                             <p>You have currently have {history.getCurrentCount()} {history.name}</p>
                         </Col>
                         <Col lg={6}>
-                            <InputGroup className="mb-3">
-                                <FormControl value={history.getCurrentCount()}></FormControl>
-                                <Button id="button-addon2">
-                                    Save
-                                </Button>
-                            </InputGroup>
+                            <MaterialCountInput/>
                         </Col>
                     </Row>
 
