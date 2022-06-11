@@ -1,5 +1,5 @@
 import {useSession} from "next-auth/react";
-import {GenericPageLayout} from "../../component/pageComponents/GenericPageLayout";
+import {GenericPageLayout, PageSkeleton} from "../../component/pageComponents/GenericPageLayout";
 import {Navigation} from "../../component/pageComponents/header/Navigation";
 import {useRouter} from "next/router";
 import {MaterialHistoryIDData} from "../../component/pages/History/MaterialHistoryIDData";
@@ -24,10 +24,9 @@ export default function MaterialHistoryIDPage() {
     }
 
     return <>
-        <GenericPageLayout pushFooter={false}>
-            <Navigation/>
+        <PageSkeleton navbar={true}>
             <MaterialHistoryIDData MaterialID={parseInt(id)}/>
-        </GenericPageLayout>
+        </PageSkeleton>
     </>
 }
 

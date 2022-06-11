@@ -6,6 +6,6 @@ export function SectionTitle(props: { title: string }) {
 
 export function PageTitle(props: { title: string }) {
     return <h1 className={style.pageTitle}>
-        <b>Welcome to HonkaiLog!</b>
+        <b>⪡ {props.title} ⪢</b>
     </h1>;
 }

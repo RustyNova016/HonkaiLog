@@ -3,7 +3,7 @@ import {MaterialHistory} from "../../../tools/Database/MaterialHistory";
 import {useMaterialLogs} from "../../../tools/Database/Data Hooks/useMaterialLogs";
 import {LoadingComponent} from "../../App Components/LoadingComponent";
 import {Button, Col, Container, FormControl, InputGroup, Row} from "react-bootstrap";
-import {SectionTitle} from "../../pageComponents/Theme/Theme";
+import {PageTitle, SectionTitle} from "../../pageComponents/Theme/Theme";
 import ContentDiv from "../../Layout/ContentDiv";
 import {ErrorBoundary} from "react-error-boundary";
 import {ErrorFallback, ErrorHandler} from "../../App Components/ErrorFallback";
@@ -31,7 +31,7 @@ export function MaterialHistoryIDData(props: MaterialHistoryIDDataProps) {
     return <>
         <HistoryContext.Provider value={history}>
             <Container>
-                <SectionTitle title={materialLogs.name + " history"}></SectionTitle>
+                <PageTitle title={materialLogs.name + " history"}></PageTitle>
 
                 <ContentDiv sides={true}>
                     <SectionTitle title={materialLogs.name + " count"}></SectionTitle>

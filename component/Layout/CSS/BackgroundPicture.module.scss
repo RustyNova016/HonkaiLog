@@ -1,16 +1,18 @@
-@import "colors";
+@import "styles/colors";
 
-.backgroundDiv {
+.backgroundPicture {
     background-attachment: fixed;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    min-height: 100vh;
+    height: 100vh;
 }
 
-.backgroundColorTrans {
+.backgroundPictureOverlay {
+    display: flex;
+    flex-direction: column;
     background-color: $main-bg-color;
-    min-height: 100vh;
+    height: 100%;
 }
 
 .footerWarper {

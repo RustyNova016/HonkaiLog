@@ -1,22 +1,24 @@
-import {PropsWithChildren} from "react";
 import styles from "./CSS/ContentDiv.module.scss";
+import {addCSSClasses} from "../../tools/miscs";
+import {ChildrenProps, CSSClassesProps, CSSStylesProps} from "../../tools/Types";
 
-interface IContentDivProps {
-    top?: boolean;
+export interface ContentDivProps extends ChildrenProps, CSSClassesProps, CSSStylesProps {
     sides?: boolean;
+    top?: boolean;
 }
 
-function ContentDiv(props: PropsWithChildren<IContentDivProps>) {
-    let classname = styles.contentDiv
+function ContentDiv(props: ContentDivProps) {
+    const ContentDivClasses = [styles.ContentDiv];
 
-    if (props.top) {
-        classname += " " + styles.topBorder
-    }
-    if (props.sides) {
-        classname += " " + styles.sideBorder
-    }
+    if (props.className !== undefined) { ContentDivClasses.push(props.className); }
+    if (props.top) { ContentDivClasses.push(styles.topBorder); }
+    if (props.sides) { ContentDivClasses.push(styles.sideBorder); }
 
-    return (<div className={classname}>{props.children}</div>);
+    return (
+        <div className={addCSSClasses(ContentDivClasses)} style={props.style}>
+            {props.children}
+        </div>
+    );
 }
 
 export default ContentDiv;

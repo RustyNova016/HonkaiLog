@@ -1,17 +1,21 @@
 // React component for the generic page layout
-import {Background} from "./background";
+import {BackgroundPicture} from "../Layout/BackgroundPicture";
 import {Footer} from "./footer";
 import {getCommonHead} from "./getCommonHead";
-import styles from '../../styles/background.module.scss'
+import styles from '../Layout/CSS/BackgroundPicture.module.scss'
 import {ErrorFallback, ErrorHandler} from "../App Components/ErrorFallback";
 import {ErrorBoundary} from "react-error-boundary";
+import {Navigation} from "./header/Navigation";
 
-export function GenericPageLayout(props: { children: React.ReactNode, hideFooter?: boolean, pushFooter?: boolean;}) {
+export function GenericPageLayout(props: { children: React.ReactNode, hideFooter?: boolean, pushFooter?: boolean; }) {
+
+
     return (
         <>
             {getCommonHead()}
-            <Background>
-                <div className={props.pushFooter? styles.footerPush : ""}>
+            <BackgroundPicture>
+
+                <div style={{height: "100%"}} className={props.pushFooter ? styles.footerPush : ""}>
                     <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
                         {props.children}
                     </ErrorBoundary>
@@ -20,7 +24,26 @@ export function GenericPageLayout(props: { children: React.ReactNode, hideFooter
                 {
                     props.hideFooter ? null : <Footer/>
                 }
-            </Background>
+            </BackgroundPicture>
         </>
     );
+}
+
+export interface PageSkeletonProps {
+    footer?: boolean;
+    navbar?: boolean;
+    children?: React.ReactNode;
+}
+
+export function PageSkeleton(props: PageSkeletonProps) {
+    return <>
+        {getCommonHead()}
+        <BackgroundPicture>
+            {props.navbar ? <Navigation/> : null}
+
+            {props.children}
+
+            {props.footer ? <Footer/> : null}
+        </BackgroundPicture>
+    </>
 }
