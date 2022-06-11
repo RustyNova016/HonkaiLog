@@ -1,0 +1,11 @@
+@import "../../../styles/colors";
+
+.PointToolTip {
+  color: white;
+  background-color: rgba(43, 43, 43, 0.51);
+  border-radius: 5px;
+  border: solid;
+  border-width: 0px 3px;
+  border-color: $contentDivAccent;
+  padding: 15px 20px 0.5px 20px;
+}

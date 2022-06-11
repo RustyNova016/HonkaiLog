@@ -1,0 +1,27 @@
+@import "styles/colors";
+
+.backgroundPicture {
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100vh;
+}
+
+.backgroundPictureOverlay {
+    display: flex;
+    flex-direction: column;
+    background-color: $main-bg-color;
+    height: 100%;
+}
+
+.footerWarper {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.footerPush {
+    min-height: 100vh;
+}
