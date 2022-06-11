@@ -3,6 +3,7 @@ import type {AppProps} from 'next/app'
 import {SessionProvider} from "next-auth/react";
 import SWRDevtools from "@jjordy/swr-devtools";
 import 'reflect-metadata';
+import '../styles/SCSS/globals.scss'
 
 function MyApp({Component, pageProps}: AppProps) {
     return <>
