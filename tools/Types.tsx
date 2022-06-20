@@ -11,3 +11,8 @@ export interface CSSClassesProps {
 export interface CSSStylesProps {
     style?: React.CSSProperties;
 }
+
+export interface SequelizeTableCommonDBResults {
+    createdAt: string;
+    updatedAt: string;
+}

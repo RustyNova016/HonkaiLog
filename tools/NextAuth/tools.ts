@@ -12,10 +12,22 @@ export const AuthProviders: Provider[] = [
 export const AuthCallbacks: Partial<CallbacksOptions<Profile, Account>> = {
     session: async ({session, token}) => {
         if (session?.user) {
-            if (token.sub !== undefined) {
+            if (token?.sub !== undefined) {
                 session.user.id = token.sub;
             }
         }
         return session;
     },
+}
+
+export function isNumericString(str: any): str is string {
+    if (typeof str !== 'string') {
+        return false;
+    }
+
+    if (str.trim() === '') {
+        return false;
+    }
+
+    return !Number.isNaN(Number(str));
 }

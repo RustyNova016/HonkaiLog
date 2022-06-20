@@ -2,19 +2,21 @@ import {DBModel} from "../tools/Database/DBModel";
 import {DataTypes} from "sequelize";
 import sequelize from "../tools/Database/SequelizeConnection";
 import database from "./database";
-import User from "./user";
+import {SequelizeTableCommonDBResults} from "../tools/Types";
 
-export interface IMaterialDBResponse {
+export interface MaterialDBResponse extends SequelizeTableCommonDBResults {
     id: number;
     name: string;
 }
 
-class Material extends DBModel<Material> implements IMaterialDBResponse {
+class Material extends DBModel<Material> {
     declare id: number;
     declare name: string;
 
     static associate(models: typeof database) {
-        Material.hasMany(models.Material_log);
+        Material.hasMany(models.Material_log, {
+            foreignKey: 'materialId',
+        });
     }
 }
 

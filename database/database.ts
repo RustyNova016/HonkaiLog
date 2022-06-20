@@ -1,20 +1,26 @@
 /** Initialize the database models */
-import User from "./user";
 import Material from "./material";
 import Material_log from "./material_log";
 import sequelize from "../tools/Database/SequelizeConnection";
+import SequelizeAdapter, {models} from "@next-auth/sequelize-adapter"
+import {associateUser} from "./user";
 
+export const AuthDBAdapter = SequelizeAdapter(sequelize, {
+    models: {
+        User: sequelize.define("user", {
+            ...models.User
+        })
+    }
+});
 
-export interface databaseResponse {
-    createdAt: Date;
-    updatedAt: Date;
-}
 
 export const database = {
     Material,
     Material_log,
-    User,
+    User: sequelize.models.user,
 }
+
+associateUser(database);
 
 Object.values(database).forEach((model: any) => {
     if (model.associate) {
@@ -22,6 +28,7 @@ Object.values(database).forEach((model: any) => {
     }
 });
 
-sequelize.sync({alter: true});
+
+//sequelize.sync({alter: true});
 
 export default database;
