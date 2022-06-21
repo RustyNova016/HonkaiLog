@@ -1,56 +1,58 @@
 import {signIn, signOut, useSession} from "next-auth/react";
 import {Container, Nav, Navbar} from "react-bootstrap";
-import Link from "next/link";
 import {Session} from "next-auth";
 import styles from "./Navigation.module.scss";
+import {LoadingComponent} from "../../App Components/PageLoadingComponent";
+
+export function NavUser() {
+    const {data: session, status} = useSession()
+
+    // TODO: Prevent Navbar to expend when loading
+    if (status === "loading") { return <LoadingComponent height={"1em"}/>}
+
+    if (session === null) {
+        return <LogIn/>;
+    } else {
+        return <></>
+    }
+}
+
+export function LogIn() {
+    return <>
+        <a
+            href={`/api/auth/signin`}
+            className={styles.buttonPrimary}
+            onClick={(e) => {
+                e.preventDefault()
+                signIn()
+            }}
+        >
+            Login
+        </a>
+        <a
+            href={`http://localhost:3000/account/register`}
+            className={styles.buttonPrimary}
+            onClick={(e) => {
+            }}
+        >
+            Register
+        </a>
+    </>
+}
+
 
 export function Navigation() {
-    const {data: session, status} = useSession()
-    const loading = status === "loading"
+
 
     return <>
         <Navbar bg="dark" variant="dark">
             <Container>
                 <Navbar.Brand href="http://localhost:3000/">HonkaiLog</Navbar.Brand>
                 <Nav className="me-auto">
-                    <Link href={"http://localhost:3000/model/add"} >Ajouter un model</Link>
                 </Nav>
-                <div>
-                    {/*{NotSignedIn(session)}
-                    {SignedIn(session)}*/}
-                </div>
+                <NavUser/>
             </Container>
         </Navbar>
-    </>;
-}
-
-function NotSignedIn(session: Session | null) {
-    return <>
-        {!session && (
-            <>
-              <span className={styles.notSignedInText}>
-                You are not signed in
-              </span>
-                <a
-                    href={`/api/auth/signin`}
-                    className={styles.buttonPrimary}
-                    onClick={(e) => {
-                        e.preventDefault()
-                        signIn()
-                    }}
-                >
-                    Login
-                </a>
-                <a
-                    href={`http://localhost:3000/account/register`}
-                    className={styles.buttonPrimary}
-                    onClick={(e) => {
-                    }}
-                >
-                    Register
-                </a>
-            </>
-        )}
     </>;
 }
 

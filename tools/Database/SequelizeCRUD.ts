@@ -8,11 +8,6 @@ export class SequelizeCRUD<model extends ModelCtor<Model<any, any>>> {
         this.table = table;
     }
 
-    public static getRouteHandlerFromModel<sequeModel extends ModelCtor<Model<any, any>>>(SeqModel: any) {
-        const CRUD = new this<sequeModel>(SeqModel);
-        return CRUD.generateRouteHandler();
-    }
-
     public static getIDRouteHandlerFromModel<sequeModel extends ModelCtor<Model<any, any>>>(SeqModel: any, idName: string = "id") {
         const CRUD = new this<sequeModel>(SeqModel);
         return CRUD.generateIDRouteHandler();
@@ -26,31 +21,18 @@ export class SequelizeCRUD<model extends ModelCtor<Model<any, any>>> {
         return queryElement;
     }
 
-    public findAll() {
-        return this.table.findAll();
+    public static getRouteHandlerFromModel<sequeModel extends ModelCtor<Model<any, any>>>(SeqModel: any) {
+        const CRUD = new this<sequeModel>(SeqModel);
+        return CRUD.generateRouteHandler();
     }
 
-    public findById(id: Identifier) {
-        return this.table.findByPk(id);
-    }
-
-    public deleteById(id: Identifier) {
-        return this.table.destroy({
-            where: {
-                [this.table.primaryKeyAttribute]: id
+    public DELETE_WITH_ID(req: NextApiRequest, res: NextApiResponse) {
+        this.deleteById(SequelizeCRUD.getNextApiRouteId(req)).then(
+            data => {
+                res.json(data);
             }
-        });
-    }
-
-    public create(data: any) {
-        return this.table.create(data);
-    }
-
-    async updateById(data: any, id: Identifier) {
-        return this.table.update(data, {
-            where: {
-                [this.table.primaryKeyAttribute]: id
-            }
+        ).catch((e) => {
+            res.status(500).json(e);
         });
     }
 
@@ -75,16 +57,6 @@ export class SequelizeCRUD<model extends ModelCtor<Model<any, any>>> {
         });
     }
 
-    public DELETE_WITH_ID(req: NextApiRequest, res: NextApiResponse) {
-        this.deleteById(SequelizeCRUD.getNextApiRouteId(req)).then(
-            data => {
-                res.json(data);
-            }
-        ).catch((e) => {
-            res.status(500).json(e);
-        });
-    }
-
     public POST(req: NextApiRequest, res: NextApiResponse) {
         this.create(req.body).then(
             data => {
@@ -105,16 +77,39 @@ export class SequelizeCRUD<model extends ModelCtor<Model<any, any>>> {
         });
     }
 
+    public create(data: any) {
+        return this.table.create(data);
+    }
+
+    public deleteById(id: Identifier) {
+        return this.table.destroy({
+            where: {
+                [this.table.primaryKeyAttribute]: id
+            }
+        });
+    }
+
+    public findAll() {
+        return this.table.findAll();
+    }
+
+    public findById(id: Identifier) {
+        return this.table.findByPk(id);
+    }
+
     public generateIDRouteHandler() {
         return (req: NextApiRequest, res: NextApiResponse) => {
             switch (req.method) {
                 case 'GET':
+                    // SELECT * WHERE id = :id
                     this.GET_WITH_ID(req, res);
                     break;
                 case 'PUT':
+                    // UPDATE WHERE id = :id
                     this.PUT_WITH_ID(req, res);
                     break;
                 case 'DELETE':
+                    // DELETE WHERE id = :id
                     this.DELETE_WITH_ID(req, res);
                     break;
                 default:
@@ -127,14 +122,24 @@ export class SequelizeCRUD<model extends ModelCtor<Model<any, any>>> {
         return (req: NextApiRequest, res: NextApiResponse) => {
             switch (req.method) {
                 case 'GET':
+                    // SELECT *
                     this.GET(req, res);
                     break;
                 case 'POST':
+                    // INSERT
                     this.POST(req, res);
                     break;
                 default:
                     res.status(404).json({error: 'Not found'});
             }
         };
+    }
+
+    async updateById(data: any, id: Identifier) {
+        return this.table.update(data, {
+            where: {
+                [this.table.primaryKeyAttribute]: id
+            }
+        });
     }
 }

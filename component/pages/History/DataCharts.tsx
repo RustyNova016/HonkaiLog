@@ -4,7 +4,7 @@ import {removeDaysFromToday} from "../../../tools/miscs";
 import {SectionTitle} from "../../pageComponents/Theme/Theme";
 import ContentDiv from "../../Layout/ContentDiv";
 import {MaterialHistoryGraph} from "./MaterialHistoryGraph";
-import {LoadingComponent} from "../../App Components/LoadingComponent";
+import {PageLoadingComponent} from "../../App Components/PageLoadingComponent";
 import {HistoryContext} from "./MaterialHistoryIDData";
 import {TimeFrameSelect} from "./TimeFrameSelect";
 import {SelectGraphType} from "./SelectGraphType";
@@ -18,7 +18,7 @@ export function DataCharts(props: DataChartsProps) {
     const history = useContext(HistoryContext);
 
     if (history === undefined) {
-        return <LoadingComponent/>
+        return <PageLoadingComponent/>
     }
 
     const [lowerDate, setLowerDate] = useState<Date>(removeDaysFromToday(1));

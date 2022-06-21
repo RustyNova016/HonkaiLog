@@ -1,6 +1,6 @@
 import useSWR from "swr";
-import {Material_response} from "../../../database/material";
 import axios from "axios";
+import {MaterialDBResponse} from "../../../database/material";
 
 export async function fetcher<T>(key: string): Promise<T> {
     return await axios.get(key).then((res) => res.data).catch((e) => {
@@ -11,7 +11,7 @@ export async function fetcher<T>(key: string): Promise<T> {
 
 export function useMaterial(id: number) {
     const key = `/api/material/${id}`;
-    const {data, error} = useSWR<Material_response, Error>(key, fetcher);
+    const {data, error} = useSWR<MaterialDBResponse, Error>(key, fetcher);
     return {
         material: data,
         isLoading: !error && !data,

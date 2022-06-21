@@ -1,6 +1,5 @@
 import {useSession} from "next-auth/react";
-import {GenericPageLayout, PageSkeleton} from "../../component/pageComponents/GenericPageLayout";
-import {Navigation} from "../../component/pageComponents/header/Navigation";
+import {PageSkeleton} from "../../component/pageComponents/GenericPageLayout";
 import {useRouter} from "next/router";
 import {MaterialHistoryIDData} from "../../component/pages/History/MaterialHistoryIDData";
 
@@ -18,6 +17,7 @@ export default function MaterialHistoryIDPage() {
         }
     }
 
+    // TODO: Remove failsafe and actually tell that it's not valid
     let id = router.query.id;
     if (typeof id !== "string") {
         id = "1";

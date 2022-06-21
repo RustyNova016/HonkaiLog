@@ -1,12 +1,10 @@
 import {MaterialHistory} from "../tools/Database/MaterialHistory";
-import {TestMaterialCountAPIResponse} from "./Test Data";
+import {TestMaterialCountAPIResponse, TestMaterialCountAPIResponse_NoLogs} from "./Test Data";
 
 describe('MaterialHistory tests', function () {
-    describe('Test with valid data', function () {
-        it('should return a MaterialHistory object', function () {
-            const materialHistory = new MaterialHistory(TestMaterialCountAPIResponse);
-            expect(materialHistory).toBeInstanceOf(MaterialHistory);
-        });
+    it('should return a MaterialHistory object', function () {
+        expect(new MaterialHistory(TestMaterialCountAPIResponse)).toBeInstanceOf(MaterialHistory);
+        expect(new MaterialHistory(TestMaterialCountAPIResponse_NoLogs)).toBeInstanceOf(MaterialHistory);
     });
 });
 

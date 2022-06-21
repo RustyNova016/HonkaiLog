@@ -1,6 +1,6 @@
 import {Dispatch, SetStateAction, useContext} from "react";
 import {HistoryContext} from "./MaterialHistoryIDData";
-import {LoadingComponent} from "../../App Components/LoadingComponent";
+import {PageLoadingComponent} from "../../App Components/PageLoadingComponent";
 import {Button, ButtonGroup} from "react-bootstrap";
 import {removeDaysFromToday} from "../../../tools/miscs";
 
@@ -8,7 +8,7 @@ export function TimeFrameSelectButton(props: { dayValue: number | null, label: s
     const history = useContext(HistoryContext);
 
     if (history === undefined) {
-        return <LoadingComponent/>
+        return <PageLoadingComponent/>
     }
 
     return <Button onClick={

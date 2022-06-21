@@ -1,14 +1,14 @@
 import {createContext} from "react";
 import {MaterialHistory} from "../../../tools/Database/MaterialHistory";
 import {useMaterialLogs} from "../../../tools/Database/Data Hooks/useMaterialLogs";
-import {LoadingComponent} from "../../App Components/LoadingComponent";
+import {PageLoadingComponent} from "../../App Components/PageLoadingComponent";
 import {Col, Container, Row} from "react-bootstrap";
 import {PageTitle, SectionTitle} from "../../pageComponents/Theme/Theme";
 import ContentDiv from "../../Layout/ContentDiv";
 import {ErrorBoundary} from "react-error-boundary";
 import {ErrorFallback, ErrorHandler} from "../../App Components/ErrorFallback";
 import {DataCharts} from "./DataCharts";
-import {MaterialCountInput} from "./MaterialCountInput";
+import {MaterialLogInput} from "./MaterialLogInput";
 
 export interface MaterialHistoryIDDataProps {
     MaterialID: number;
@@ -17,34 +17,30 @@ export interface MaterialHistoryIDDataProps {
 export const HistoryContext = createContext<MaterialHistory | undefined>(undefined as MaterialHistory | undefined);
 
 export function MaterialHistoryIDData(props: MaterialHistoryIDDataProps) {
-    const {isError, isLoading, materialLogs} = useMaterialLogs(props.MaterialID);
+    const {isError, isLoading, materialLogsResponse} = useMaterialLogs(props.MaterialID);
 
-    if (isLoading || materialLogs === undefined) {
-        return <LoadingComponent/>;
-    }
+    if (isLoading) return <PageLoadingComponent/>;
+    if (isError) return <div>Error!</div>;
+    if (materialLogsResponse === undefined) return <div>Error! No material</div>;
 
-    if (isError) {
-        return <div>Error!</div>;
-    }
-
-    const history = new MaterialHistory(materialLogs);
+    const history = new MaterialHistory(materialLogsResponse);
 
     return <>
         <HistoryContext.Provider value={history}>
             <Container>
-                <PageTitle title={materialLogs.name + " history"}></PageTitle>
+                <PageTitle title={materialLogsResponse.name + " history"}></PageTitle>
 
                 <ContentDiv sides={true}>
-                    <SectionTitle title={materialLogs.name + " count"}></SectionTitle>
+                    <SectionTitle title={materialLogsResponse.name + " logs"}></SectionTitle>
                     <Row>
-                        <Col lg={6}>
-                            <p>You have currently have {history.getCurrentCount()} {history.name}</p>
+                        <Col lg={6} className={"display-flex align-content-center"}>
+                            <p className={"text-"}>You have currently
+                                have {history.getCurrentCount()} {history.name}</p>
                         </Col>
                         <Col lg={6}>
-                            <MaterialCountInput/>
+                            <MaterialLogInput/>
                         </Col>
                     </Row>
-
                 </ContentDiv>
 
                 <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>

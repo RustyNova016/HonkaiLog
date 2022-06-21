@@ -5,13 +5,13 @@ import {MaterialHistoryLog} from "../tools/Database/MaterialHistoryLog";
 describe('MaterialHistoryLog tests', function () {
     describe('Test with valid data', function () {
         it('should return a MaterialHistoryLog object', function () {
-            const materialHistory = new MaterialHistoryLog(TestMaterialCountAPIResponse.materialLogs[0]);
+            const materialHistory = new MaterialHistoryLog(TestMaterialCountAPIResponse.materialLogsResponce[0]);
             expect(materialHistory).toBeInstanceOf(MaterialHistoryLog);
         });
 
         describe('Method tests', function () {
-            const log1 = new MaterialHistoryLog(TestMaterialCountAPIResponse.materialLogs[0]);
-            const log2 = new MaterialHistoryLog(TestMaterialCountAPIResponse.materialLogs[1]);
+            const log1 = new MaterialHistoryLog(TestMaterialCountAPIResponse.materialLogsResponce[0]);
+            const log2 = new MaterialHistoryLog(TestMaterialCountAPIResponse.materialLogsResponce[1]);
 
             it("should return the oldest of the two logs", function () {
                 expect(log1.isOlderThan(log2)).toEqual(true);

@@ -1,5 +1,5 @@
 import {MaterialHistoryLog} from "./MaterialHistoryLog";
-import {IMaterialLogDBResponse} from "../../database/material_log";
+import {MaterialLogDBResponse} from "../../database/material_log";
 import {TimeTools, toTimestamp} from "../miscs";
 
 export interface IMaterialHistoryLogCollection {
@@ -13,8 +13,11 @@ export class MaterialHistoryLogCollection implements IMaterialHistoryLogCollecti
         this.material_logs = materialLogs;
     }
 
-    static DBResponseToLogCollection(materialLogs: IMaterialLogDBResponse[]): MaterialHistoryLog[] {
+    static DBResponseToLogCollection(materialLogs: MaterialLogDBResponse[]): MaterialHistoryLog[] {
         const out: MaterialHistoryLog[] = [];
+
+        if (materialLogs.length === 0) return out;
+
         materialLogs.map((log) => {
             out.push(new MaterialHistoryLog(log));
         })
@@ -26,18 +29,12 @@ export class MaterialHistoryLogCollection implements IMaterialHistoryLogCollecti
         return out;
     }
 
+    empty(): boolean {
+        return this.material_logs.length === 0;
+    }
+
     getAverageDelta(): number {
         return (this.getLatestLog().count - this.getOldestLog().count) / this.getNbDays();
-    }
-
-    getAverageGain(): number {
-        return this.getNetGain() / this.getNbDays();
-    }
-
-    getAverageGainOfPeriod(dateFrom?: Date, dateTo?: Date): number {
-        const {dateLowerBound, dateUpperBound} = this.getTimeframe(dateFrom, dateTo);
-
-        return this.getLogsBetween(dateLowerBound, dateUpperBound).getAverageGain();
     }
 
     getAverageDeltaOfPeriod(dateFrom?: Date, dateTo?: Date): number {
@@ -46,7 +43,19 @@ export class MaterialHistoryLogCollection implements IMaterialHistoryLogCollecti
         return this.getLogsBetween(dateLowerBound, dateUpperBound).getAverageDelta();
     }
 
+    getAverageGain(): number {
+        const nbDays = this.getNbDays();
+        return this.getNetGain() / nbDays;
+    }
+
+    getAverageGainOfPeriod(dateFrom?: Date, dateTo?: Date): number {
+        const {dateLowerBound, dateUpperBound} = this.getTimeframe(dateFrom, dateTo);
+
+        return this.getLogsBetween(dateLowerBound, dateUpperBound).getAverageGain();
+    }
+
     getCurrentCount(): number {
+        if (this.empty()) return 0;
         return this.getLatestLog().count;
     }
 
@@ -79,12 +88,8 @@ export class MaterialHistoryLogCollection implements IMaterialHistoryLogCollecti
     }
 
     getNbDays(): number {
-        return (this.getLatestLog().log_date.getTime() - this.getOldestLog().log_date.getTime()) / (1000 * 60 * 60 * 24);
-    }
-
-    getTimeframeMilliseconds(dateFrom: Date | undefined, dateTo: Date | undefined) {
-        const {dateLowerBound, dateUpperBound} = this.getTimeframe(dateFrom, dateTo);
-        return TimeTools.getDateDifference(dateUpperBound, dateLowerBound);
+        const time = this.getLatestLog().log_date.getTime() - this.getOldestLog().log_date.getTime();
+        return time / (1000 * 60 * 60 * 24);
     }
 
     /** Return the net gain of the collection. */
@@ -116,7 +121,12 @@ export class MaterialHistoryLogCollection implements IMaterialHistoryLogCollecti
         return this.material_logs[0];
     }
 
-    /** Returns the timeframe of the history. If no date is given, the timeframe is from the oldest log to the latest log.*/
+    getTimeframeMilliseconds(dateFrom: Date | undefined, dateTo: Date | undefined) {
+        const {dateLowerBound, dateUpperBound} = this.getTimeframe(dateFrom, dateTo);
+        return TimeTools.getDateDifference(dateUpperBound, dateLowerBound);
+    }
+
+    /** Returns the timeframe of the history. If no date is given, the timeframe is from the oldest logs to the latest logs.*/
     protected getTimeframe(dateFrom: Date | undefined, dateTo: Date | undefined) {
         const dateLowerBound = dateFrom || this.getOldestLog().log_date;
         const dateUpperBound = dateTo || this.getLatestLog().log_date;

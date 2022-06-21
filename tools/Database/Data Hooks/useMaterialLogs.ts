@@ -1,14 +1,14 @@
 import useSWR from "swr";
 import {fetcher} from "./useMaterial";
-import {IMaterialCountAPIResponse} from "../../../pages/api/material/count/[id]";
+import {IMaterialLogsAPIResponse} from "../../../pages/api/material/logs/[id]";
 
 export function useMaterialLogs(id: number) {
-    const key = `/api/material/count/${id}`;
-    const {data, error} = useSWR<IMaterialCountAPIResponse, Error>(key, fetcher);
+    const key = `/api/material/logs/${id}`;
+    const {data, error} = useSWR<IMaterialLogsAPIResponse, Error>(key, fetcher);
 
     return {
-        materialLogs: data,
-        isLoading: !error && !data,
+        materialLogsResponse: data,
+        isLoading: error === undefined && data === undefined,
         isError: error
     }
 }

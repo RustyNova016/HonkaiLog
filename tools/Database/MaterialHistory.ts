@@ -1,11 +1,11 @@
-import {IMaterialCountAPIResponse} from "../../pages/api/material/count/[id]";
+import {IMaterialLogsAPIResponse} from "../../pages/api/material/logs/[id]";
 import {toTimestamp} from "../miscs";
 import {Serie} from "@nivo/line";
 import {MaterialHistoryLog} from "./MaterialHistoryLog";
 import {GraphType} from "../../component/pages/History/DataCharts";
 import {MaterialHistoryLogCollection} from "./MaterialHistoryLogCollection";
 
-export interface IMaterialHistory extends Omit<IMaterialCountAPIResponse, 'Material_logs'> {
+export interface IMaterialHistory extends Omit<IMaterialLogsAPIResponse, 'Material_logs'> {
     material_logs: MaterialHistoryLog[];
 }
 
@@ -16,14 +16,18 @@ export type LogDatum = {
 }
 
 export class MaterialHistory extends MaterialHistoryLogCollection implements IMaterialHistory {
+    createdAt: string;
     id: number;
     name: string;
+    updatedAt: string;
 
-    constructor(materialCount: IMaterialCountAPIResponse) {
-        super(MaterialHistoryLogCollection.DBResponseToLogCollection(materialCount.Material_logs));
+    constructor(materialLogsAPIResponse: IMaterialLogsAPIResponse) {
+        super(MaterialHistoryLogCollection.DBResponseToLogCollection(materialLogsAPIResponse.Material_logs));
 
-        this.id = materialCount.id;
-        this.name = materialCount.name;
+        this.id = materialLogsAPIResponse.id;
+        this.name = materialLogsAPIResponse.name;
+        this.createdAt = materialLogsAPIResponse.createdAt;
+        this.updatedAt = materialLogsAPIResponse.updatedAt;
     }
 
     getGraphData(graphType: GraphType, dateFrom?: Date, dateTo?: Date): Serie[] {

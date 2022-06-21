@@ -1,5 +1,5 @@
 import {ResponsiveLine, Serie} from "@nivo/line";
-import {MaterialCountPointToolTip} from "../../Graphs/Tooltips/MaterialCountPointToolTip";
+import {MaterialLogPointToolTip} from "../../Graphs/Tooltips/MaterialLogPointToolTip";
 import {Alert} from "react-bootstrap";
 
 export interface MaterialHistoryGraphProps {
@@ -59,7 +59,7 @@ export function MaterialHistoryGraph(props: MaterialHistoryGraphProps) {
             enableArea={true}
             areaOpacity={0.15}
             useMesh={true}
-            tooltip={MaterialCountPointToolTip}
+            tooltip={MaterialLogPointToolTip}
             legends={[
                 {
                     anchor: 'bottom-right',

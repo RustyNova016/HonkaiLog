@@ -6,7 +6,7 @@ import {getAPIsideUser} from "../../../../database/user";
 import {HttpStatusCode} from "../../../../tools/API/HttpStatusCodes";
 import {getIDFromQuery} from "../../../../tools/API/getIDFromQuery";
 
-export interface IMaterialCountAPIResponse extends MaterialDBResponse {
+export interface IMaterialLogsAPIResponse extends MaterialDBResponse {
     Material_logs: MaterialLogDBResponse[];
 }
 
@@ -26,7 +26,7 @@ export default async function MaterialCountAPIHandler(req: NextApiRequest, res: 
     });
 
     if (materialWithLogs === null) {
-        res.status(HttpStatusCode.NoContent).end();
+        res.status(HttpStatusCode.Ok).json([]);
         return;
     } else {
         res.status(HttpStatusCode.Ok).json(materialWithLogs);
