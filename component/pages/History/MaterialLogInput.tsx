@@ -3,6 +3,7 @@ import {useForm} from "react-hook-form";
 import {HistoryContext} from "./MaterialHistoryIDData";
 import {useContext} from "react";
 import {PageLoadingComponent} from "../../App Components/PageLoadingComponent";
+import axios from "axios";
 
 export interface MaterialLogInputForm {
     count: number;
@@ -18,10 +19,13 @@ export function MaterialLogInput(props: MaterialLogInputProps) {
     if (history === undefined) { return <PageLoadingComponent/> }
 
     // TODO: Send request to server to update count
-    const onSubmit = (data: MaterialLogInputForm) => {}
+    const onSubmit = async (data: MaterialLogInputForm) => {
+
+        axios.post("http://localhost:3000/api/material/logs", {...data, MaterialId: history.id})
+    }
 
     return <>
-        <form onSubmit={handleSubmit(onsubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
             <Row>
                 <Col lg={8}>
                     <FormFloating className={"mb-3"}>
@@ -31,9 +35,7 @@ export function MaterialLogInput(props: MaterialLogInputProps) {
                     </FormFloating>
                 </Col>
                 <Col lg={2}>
-                    <Button>
-                        Save
-                    </Button>
+                    <button type="submit">Submit</button>
                 </Col>
             </Row>
         </form>

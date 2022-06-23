@@ -15,9 +15,9 @@ export interface MaterialLogDBResponse extends SequelizeTableCommonDBResults {
 }
 
 class Material_log extends DBModel<Material_log> {
-    declare count: number;
-    declare id: number;
-    declare log_date: string;
+    //declare count: number;
+    //declare id: number;
+    //declare log_date: string;
 
     static associate(models: typeof database) {
         Material_log.belongsTo(models.Material, {
