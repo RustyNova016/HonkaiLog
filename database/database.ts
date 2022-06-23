@@ -4,6 +4,7 @@ import Material_log from "./material_log";
 import sequelize from "../tools/Database/SequelizeConnection";
 import SequelizeAdapter, {models} from "@next-auth/sequelize-adapter"
 import {associateUser} from "./user";
+import {addLegacyData} from "../tools/Database/legacyMigration";
 
 export const AuthDBAdapter = SequelizeAdapter(sequelize, {
     models: {
@@ -28,7 +29,7 @@ Object.values(database).forEach((model: any) => {
     }
 });
 
-
+//addLegacyData()
 //sequelize.sync({alter: true});
 
 export default database;
