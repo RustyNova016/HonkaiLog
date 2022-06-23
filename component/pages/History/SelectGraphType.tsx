@@ -1,11 +1,11 @@
-import {MaterialHistory} from "../../../tools/Database/MaterialHistory";
 import {Dispatch, SetStateAction} from "react";
 import {Form} from "react-bootstrap";
 import {GraphType} from "./DataCharts";
+import {MaterialLogsGraph} from "../../../tools/MaterialLogsGraph";
 
 export interface SelectGraphTypeProps {
-    history: MaterialHistory;
     graphTypeHook: Dispatch<SetStateAction<GraphType>>
+    materialLogsGraph: MaterialLogsGraph;
 }
 
 export function SelectGraphType(props: SelectGraphTypeProps) {
@@ -14,15 +14,15 @@ export function SelectGraphType(props: SelectGraphTypeProps) {
         <Form.Select>
             <option onClick={() => {
                 props.graphTypeHook("count")
-            }}>{props.history.name} count
+            }}>{props.materialLogsGraph.material.name} count
             </option>
             <option onClick={() => {
                 props.graphTypeHook("gains")
-            }}>{props.history.name} gains
+            }}>{props.materialLogsGraph.material.name} gains
             </option>
             <option onClick={() => {
                 props.graphTypeHook("averages")
-            }}>{props.history.name} averages
+            }}>{props.materialLogsGraph.material.name} averages
             </option>
         </Form.Select>
     </>;

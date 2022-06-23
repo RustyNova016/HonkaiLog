@@ -1,6 +1,6 @@
 import styles from "./CSS/ContentDiv.module.scss";
-import {addCSSClasses} from "../../tools/miscs";
 import {ChildrenProps, CSSClassesProps, CSSStylesProps} from "../../tools/Types";
+import {addCSSClasses} from "../../tools/Miscs";
 
 export interface ContentDivProps extends ChildrenProps, CSSClassesProps, CSSStylesProps {
     sides?: boolean;

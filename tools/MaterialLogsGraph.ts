@@ -1,33 +1,30 @@
-import {IMaterialLogsAPIResponse} from "../../pages/api/material/logs/[id]";
-import {toTimestamp} from "../miscs";
+import {GraphType} from "../component/pages/History/DataCharts";
 import {Serie} from "@nivo/line";
-import {MaterialHistoryLog} from "./MaterialHistoryLog";
-import {GraphType} from "../../component/pages/History/DataCharts";
-import {MaterialHistoryLogCollection} from "./MaterialHistoryLogCollection";
+import {Material} from "./Models/Material";
+import {toTimestamp} from "./Miscs";
+import {MaterialLogCollection} from "./Models/MaterialLogCollection";
+import {DatumConstructor} from "./Types/DatumConstructor";
+import {LogDatum} from "./Types/LogDatum";
 
-export interface IMaterialHistory extends Omit<IMaterialLogsAPIResponse, 'Material_logs'> {
-    material_logs: MaterialHistoryLog[];
+export class MaterialWithLogs extends Material {
+    override logs: MaterialLogCollection
+
+    constructor(id: number, name: string, logs: MaterialLogCollection) {
+        super(id, name);
+        this.logs = logs;
+    }
+
+    static getFromMaterial(material: Material) {
+        if (material.logs === "loading") throw new Error("Longs aren't initialised")
+        return new MaterialWithLogs(material.id, material.name, material.logs)
+    }
 }
 
-export type DatumConstructor = (dateLowerBound: Date, dateUpperBound: Date) => LogDatum[]
-export type LogDatum = {
-    x: number;
-    y: number;
-}
+export class MaterialLogsGraph {
+    material: MaterialWithLogs;
 
-export class MaterialHistory extends MaterialHistoryLogCollection implements IMaterialHistory {
-    createdAt: string;
-    id: number;
-    name: string;
-    updatedAt: string;
-
-    constructor(materialLogsAPIResponse: IMaterialLogsAPIResponse) {
-        super(MaterialHistoryLogCollection.DBResponseToLogCollection(materialLogsAPIResponse.Material_logs));
-
-        this.id = materialLogsAPIResponse.id;
-        this.name = materialLogsAPIResponse.name;
-        this.createdAt = materialLogsAPIResponse.createdAt;
-        this.updatedAt = materialLogsAPIResponse.updatedAt;
+    constructor(material: Material) {
+        this.material = MaterialWithLogs.getFromMaterial(material);
     }
 
     getGraphData(graphType: GraphType, dateFrom?: Date, dateTo?: Date): Serie[] {
@@ -47,7 +44,7 @@ export class MaterialHistory extends MaterialHistoryLogCollection implements IMa
     }
 
     private createSeries(name: string, data: DatumConstructor, dateFrom?: Date, dateTo?: Date): Serie {
-        const {dateLowerBound, dateUpperBound} = this.getTimeframe(dateFrom, dateTo);
+        const {dateLowerBound, dateUpperBound} = this.material.logs.getTimeframe(dateFrom, dateTo);
 
         return {
             id: name,
@@ -58,9 +55,9 @@ export class MaterialHistory extends MaterialHistoryLogCollection implements IMa
     private generateAveragesGraphData(dateFrom?: Date, dateTo?: Date): Serie[] {
         const generateAverageDeltaDatum: DatumConstructor = (dateLowerBound, dateUpperBound) => {
             const averageData: LogDatum[] = [];
-            const logs = this.getLogsBetween(dateLowerBound, dateUpperBound);
+            const logs = this.material.logs.getLogsBetween(dateLowerBound, dateUpperBound);
 
-            logs.material_logs.forEach((log, index) => {
+            logs.logs.forEach((log, index) => {
                 if (index === 0) {return;} // Cannot apply average to first log
 
                 averageData.push({
@@ -74,10 +71,10 @@ export class MaterialHistory extends MaterialHistoryLogCollection implements IMa
 
         const generateAverageGainDatum: DatumConstructor = (dateLowerBound, dateUpperBound) => {
             const averageData: LogDatum[] = [];
-            const logs = this.getLogsBetween(dateLowerBound, dateUpperBound);
+            const logs = this.material.logs.getLogsBetween(dateLowerBound, dateUpperBound);
 
 
-            logs.material_logs.forEach((log, index) => {
+            logs.logs.forEach((log, index) => {
                 if (index === 0) {return;} // Cannot apply average to first log
 
                 averageData.push({
@@ -99,12 +96,12 @@ export class MaterialHistory extends MaterialHistoryLogCollection implements IMa
         let getCountDatum: DatumConstructor = (dateLowerBound, dateUpperBound) => {
             const countData: LogDatum[] = [];
 
-            this.material_logs.forEach((log) => {
+            this.material.logs.logs.forEach((log) => {
                 if (new Date(log.log_date) >= dateLowerBound && new Date(log.log_date) <= dateUpperBound) {
                     countData.push(
                         {
                             x: toTimestamp(log.log_date),
-                            y: log.count
+                            y: log.quantity
                         }
                     )
                 }
@@ -121,7 +118,7 @@ export class MaterialHistory extends MaterialHistoryLogCollection implements IMa
         const generateDeltaDatum: DatumConstructor = (dateLowerBound, dateUpperBound) => {
             const deltaData: LogDatum[] = [];
 
-            this.material_logs.forEach((log, index) => {
+            this.material.logs.logs.forEach((log, index) => {
                 if (index === 0) {
                     return;
                 }
@@ -130,7 +127,7 @@ export class MaterialHistory extends MaterialHistoryLogCollection implements IMa
                     deltaData.push(
                         {
                             x: toTimestamp(log.log_date),
-                            y: MaterialHistoryLog.getDelta(this.material_logs[index - 1], log)
+                            y: this.material.logs.logs[index - 1].getDelta(log)
                         }
                     )
                 }
@@ -141,13 +138,13 @@ export class MaterialHistory extends MaterialHistoryLogCollection implements IMa
         const generateGainDatum: DatumConstructor = (dateLowerBound, dateUpperBound) => {
             const gainData: LogDatum[] = [];
 
-            this.material_logs.forEach((log, index) => {
+            this.material.logs.logs.forEach((log, index) => {
                 if (index === 0) {
                     return;
                 }
 
                 if (new Date(log.log_date) >= dateLowerBound && new Date(log.log_date) <= dateUpperBound) {
-                    let delta = MaterialHistoryLog.getDelta(this.material_logs[index - 1], log);
+                    let delta = this.material.logs.logs[index - 1].getDelta(log)
                     if (delta < 0) {
                         delta = 0;
                     }
@@ -166,13 +163,13 @@ export class MaterialHistory extends MaterialHistoryLogCollection implements IMa
         const generateLossDatum: DatumConstructor = (dateLowerBound, dateUpperBound) => {
             const lossData: LogDatum[] = [];
 
-            this.material_logs.forEach((log, index) => {
+            this.material.logs.logs.forEach((log, index) => {
                 if (index === 0) {
                     return;
                 }
 
                 if (new Date(log.log_date) >= dateLowerBound && new Date(log.log_date) <= dateUpperBound) {
-                    let delta = MaterialHistoryLog.getDelta(this.material_logs[index - 1], log);
+                    let delta = this.material.logs.logs[index - 1].getDelta(log)
                     if (delta > 0) {
                         delta = 0;
                     }
@@ -195,6 +192,4 @@ export class MaterialHistory extends MaterialHistoryLogCollection implements IMa
             this.createSeries("Losses", generateLossDatum, dateFrom, dateTo),
         ];
     }
-
-
 }

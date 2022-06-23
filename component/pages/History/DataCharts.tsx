@@ -1,13 +1,14 @@
 import {useContext, useState} from "react";
 import {Col, Row} from "react-bootstrap";
-import {removeDaysFromToday} from "../../../tools/miscs";
+import {removeDaysFromToday} from "../../../tools/Miscs";
 import {SectionTitle} from "../../pageComponents/Theme/Theme";
 import ContentDiv from "../../Layout/ContentDiv";
 import {MaterialHistoryGraph} from "./MaterialHistoryGraph";
 import {PageLoadingComponent} from "../../App Components/PageLoadingComponent";
-import {HistoryContext} from "./MaterialHistoryIDData";
+import {MaterialContext} from "./MaterialHistoryIDData";
 import {TimeFrameSelect} from "./TimeFrameSelect";
 import {SelectGraphType} from "./SelectGraphType";
+import {MaterialLogsGraph} from "../../../tools/MaterialLogsGraph";
 
 export interface DataChartsProps {
 }
@@ -15,11 +16,10 @@ export interface DataChartsProps {
 export type GraphType = "count" | "gains" | "averages";
 
 export function DataCharts(props: DataChartsProps) {
-    const history = useContext(HistoryContext);
-
-    if (history === undefined) {
-        return <PageLoadingComponent/>
-    }
+    // Get the material
+    const material = useContext(MaterialContext)
+    if (material === undefined || material.logs === "loading") return <PageLoadingComponent/>;
+    const materialLogsGraph = new MaterialLogsGraph(material)
 
     const [lowerDate, setLowerDate] = useState<Date>(removeDaysFromToday(1));
     const [upperDate, setUpperDate] = useState(new Date());
@@ -32,13 +32,12 @@ export function DataCharts(props: DataChartsProps) {
                 <TimeFrameSelect dateHook={setLowerDate}/>
             </Col>
             <Col lg={6}>
-                <SelectGraphType graphTypeHook={setGraphType} history={history}/>
+                <SelectGraphType graphTypeHook={setGraphType} materialLogsGraph={materialLogsGraph}/>
             </Col>
         </Row>
 
-
         <p>Showing count from the {lowerDate.toLocaleString()} to {upperDate.toLocaleString()}</p>
 
-        <MaterialHistoryGraph series={history.getGraphData(graphType, lowerDate, upperDate)}/>
+        <MaterialHistoryGraph series={materialLogsGraph.getGraphData(graphType, lowerDate, upperDate)}/>
     </ContentDiv>;
 }

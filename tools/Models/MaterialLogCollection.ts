@@ -3,7 +3,7 @@ import {MaterialLog} from "./MaterialLog";
 import axios from "axios";
 import {IMaterialLogsAPIResponse} from "../../pages/api/material/logs/[id]";
 import {APIRoutes} from "../../config/API routes";
-import {TimeTools} from "../miscs";
+import {TimeTools} from "../Miscs";
 
 export class MaterialLogCollection {
     logs: MaterialLog[]
@@ -127,7 +127,7 @@ export class MaterialLogCollection {
     }
 
     /** Returns the timeframe of the history. If no date is given, the timeframe is from the oldest logs to the latest logs.*/
-    protected getTimeframe(dateFrom: Date | undefined, dateTo: Date | undefined) {
+    getTimeframe(dateFrom: Date | undefined, dateTo: Date | undefined) {
         const dateLowerBound = dateFrom || this.getOldestLog().log_date;
         const dateUpperBound = dateTo || this.getLatestLog().log_date;
         return {dateLowerBound, dateUpperBound};

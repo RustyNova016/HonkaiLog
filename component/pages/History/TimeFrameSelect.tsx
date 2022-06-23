@@ -1,25 +1,24 @@
 import {Dispatch, SetStateAction, useContext} from "react";
-import {HistoryContext} from "./MaterialHistoryIDData";
+import {MaterialContext} from "./MaterialHistoryIDData";
 import {PageLoadingComponent} from "../../App Components/PageLoadingComponent";
 import {Button, ButtonGroup} from "react-bootstrap";
-import {removeDaysFromToday} from "../../../tools/miscs";
+import {removeDaysFromToday} from "../../../tools/Miscs";
 
 export function TimeFrameSelectButton(props: { dayValue: number | null, label: string, action: Dispatch<SetStateAction<Date>> }) {
-    const history = useContext(HistoryContext);
+    // Get the material
+    const material = useContext(MaterialContext)
+    if (material === undefined || material.logs === "loading") return <PageLoadingComponent/>;
 
-    if (history === undefined) {
-        return <PageLoadingComponent/>
-    }
-
-    return <Button onClick={
-        event => {
-            if (props.dayValue !== null) {
-                return props.action(removeDaysFromToday(props.dayValue))
-            } else {
-                return props.action(new Date(history.getOldestLog().log_date))
-            }
+    const onClick = function (event: any) {
+        if (props.dayValue !== null) {
+            return props.action(removeDaysFromToday(props.dayValue))
+        } else {
+            if (material === undefined || material.logs === "loading") throw new Error("This shouldn't happen. Material isn't initialized");
+            return props.action(new Date(material.logs.getOldestLog().log_date))
         }
-    }>{props.label}</Button>;
+    };
+
+    return <Button onClick={onClick}>{props.label}</Button>;
 }
 
 export function TimeFrameSelect(props: { dateHook: (value: (((prevState: Date) => Date) | Date)) => void }) {

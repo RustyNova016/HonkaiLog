@@ -18,7 +18,13 @@ module.exports = {
                 name: 'Crystals',
                 createdAt: new Date(),
                 updatedAt: new Date()
-            }
+            },
+            {
+                id: 2,
+                name: 'Dorm Supply Card',
+                createdAt: new Date(),
+                updatedAt: new Date()
+            },
         ]);
     },
 
