@@ -1,8 +1,8 @@
 import {signIn, signOut, useSession} from "next-auth/react";
 import {Container, Nav, Navbar} from "react-bootstrap";
 import {Session} from "next-auth";
-import styles from "./Navigation.module.scss";
-import {LoadingComponent} from "../../App Components/PageLoadingComponent";
+import styles from "./CSS/Navigation.module.scss";
+import {LoadingComponent} from "../App Components/PageLoadingComponent";
 
 export function NavUser() {
     const {data: session, status} = useSession()

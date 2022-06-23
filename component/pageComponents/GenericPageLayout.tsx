@@ -5,7 +5,7 @@ import {getCommonHead} from "./getCommonHead";
 import styles from '../Layout/CSS/BackgroundPicture.module.scss'
 import {ErrorFallback, ErrorHandler} from "../App Components/ErrorFallback";
 import {ErrorBoundary} from "react-error-boundary";
-import {Navigation} from "./header/Navigation";
+import {Navigation} from "../Layout/Navigation";
 
 export function GenericPageLayout(props: { children: React.ReactNode, hideFooter?: boolean, pushFooter?: boolean; }) {
 

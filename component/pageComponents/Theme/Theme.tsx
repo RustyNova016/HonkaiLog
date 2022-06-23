@@ -1,4 +1,4 @@
-import style from './theme.module.scss';
+import style from './CSS/theme.module.scss';
 
 export function SectionTitle(props: { title: string }) {
     return <h1 className={style.sectionTitle}>{props.title}</h1>;
