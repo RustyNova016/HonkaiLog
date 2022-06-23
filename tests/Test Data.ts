@@ -6,7 +6,7 @@ export const TestMaterialCountAPIResponse: IMaterialLogsAPIResponse = {
     id: 1,
     name: "Test Material",
     updatedAt: "2020-01-01T00:00:00.000Z",
-    materialLogsResponce: [
+    Material_logs: [
         {
             createdAt: "2020-01-01T00:00:00.000Z",
             id: 1,
@@ -33,7 +33,7 @@ export const TestMaterialCountAPIResponse_NoLogs: IMaterialLogsAPIResponse = {
     id: 1,
     name: "Test Material 2",
     updatedAt: "2020-01-01T00:00:00.000Z",
-    materialLogsResponce: []
+    Material_logs: []
 }
 
 export const TestMaterialCountAPIResponse_bigger: IMaterialLogsAPIResponse = {
@@ -41,7 +41,7 @@ export const TestMaterialCountAPIResponse_bigger: IMaterialLogsAPIResponse = {
     id: 1,
     name: "Test Material",
     updatedAt: "2020-01-01T00:00:00.000Z",
-    materialLogsResponce: [
+    Material_logs: [
         {
             createdAt: "2020-01-01T00:00:00.000Z",
             id: 1,
