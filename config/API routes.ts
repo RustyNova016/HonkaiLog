@@ -1,4 +1,4 @@
-export enum APIRoutes {
-    material = "/api/material/",
-    materialLogs = "/api/material/logs/",
+export const APIRoutes = {
+    material: "/api/material/",
+    materialLogs: "/api/material/logs/",
 }

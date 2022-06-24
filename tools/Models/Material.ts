@@ -18,7 +18,11 @@ export class Material {
         const materialResponse = await axios.get<MaterialApiResponse>(APIRoutes.material + id)
 
         if (materialResponse.status === HttpStatusCode.Ok) {
-            return new Material(materialResponse.data.id, materialResponse.data.name)
+            const data = materialResponse.data;
+
+            if (data === null) throw new Error("Api returned null")
+
+            return new Material(data.id, data.name)
         } else {
             throw new Error("Cannot get Material")
         }
