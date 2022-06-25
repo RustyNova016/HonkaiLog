@@ -2,6 +2,7 @@ import {UserDBResponse} from "../../database/user";
 import {Material} from "./Material";
 import {MaterialQuantity} from "./MaterialQuantity";
 
+/** Snapshot of a quantity at a given time */
 export class MaterialLog extends MaterialQuantity {
     id: number;
     log_date: Date;
