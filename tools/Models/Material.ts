@@ -4,6 +4,7 @@ import {APIRoutes} from "../../config/API routes";
 import {HttpStatusCode} from "../API/HttpStatusCodes";
 import {MaterialLogCollection} from "./MaterialLogCollection";
 
+/** Class of a material object. E.G. Gold, crystals, gems, ETC */
 export class Material {
     id: number;
     name: string;
