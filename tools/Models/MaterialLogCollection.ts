@@ -7,31 +7,34 @@ import {TimeTools} from "../Miscs";
 
 /** List of all the MaterialLogs of an material. It can be used to calculate data about the usage of the materials */
 export class MaterialLogCollection {
-    logs: MaterialLog[]
+    loaded: boolean = false;
+    logs: MaterialLog[] = [];
 
-    constructor(logs: MaterialLog[]) {
-
-        this.logs = logs;
+    constructor(logs?: MaterialLog[]) {
+        if (logs !== undefined) {
+            this.logs = logs;
+            this.loaded = true
+        }
     }
 
-    static fromAPI(res: IMaterialLogsAPIResponse, material: Material) {
-        const logs = []
-
+    /** Put the MaterialLog objects into the array using an API response as input data */
+    public addLogsFromAPIResponse(res: IMaterialLogsAPIResponse, material: Material): void {
         for (const materialLog of res.Material_logs) {
-            logs.push(new MaterialLog(material, materialLog.count, materialLog.id, new Date(materialLog.log_date), materialLog.userId))
+            this.logs.push(new MaterialLog(material, materialLog.count, materialLog.id, new Date(materialLog.log_date), materialLog.userId))
         }
 
-        return new MaterialLogCollection(logs)
-    }
-
-    static async getLogsOfMaterial(material: Material): Promise<MaterialLogCollection> {
-        const logs = await axios.get<IMaterialLogsAPIResponse>(APIRoutes.materialLogs + material.id);
-
-        return MaterialLogCollection.fromAPI(logs.data, material);
+        this.loaded = true
     }
 
     empty(): boolean {
         return this.logs.length === 0;
+    }
+
+    /** Initialize the logs with a material object */
+    public async fetchLogsOfMaterial(material: Material): Promise<void> {
+        const logs = await axios.get<IMaterialLogsAPIResponse>(APIRoutes.materialLogs + material.id);
+
+        this.addLogsFromAPIResponse(logs.data, material);
     }
 
     getAverageDelta(): number {
@@ -55,6 +58,7 @@ export class MaterialLogCollection {
         return this.getLogsBetween(dateLowerBound, dateUpperBound).getAverageGain();
     }
 
+    /** Return the current count of material that the user has in game... Well, the count they last logged. */
     getCurrentCount(): number {
         if (this.empty()) return 0;
         return this.getLatestLog().quantity;
@@ -122,15 +126,15 @@ export class MaterialLogCollection {
         return this.logs[0];
     }
 
-    getTimeframeMilliseconds(dateFrom: Date | undefined, dateTo: Date | undefined) {
-        const {dateLowerBound, dateUpperBound} = this.getTimeframe(dateFrom, dateTo);
-        return TimeTools.getDateDifference(dateUpperBound, dateLowerBound);
-    }
-
     /** Returns the timeframe of the history. If no date is given, the timeframe is from the oldest logs to the latest logs.*/
     getTimeframe(dateFrom: Date | undefined, dateTo: Date | undefined) {
         const dateLowerBound = dateFrom || this.getOldestLog().log_date;
         const dateUpperBound = dateTo || this.getLatestLog().log_date;
         return {dateLowerBound, dateUpperBound};
+    }
+
+    getTimeframeMilliseconds(dateFrom: Date | undefined, dateTo: Date | undefined) {
+        const {dateLowerBound, dateUpperBound} = this.getTimeframe(dateFrom, dateTo);
+        return TimeTools.getDateDifference(dateUpperBound, dateLowerBound);
     }
 }

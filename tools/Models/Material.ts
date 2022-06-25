@@ -7,8 +7,8 @@ import {MaterialLogCollection} from "./MaterialLogCollection";
 /** Class of a material object. E.G. Gold, crystals, gems, ETC */
 export class Material {
     id: number;
+    logs: MaterialLogCollection = new MaterialLogCollection();
     name: string;
-    logs: MaterialLogCollection | "loading" = "loading";
 
     constructor(id: number, name: string) {
         this.id = id;
@@ -30,7 +30,22 @@ export class Material {
     }
 
     async fetchLogs() {
-        this.logs = await MaterialLogCollection.getLogsOfMaterial(this)
+        this.logs.fetchLogsOfMaterial(this)
+    }
+
+    /** Return the current count of material that the user has in game... Well, the count they last logged. */
+    getInGameCount() {
+        this.logNotSetWarning();
+        return this.logs.getCurrentCount();
+    }
+
+    hasLogs() {
+        return this.logs.loaded;
+    }
+
+    /** If the logs aren't set, send a warning in the console */
+    private logNotSetWarning() {
+        if (!this.hasLogs()) console.warn("The logs aren't set! The data isn't what it should be!")
     }
 }
 

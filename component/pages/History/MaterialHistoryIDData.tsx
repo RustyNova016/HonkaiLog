@@ -1,4 +1,4 @@
-import {createContext, useContext, useState} from "react";
+import {createContext, useState} from "react";
 import {Container} from "react-bootstrap";
 import {PageTitle} from "../../pageComponents/Theme/Theme";
 import {ErrorBoundary} from "react-error-boundary";
@@ -8,6 +8,7 @@ import {MaterialCollection} from "../../../tools/Models/MaterialCollection";
 import {Material} from "../../../tools/Models/Material";
 import {LoggerComponent} from "./LoggerComponent";
 import {PageLoadingComponent} from "../../App Components/PageLoadingComponent";
+import {GachaData} from "./GachaData";
 
 export interface MaterialHistoryIDDataProps {
     MaterialID: number;
@@ -21,7 +22,7 @@ export function MaterialHistoryIDData(props: MaterialHistoryIDDataProps) {
         setMaterial(fetchedMaterial)
     })
 
-    if (material === undefined || material.logs === "loading") return <PageLoadingComponent/>;
+    if (material === undefined || !material.hasLogs()) return <PageLoadingComponent/>;
 
     return <>
         <MaterialContext.Provider value={material}>
@@ -36,9 +37,9 @@ export function MaterialHistoryIDData(props: MaterialHistoryIDDataProps) {
                     <DataCharts/>
                 </ErrorBoundary>
 
-                {/*<ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
+                <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
                     <GachaData/>
-                </ErrorBoundary>*/}
+                </ErrorBoundary>
             </Container>
         </MaterialContext.Provider>
 
