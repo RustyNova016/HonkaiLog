@@ -5,6 +5,7 @@ import {IMaterialLogsAPIResponse} from "../../pages/api/material/logs/[id]";
 import {APIRoutes} from "../../config/API routes";
 import {TimeTools} from "../Miscs";
 
+/** List of all the MaterialLogs of an material. It can be used to calculate data about the usage of the materials */
 export class MaterialLogCollection {
     logs: MaterialLog[]
 
