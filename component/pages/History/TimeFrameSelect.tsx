@@ -1,13 +1,11 @@
 import {Dispatch, SetStateAction, useContext} from "react";
-import {MaterialContext} from "./MaterialHistoryIDData";
-import {PageLoadingComponent} from "../../App Components/PageLoadingComponent";
 import {Button, ButtonGroup} from "react-bootstrap";
 import {removeDaysFromToday} from "../../../tools/Miscs";
+import {MaterialContext} from "../../Contexts/MaterialContext";
 
 export function TimeFrameSelectButton(props: { dayValue: number | null, label: string, action: Dispatch<SetStateAction<Date>> }) {
     // Get the material
     const material = useContext(MaterialContext)
-    if (material === undefined || material.logs === "loading") return <PageLoadingComponent/>;
 
     const onClick = function (event: any) {
         if (props.dayValue !== null) {

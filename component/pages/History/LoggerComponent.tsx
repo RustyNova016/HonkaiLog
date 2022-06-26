@@ -3,7 +3,7 @@ import {SectionTitle} from "../../pageComponents/Theme/Theme";
 import {Col, Row} from "react-bootstrap";
 import {MaterialLogInput} from "./MaterialLogInput";
 import {useContext} from "react";
-import {MaterialContext} from "./MaterialHistoryIDData";
+import {MaterialContext} from "../../Contexts/MaterialContext";
 
 export function LoggerComponent() {
     // Get the material

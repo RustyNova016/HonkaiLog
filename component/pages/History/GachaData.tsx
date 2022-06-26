@@ -1,13 +1,12 @@
 import ContentDiv from "../../Layout/ContentDiv";
 import {SectionTitle} from "../../pageComponents/Theme/Theme";
 import {useContext, useState} from "react";
-import {MaterialContext} from "./MaterialHistoryIDData";
-import {PageLoadingComponent} from "../../App Components/PageLoadingComponent";
 import {removeDaysFromToday, TimeTools} from "../../../tools/Miscs";
 import {Col, Row} from "react-bootstrap";
 import {TimeFrameSelect} from "./TimeFrameSelect";
 import {GachaBanner} from "../../../tools/Models/GachaBanner";
 import {MaterialQuantity} from "../../../tools/Models/MaterialQuantity";
+import {MaterialContext} from "../../Contexts/MaterialContext";
 
 function GachaBannerInfo(props: { gachaBanner: GachaBanner }) {
     const gachaBanner = props.gachaBanner
@@ -21,7 +20,9 @@ function GachaBannerInfo(props: { gachaBanner: GachaBanner }) {
 
         <p>
             With your current average gains, you will be able to get
-            enough {gachaBanner.getGetCostMaterialName()} to complete the gacha in {gachaBanner.getDaysToFullCompletionFounds()} days, AKA the {TimeTools.AddDaysToDate(new Date(), gachaBanner.getDaysToFullCompletionFounds()).toLocaleString()}
+            enough {gachaBanner.getGetCostMaterialName()} to complete the gacha
+            in {gachaBanner.getDaysToFullCompletionFounds()} days, AKA
+            the {TimeTools.AddDaysToDate(new Date(), gachaBanner.getDaysToFullCompletionFounds()).toLocaleString()}
         </p>
 
     </Row>;
@@ -30,8 +31,6 @@ function GachaBannerInfo(props: { gachaBanner: GachaBanner }) {
 export function GachaData() {
     // Get the material
     const material = useContext(MaterialContext)
-    if (material === undefined || !material.hasLogs()) return <PageLoadingComponent/>;
-
     const [lowerDate, setLowerDate] = useState<Date>(removeDaysFromToday(1));
 
     const expaBanner = new GachaBanner("EXPA", new MaterialQuantity(material, 280), 100, 1)

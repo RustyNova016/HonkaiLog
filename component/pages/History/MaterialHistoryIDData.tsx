@@ -1,4 +1,4 @@
-import {createContext, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {Container} from "react-bootstrap";
 import {PageTitle} from "../../pageComponents/Theme/Theme";
 import {ErrorBoundary} from "react-error-boundary";
@@ -9,12 +9,11 @@ import {LoggerComponent} from "./LoggerComponent";
 import {GachaData} from "./GachaData";
 import {Fade} from "react-awesome-reveal";
 import {PageLoadingComponent} from "../../App Components/PageLoadingComponent";
+import { MaterialContext } from "../../Contexts/MaterialContext";
 
 export interface MaterialHistoryIDDataProps {
     materialID: number;
 }
-
-export const MaterialContext = createContext<Material>(new Material(-1, ""))
 
 /** The actual MaterialHistoryIDPage content. Here the user is sure to be logged in */
 export function MaterialHistoryIDData(props: MaterialHistoryIDDataProps) {

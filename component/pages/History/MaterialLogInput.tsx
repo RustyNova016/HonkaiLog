@@ -1,9 +1,8 @@
 import {Col, FormFloating, Row} from "react-bootstrap";
 import {useForm} from "react-hook-form";
-import {MaterialContext} from "./MaterialHistoryIDData";
 import {useContext} from "react";
-import {PageLoadingComponent} from "../../App Components/PageLoadingComponent";
 import axios from "axios";
+import {MaterialContext} from "../../Contexts/MaterialContext";
 
 export interface MaterialLogInputForm {
     count: number;
@@ -15,8 +14,6 @@ export interface MaterialLogInputProps {
 export function MaterialLogInput(props: MaterialLogInputProps) {
     // Get the material
     const material = useContext(MaterialContext)
-    if (material === undefined || material.logs === "loading") return <PageLoadingComponent/>;
-
     const {register, handleSubmit, watch, formState: {errors}} = useForm<MaterialLogInputForm>();
 
     // TODO: Send request to server to update count

@@ -4,11 +4,10 @@ import {removeDaysFromToday} from "../../../tools/Miscs";
 import {SectionTitle} from "../../pageComponents/Theme/Theme";
 import ContentDiv from "../../Layout/ContentDiv";
 import {MaterialHistoryGraph} from "./MaterialHistoryGraph";
-import {PageLoadingComponent} from "../../App Components/PageLoadingComponent";
-import {MaterialContext} from "./MaterialHistoryIDData";
 import {TimeFrameSelect} from "./TimeFrameSelect";
 import {SelectGraphType} from "./SelectGraphType";
 import {MaterialLogsGraph} from "../../../tools/MaterialLogsGraph";
+import {MaterialContext} from "../../Contexts/MaterialContext";
 
 export interface DataChartsProps {
 }
@@ -18,9 +17,7 @@ export type GraphType = "count" | "gains" | "averages";
 export function DataCharts(props: DataChartsProps) {
     // Get the material
     const material = useContext(MaterialContext)
-    if (material === undefined || material.logs === "loading") return <PageLoadingComponent/>;
     const materialLogsGraph = new MaterialLogsGraph(material)
-
     const [lowerDate, setLowerDate] = useState<Date>(removeDaysFromToday(1));
     const [upperDate, setUpperDate] = useState(new Date());
     const [graphType, setGraphType] = useState<GraphType>("count");
