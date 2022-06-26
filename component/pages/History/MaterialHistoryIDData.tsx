@@ -1,28 +1,22 @@
-import {createContext, useState} from "react";
+import {createContext} from "react";
 import {Container} from "react-bootstrap";
 import {PageTitle} from "../../pageComponents/Theme/Theme";
 import {ErrorBoundary} from "react-error-boundary";
 import {ErrorFallback, ErrorHandler} from "../../App Components/ErrorFallback";
 import {DataCharts} from "./DataCharts";
-import {MaterialCollection} from "../../../tools/Models/MaterialCollection";
 import {Material} from "../../../tools/Models/Material";
 import {LoggerComponent} from "./LoggerComponent";
-import {PageLoadingComponent} from "../../App Components/PageLoadingComponent";
 import {GachaData} from "./GachaData";
 
 export interface MaterialHistoryIDDataProps {
     MaterialID: number;
+    material: Material
 }
 
 export const MaterialContext = createContext<Material | undefined>(undefined)
 
 export function MaterialHistoryIDData(props: MaterialHistoryIDDataProps) {
-    const [material, setMaterial] = useState<Material>();
-    MaterialCollection.getCollection().findMaterialById(1, true).then(fetchedMaterial => {
-        setMaterial(fetchedMaterial)
-    })
-
-    if (material === undefined || !material.hasLogs()) return <PageLoadingComponent/>;
+    const {material} = props;
 
     return <>
         <MaterialContext.Provider value={material}>

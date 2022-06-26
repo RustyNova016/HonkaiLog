@@ -4,7 +4,7 @@ import {APIRoutes} from "../../config/API routes";
 import {HttpStatusCode} from "../API/HttpStatusCodes";
 import {MaterialLogCollection} from "./MaterialLogCollection";
 
-/** Class of a material object. E.G. Gold, crystals, gems, ETC */
+/** Class of a material object. E.G. Gold, crystals, exp material, etc... */
 export class Material {
     id: number;
     logs: MaterialLogCollection = new MaterialLogCollection();
@@ -15,7 +15,8 @@ export class Material {
         this.name = name;
     }
 
-    static async getMaterialFromId(id: number): Promise<Material> {
+    /** Ask the API for the data of a material. */
+    static async getAPIMaterialData(id: number): Promise<MaterialApiResponse> {
         const materialResponse = await axios.get<MaterialApiResponse>(APIRoutes.material + id)
 
         if (materialResponse.status === HttpStatusCode.Ok) {
@@ -23,14 +24,19 @@ export class Material {
 
             if (data === null) throw new Error("Api returned null")
 
-            return new Material(data.id, data.name)
+            return data;
         } else {
             throw new Error("Cannot get Material")
         }
     }
 
+    static async getMaterialFromId(id: number): Promise<Material> {
+        const data = await Material.getAPIMaterialData(id)
+        return new Material(data.id, data.name)
+    }
+
     async fetchLogs() {
-        this.logs.fetchLogsOfMaterial(this)
+        await this.logs.fetchLogsOfMaterial(this)
     }
 
     /** Return the current count of material that the user has in game... Well, the count they last logged. */
@@ -41,6 +47,11 @@ export class Material {
 
     hasLogs() {
         return this.logs.loaded;
+    }
+
+    /** Load the object with the latest data in the API. */
+    loadData(loadLogs?: boolean) {
+
     }
 
     /** If the logs aren't set, send a warning in the console */
