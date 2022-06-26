@@ -44,6 +44,12 @@ export class TimeTools {
         return newDate;
     }
 
+    static AddDaysToDate(date: Date, days: number): Date {
+        const newDate = new Date(date);
+        newDate.setDate(newDate.getDate() + days);
+        return newDate;
+    }
+
     static removeDaysFromToday(days: number): Date {
         return TimeTools.removeDaysFromDate(new Date(), days);
     }

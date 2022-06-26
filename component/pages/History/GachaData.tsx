@@ -3,11 +3,29 @@ import {SectionTitle} from "../../pageComponents/Theme/Theme";
 import {useContext, useState} from "react";
 import {MaterialContext} from "./MaterialHistoryIDData";
 import {PageLoadingComponent} from "../../App Components/PageLoadingComponent";
-import {removeDaysFromToday} from "../../../tools/Miscs";
+import {removeDaysFromToday, TimeTools} from "../../../tools/Miscs";
 import {Col, Row} from "react-bootstrap";
 import {TimeFrameSelect} from "./TimeFrameSelect";
 import {GachaBanner} from "../../../tools/Models/GachaBanner";
 import {MaterialQuantity} from "../../../tools/Models/MaterialQuantity";
+
+function GachaBannerInfo(props: { gachaBanner: GachaBanner }) {
+    const gachaBanner = props.gachaBanner
+    return <Row>
+        <p>{gachaBanner.name} gacha banner:</p>
+
+        <p>
+            You have enough to do {gachaBanner.getNBPullsPossible()} pulls, which
+            is {gachaBanner.getPercentageAchievable()}% of the banner complete.
+        </p>
+
+        <p>
+            With your current average gains, you will be able to get
+            enough {gachaBanner.getGetCostMaterialName()} to complete the gacha in {gachaBanner.getDaysToFullCompletionFounds()} days, AKA the {TimeTools.AddDaysToDate(new Date(), gachaBanner.getDaysToFullCompletionFounds()).toLocaleString()}
+        </p>
+
+    </Row>;
+}
 
 export function GachaData() {
     // Get the material
@@ -18,7 +36,7 @@ export function GachaData() {
 
     const expaBanner = new GachaBanner("EXPA", new MaterialQuantity(material, 280), 100, 1)
 
-    return <ContentDiv>
+    return <ContentDiv sides={true}>
         <SectionTitle title={"Gacha"}></SectionTitle>
 
         <Row>
@@ -27,14 +45,6 @@ export function GachaData() {
             </Col>
         </Row>
 
-        <Row>
-            <p>{expaBanner.name} gacha banner:</p>
-
-
-            <p>You have enough to do {expaBanner.getNBPullsPossible()} pulls, which is {expaBanner.getPercentageAchievable()}%
-                of the banner. </p>
-
-
-        </Row>
+        <GachaBannerInfo gachaBanner={expaBanner}/>
     </ContentDiv>;
 }
