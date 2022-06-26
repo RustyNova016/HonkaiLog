@@ -3,16 +3,30 @@ import {MaterialApiResponse} from "../../pages/api/material/[id]";
 import {APIRoutes} from "../../config/API routes";
 import {HttpStatusCode} from "../API/HttpStatusCodes";
 import {MaterialLogCollection} from "./MaterialLogCollection";
+import logging from "../Logger";
 
 /** Class of a material object. E.G. Gold, crystals, exp material, etc... */
 export class Material {
-    id: number;
     logs: MaterialLogCollection = new MaterialLogCollection();
     name: string;
+    private _id: number;
 
     constructor(id: number, name: string) {
-        this.id = id;
+        this._id = id;
         this.name = name;
+    }
+
+    get id(): number {
+        return this._id;
+    }
+
+    set id(value: number) {
+        // Invalidate any old values
+        this._id = value;
+        this.logs = new MaterialLogCollection();
+
+        // Populate with new value
+        this.loadData();
     }
 
     /** Ask the API for the data of a material. */
@@ -50,8 +64,22 @@ export class Material {
     }
 
     /** Load the object with the latest data in the API. */
-    loadData(loadLogs?: boolean) {
+    async loadData(loadLogs?: boolean): Promise<void> {
+        // Negative values can be used as placeholders. We do warn if we try to load data
+        if (this._id >= 1) {
+            const err = new Error("Cannot load data on a placeholder. Did you forget to set a Id?")
+            logging.error(err.message, "Material")
+            throw err;
+        }
 
+        // We request the API for fresh new data
+        const data = await Material.getAPIMaterialData(this._id)
+
+        // Now we set it
+        this.name = data.name
+
+        // Do we load the logs too?
+        if (loadLogs) await this.fetchLogs();
     }
 
     /** If the logs aren't set, send a warning in the console */
