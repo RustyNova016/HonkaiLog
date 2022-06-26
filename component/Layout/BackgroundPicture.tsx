@@ -20,7 +20,7 @@ export function BackgroundPicture(props: BackgroundPictureProps) {
 
     return (
         <div style={{...props.style, backgroundImage: `url(/images/background/` + backgroundPicture + `)`}}
-            className={styles.backgroundPicture}>
+             className={styles.backgroundPicture}>
             <div className={styles.backgroundPictureOverlay}>
                 {props.children}
             </div>
