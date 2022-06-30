@@ -3,7 +3,7 @@ import {Container} from "react-bootstrap";
 import {PageTitle} from "../../pageComponents/Theme/Theme";
 import {ErrorBoundary} from "react-error-boundary";
 import {ErrorFallback, ErrorHandler} from "../../App Components/ErrorFallback";
-import {DataCharts} from "./DataCharts";
+import {MaterialUsageData} from "./Material Usage Data/MaterialUsageData";
 import {Material} from "../../../tools/Models/Material";
 import {LoggerComponent} from "./LoggerComponent";
 import {GachaData} from "./GachaData";
@@ -44,7 +44,7 @@ export function MaterialHistoryIDData(props: MaterialHistoryIDDataProps) {
                     </ErrorBoundary>
 
                     <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
-                        <DataCharts/>
+                        <MaterialUsageData/>
                     </ErrorBoundary>
 
                     <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>

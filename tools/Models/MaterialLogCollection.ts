@@ -30,6 +30,14 @@ export class MaterialLogCollection {
         return this.logs.length === 0;
     }
 
+    /** Throw an error if this.logs is empty. Useful to stop calculations without data */
+    throwOnEmptyArray() {
+        if (this.empty()) {
+            // This bitch empty! YEET!
+            throw new Error("No logs are in the array.")
+        }
+    }
+
     /** Initialize the logs with a material object */
     public async fetchLogsOfMaterial(material: Material): Promise<void> {
         const logs = await axios.get<IMaterialLogsAPIResponse>(APIRoutes.materialLogs + material.id);
@@ -77,6 +85,7 @@ export class MaterialLogCollection {
     }
 
     getLatestLog() {
+        this.throwOnEmptyArray();
         return this.logs[this.logs.length - 1];
     }
 
@@ -102,15 +111,15 @@ export class MaterialLogCollection {
         let gain = 0;
         let delta = 0;
 
-        this.logs.forEach((log, index) => {
-            if (index === 0) {return;}
-
-            delta = this.logs[index - 1].getDelta(log);
+        for (let i = 0; i < this.logs.length; i++) {
+            if (i !== 0) {
+                delta = this.logs[i - 1].getChronologicalDelta(this.logs[i])
+            }
 
             if (delta > 0) {
                 gain += delta;
             }
-        })
+        }
 
         return gain;
     }

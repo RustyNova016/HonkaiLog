@@ -1,13 +1,9 @@
 import {ResponsiveLine, Serie} from "@nivo/line";
 import {MaterialLogPointToolTip} from "../../Graphs/Tooltips/MaterialLogPointToolTip";
-import {Alert} from "react-bootstrap";
+import {NoDataErrorComponent} from "../../App Components/Errors/NoDataErrorComponent";
 
 export interface MaterialHistoryGraphProps {
     series: Serie[]
-}
-
-function NoDataErrorComponent() {
-    return <Alert variant={"danger"} style={{margin: "10px"}}>No data to display.</Alert>;
 }
 
 export function MaterialHistoryGraph(props: MaterialHistoryGraphProps) {
