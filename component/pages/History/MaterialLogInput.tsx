@@ -1,25 +1,31 @@
 import {Col, FormFloating, Row} from "react-bootstrap";
 import {useForm} from "react-hook-form";
-import {useContext} from "react";
-import axios from "axios";
+import {useContext, useState} from "react";
 import {MaterialContext} from "../../Contexts/MaterialContext";
+import {Material} from "../../../tools/Models/Material";
 
 export interface MaterialLogInputForm {
     count: number;
 }
 
-export interface MaterialLogInputProps {
-}
+export interface MaterialLogInputProps {}
 
 export function MaterialLogInput(props: MaterialLogInputProps) {
+    const [loading, setLoading] = useState(false);
+
     // Get the material
     const material = useContext(MaterialContext)
     const {register, handleSubmit, watch, formState: {errors}} = useForm<MaterialLogInputForm>();
 
-    // TODO: Send request to server to update count
-    const onSubmit = async (data: MaterialLogInputForm) => {
+    const loadCallback = (mat: Material) => {
+        setLoading(false)
+    }
 
-        axios.post("http://localhost:3000/api/material/logs", {...data, MaterialId: material.id})
+    material.loadCallbacks.push(loadCallback);
+
+    const onSubmit = async (data: MaterialLogInputForm) => {
+        setLoading(true)
+        await material.addNewLog(data.count)
     }
 
     return <>
@@ -33,7 +39,14 @@ export function MaterialLogInput(props: MaterialLogInputProps) {
                     </FormFloating>
                 </Col>
                 <Col lg={2}>
-                    <button type="submit">Submit</button>
+                    <button type="submit" className={"btn btn-primary"}>
+                        Submit
+                        {loading ?
+                            <div className="spinner-border" role="status">
+                                <span className="visually-hidden">Loading...</span>
+                            </div>
+                            : null}
+                    </button>
                 </Col>
             </Row>
         </form>

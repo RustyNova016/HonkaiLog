@@ -4,11 +4,15 @@ import {APIRoutes} from "../../config/API routes";
 import {HttpStatusCode} from "../API/HttpStatusCodes";
 import {MaterialLogCollection} from "./MaterialLogCollection";
 import logging from "../Logger";
+import logger from "../Logger";
+import {MaterialQuantity} from "./MaterialQuantity";
+import {Dispatch, SetStateAction} from "react";
 
 /** Class of a material object. E.G. Gold, crystals, exp material, etc... */
 export class Material {
-    logs: MaterialLogCollection = new MaterialLogCollection();
-    name: string;
+    public loadCallbacks: ((a: Material) => void)[] = []
+    public logs: MaterialLogCollection = new MaterialLogCollection();
+    public name: string;
     private _id: number;
 
     constructor(id: number, name: string) {
@@ -28,7 +32,6 @@ export class Material {
         // Populate with new value
         this.loadData();
     }
-
     /** Ask the API for the data of a material. */
     static async getAPIMaterialData(id: number): Promise<MaterialApiResponse> {
         const materialResponse = await axios.get<MaterialApiResponse>(APIRoutes.material + id)
@@ -49,6 +52,11 @@ export class Material {
         return new Material(data.id, data.name)
     }
 
+    async addNewLog(count: number) {
+        await this.logs.addNewLog(new MaterialQuantity(this, count))
+        await this.loadData(true)
+    }
+
     async fetchLogs() {
         await this.logs.fetchLogsOfMaterial(this)
     }
@@ -66,7 +74,7 @@ export class Material {
     /** Load the object with the latest data in the API. */
     async loadData(loadLogs?: boolean): Promise<void> {
         // Negative values can be used as placeholders. We do warn if we try to load data
-        if (this._id >= 1) {
+        if (this._id < 1) {
             const err = new Error("Cannot load data on a placeholder. Did you forget to set a Id?")
             logging.error(err.message, "Material")
             throw err;
@@ -80,6 +88,19 @@ export class Material {
 
         // Do we load the logs too?
         if (loadLogs) await this.fetchLogs();
+
+        // We finish with the callbacks
+        this.executeLoadCallbacks();
+    }
+
+    private executeLoadCallbacks() {
+        if (this.loadCallbacks.length === 0) {
+            logger.warn("No load callback defined. The page may not be loaded.")
+        } else {
+            for (const loadCallback of this.loadCallbacks) {
+                loadCallback(this);
+            }
+        }
     }
 
     /** If the logs aren't set, send a warning in the console */

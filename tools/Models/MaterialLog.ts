@@ -1,6 +1,8 @@
 import {UserDBResponse} from "../../database/user";
 import {Material} from "./Material";
 import {MaterialQuantity} from "./MaterialQuantity";
+import axios from "axios";
+import {APIRoutes} from "../../config/API routes";
 
 /** Snapshot of a quantity at a given time */
 export class MaterialLog extends MaterialQuantity {
@@ -29,6 +31,12 @@ export class MaterialLog extends MaterialQuantity {
 
     isOlderThan(log: MaterialLog): boolean {
         return this.log_date.getTime() < log.log_date.getTime();
+    }
+
+    static async createNewLog(quantity: MaterialQuantity){
+        const res = await axios.post(APIRoutes.materialLogs, {count: quantity.quantity, MaterialId: quantity.material.id})
+
+        // TODO: check for errors
     }
 }
 

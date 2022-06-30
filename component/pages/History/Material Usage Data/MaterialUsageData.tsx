@@ -22,7 +22,7 @@ export function MaterialUsageData(props: DataChartsProps) {
 
     return <>
         <ContentDiv sides={true}>
-            <SectionTitle title={"Data Charts"}></SectionTitle>
+            <SectionTitle title={"Material Usages"}></SectionTitle>
             <MaterialUsageDataOptions dateHook={setLowerDate} graphTypeHook={setGraphType}
                               materialLogsGraph={materialLogsGraph}/>
 

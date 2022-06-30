@@ -5,7 +5,7 @@ import {ErrorBoundary} from "react-error-boundary";
 import {ErrorFallback, ErrorHandler} from "../../App Components/ErrorFallback";
 import {MaterialUsageData} from "./Material Usage Data/MaterialUsageData";
 import {Material} from "../../../tools/Models/Material";
-import {LoggerComponent} from "./LoggerComponent";
+import {MaterialLogger} from "./MaterialLogger";
 import {GachaData} from "./GachaData";
 import {Fade} from "react-awesome-reveal";
 import {PageLoadingComponent} from "../../App Components/PageLoadingComponent";
@@ -21,10 +21,16 @@ export function MaterialHistoryIDData(props: MaterialHistoryIDDataProps) {
     const [material, setMaterial] = useState<Material>(new Material(-1, ""));
     const [isLoading, setLoading] = useState(false)
 
+    const loadCallback = (mat: Material) => {
+        setMaterial(mat);
+        setLoading(false)
+    }
+
     const fetchMaterial = async () => {
         setLoading(true)
         const mat = await Material.getMaterialFromId(props.materialID)
         await mat.fetchLogs()
+        mat.loadCallbacks.push(loadCallback);
         setMaterial(mat)
         setLoading(false)
     };
@@ -40,7 +46,7 @@ export function MaterialHistoryIDData(props: MaterialHistoryIDDataProps) {
                     <PageTitle title={material.name + " history"}></PageTitle>
 
                     <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
-                        <LoggerComponent/>
+                        <MaterialLogger/>
                     </ErrorBoundary>
 
                     <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
