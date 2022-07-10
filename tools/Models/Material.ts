@@ -1,21 +1,19 @@
-import axios from "axios";
-import {MaterialApiResponse} from "../../pages/api/material/[id]";
-import {APIRoutes} from "../../config/API routes";
-import {HttpStatusCode} from "../API/HttpStatusCodes";
 import {MaterialLogCollection} from "./MaterialLogCollection";
 import logging from "../Logger";
-import logger from "../Logger";
 import {MaterialQuantity} from "./MaterialQuantity";
-import {Dispatch, SetStateAction} from "react";
+import {MaterialAPI} from "./MaterialAPI";
 
 /** Class of a material object. E.G. Gold, crystals, exp material, etc... */
-export class Material {
+export class Material extends MaterialAPI {
     public loadCallbacks: ((a: Material) => void)[] = []
+    public loadLogs: boolean = false
     public logs: MaterialLogCollection = new MaterialLogCollection();
     public name: string;
+    public stateHooks: ((a: Material) => void)[] = []
     private _id: number;
 
     constructor(id: number, name: string) {
+        super();
         this._id = id;
         this.name = name;
     }
@@ -32,29 +30,10 @@ export class Material {
         // Populate with new value
         this.loadData();
     }
-    /** Ask the API for the data of a material. */
-    static async getAPIMaterialData(id: number): Promise<MaterialApiResponse> {
-        const materialResponse = await axios.get<MaterialApiResponse>(APIRoutes.material + id)
-
-        if (materialResponse.status === HttpStatusCode.Ok) {
-            const data = materialResponse.data;
-
-            if (data === null) throw new Error("Api returned null")
-
-            return data;
-        } else {
-            throw new Error("Cannot get Material")
-        }
-    }
-
-    static async getMaterialFromId(id: number): Promise<Material> {
-        const data = await Material.getAPIMaterialData(id)
-        return new Material(data.id, data.name)
-    }
 
     async addNewLog(count: number) {
         await this.logs.addNewLog(new MaterialQuantity(this, count))
-        await this.loadData(true)
+        await this.refreshPageData()
     }
 
     async fetchLogs() {
@@ -88,19 +67,26 @@ export class Material {
 
         // Do we load the logs too?
         if (loadLogs) await this.fetchLogs();
-
-        // We finish with the callbacks
-        this.executeLoadCallbacks();
     }
 
-    private executeLoadCallbacks() {
-        if (this.loadCallbacks.length === 0) {
-            logger.warn("No load callback defined. The page may not be loaded.")
-        } else {
-            for (const loadCallback of this.loadCallbacks) {
-                loadCallback(this);
-            }
+    /** Force the update of the hooks, and rerender components */
+    public async refreshPageData() {
+        // We clean the hooks with a dummy material
+        for (const stateHook of this.stateHooks) {
+            stateHook(new Material(-1, "Loading"));
         }
+
+        // Because of React's hook updates, we need to create a new instance of the class
+        const newMaterial = await Material.getMaterialFromId(this.id)
+
+        if (this.loadLogs) {await newMaterial.fetchLogs()}
+
+        // Now we put it in all the hooks
+        for (const stateHook of this.stateHooks) {
+            stateHook(newMaterial);
+        }
+
+        console.log("Refreshed")
     }
 
     /** If the logs aren't set, send a warning in the console */
@@ -108,4 +94,3 @@ export class Material {
         if (!this.hasLogs()) console.warn("The logs aren't set! The data isn't what it should be!")
     }
 }
-

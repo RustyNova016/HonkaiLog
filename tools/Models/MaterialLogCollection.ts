@@ -5,7 +5,6 @@ import {IMaterialLogsAPIResponse} from "../../pages/api/material/logs/[id]";
 import {APIRoutes} from "../../config/API routes";
 import {TimeTools} from "../Miscs";
 import {MaterialQuantity} from "./MaterialQuantity";
-import Material_log from "../../database/material_log";
 
 /** List of all the MaterialLogs of an material. It can be used to calculate data about the usage of the materials */
 export class MaterialLogCollection {
@@ -28,16 +27,12 @@ export class MaterialLogCollection {
         this.loaded = true
     }
 
-    empty(): boolean {
-        return this.logs.length === 0;
+    public async addNewLog(quantity: MaterialQuantity) {
+        await MaterialLog.createNewLog(quantity)
     }
 
-    /** Throw an error if this.logs is empty. Useful to stop calculations without data */
-    throwOnEmptyArray() {
-        if (this.empty()) {
-            // This bitch empty! YEET!
-            throw new Error("No logs are in the array.")
-        }
+    empty(): boolean {
+        return this.logs.length === 0;
     }
 
     /** Initialize the logs with a material object */
@@ -149,7 +144,11 @@ export class MaterialLogCollection {
         return TimeTools.getDateDifference(dateUpperBound, dateLowerBound);
     }
 
-    public async addNewLog(quantity: MaterialQuantity) {
-        await MaterialLog.createNewLog(quantity)
+    /** Throw an error if this.logs is empty. Useful to stop calculations without data */
+    throwOnEmptyArray() {
+        if (this.empty()) {
+            // This bitch empty! YEET!
+            throw new Error("No logs are in the array.")
+        }
     }
 }
