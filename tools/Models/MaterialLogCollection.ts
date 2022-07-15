@@ -1,25 +1,33 @@
 import {Material} from "./Material";
 import {MaterialLog} from "./MaterialLog";
 import axios from "axios";
-import {IMaterialLogsAPIResponse} from "../../pages/api/material/logs/[id]";
-import {APIRoutes} from "../../config/API routes";
+import {MaterialLogsAPIFetchResponse} from "../../pages/api/material/logs/[id]";
+import {APIRoutes} from "../../data/API routes";
 import {TimeTools} from "../Miscs";
 import {MaterialQuantity} from "./MaterialQuantity";
+import {adapter} from "next/dist/server/web/adapter";
 
 /** List of all the MaterialLogs of an material. It can be used to calculate data about the usage of the materials */
 export class MaterialLogCollection {
     loaded: boolean = false;
     logs: MaterialLog[] = [];
+    readonly material: Material;
 
-    constructor(logs?: MaterialLog[]) {
+    constructor(material: Material, logs?: MaterialLog[]) {
+        this.material = material
         if (logs !== undefined) {
             this.logs = logs;
             this.loaded = true
         }
     }
 
+    /** Take API data and put it inside the log list */
+    public loadAPIData(res: MaterialLogsAPIFetchResponse) {
+        this.addLogsFromAPIResponse(res, this.material)
+    }
+
     /** Put the MaterialLog objects into the array using an API response as input data */
-    public addLogsFromAPIResponse(res: IMaterialLogsAPIResponse, material: Material): void {
+    public addLogsFromAPIResponse(res: MaterialLogsAPIFetchResponse, material: Material): void {
         for (const materialLog of res.Material_logs) {
             this.logs.push(new MaterialLog(material, materialLog.count, materialLog.id, new Date(materialLog.log_date), materialLog.userId))
         }
@@ -37,7 +45,7 @@ export class MaterialLogCollection {
 
     /** Initialize the logs with a material object */
     public async fetchLogsOfMaterial(material: Material): Promise<void> {
-        const logs = await axios.get<IMaterialLogsAPIResponse>(APIRoutes.materialLogs + material.id);
+        const logs = await axios.get<MaterialLogsAPIFetchResponse>(APIRoutes.materialLogs + material.id);
 
         this.addLogsFromAPIResponse(logs.data, material);
     }
@@ -90,6 +98,7 @@ export class MaterialLogCollection {
         const {dateLowerBound, dateUpperBound} = this.getTimeframe(dateFrom, dateTo);
 
         return new MaterialLogCollection(
+            this.material,
             this.logs.filter(
                 (log) => {
                     return new Date(log.log_date) >= dateLowerBound && new Date(log.log_date) <= dateUpperBound;

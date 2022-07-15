@@ -1,10 +1,10 @@
 const DEFAULT_NAMESPACE = '';
 
-const info = (message: any, namespace?: string) => {
+const info = (message: any, namespace?: string, values?: any) => {
     if (typeof message === 'string') {
-        console.log(`[${getDate()}] [${namespace || DEFAULT_NAMESPACE}] [INFO] ${message}`);
+        console.log(`[${getDate()}] [${namespace || DEFAULT_NAMESPACE}] [INFO] ${message}`, values);
     } else {
-        console.log(`[${getDate()}] [${namespace || DEFAULT_NAMESPACE}] [INFO]`, message);
+        console.log(`[${getDate()}] [${namespace || DEFAULT_NAMESPACE}] [INFO]`, message, values);
     }
 };
 

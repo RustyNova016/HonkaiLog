@@ -1,7 +1,7 @@
 import {Dispatch, SetStateAction, useContext} from "react";
 import {Button, ButtonGroup} from "react-bootstrap";
 import {removeDaysFromToday} from "../../../tools/Miscs";
-import {MaterialContext} from "../../Contexts/MaterialContext";
+import {MaterialContext} from "../../../features/Material/contexts/MaterialContext";
 
 export function TimeFrameSelectButton(props: { dayValue: number | null, label: string, action: Dispatch<SetStateAction<Date>> }) {
     // Get the material

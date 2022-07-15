@@ -4,12 +4,13 @@ import {MaterialQuantity} from "./MaterialQuantity";
 import {MaterialAPI} from "./MaterialAPI";
 import {HookHandler} from "../React/HookHandler";
 import {MaterialAPIFetchResponse} from "../../pages/api/material/[id]";
+import {MaterialLogsAPIFetchResponse} from "../../pages/api/material/logs/[id]";
 
 /** Class of a material object. E.G. Gold, crystals, exp material, etc... */
 export class Material extends MaterialAPI {
     public loadLogs: boolean = false
     public loadingHooks: HookHandler<boolean> = new HookHandler<boolean>()
-    public logs: MaterialLogCollection = new MaterialLogCollection();
+    public logs: MaterialLogCollection = new MaterialLogCollection(this);
     public materialHooks: HookHandler<Material> = new HookHandler<Material>()
     public name: string;
     public id: number;
@@ -20,9 +21,10 @@ export class Material extends MaterialAPI {
         this.name = name;
     }
 
+
+
     async addNewLog(count: number) {
         await this.logs.addNewLog(new MaterialQuantity(this, count))
-        await this.refreshPageData()
     }
 
     async fetchLogs() {
@@ -43,14 +45,14 @@ export class Material extends MaterialAPI {
     /** Load the object with the latest data in the API. */
     async loadData(loadLogs?: boolean): Promise<void> {
         // Negative values can be used as placeholders. We do warn if we try to load data
-        if (this._id < 1) {
+        if (this.id < 1) {
             const err = new Error("Cannot load data on a placeholder. Did you forget to set a Id?")
             logging.error(err.message, "Material")
             throw err;
         }
 
         // We request the API for fresh new data
-        const data = await Material.getAPIMaterialData(this._id)
+        const data = await Material.getAPIMaterialData(this.id)
 
         // Now we set it
         this.name = data.name
@@ -102,7 +104,13 @@ export class Material extends MaterialAPI {
         return newMaterial
     }
 
-    static getMaterialFromAPIResponse(res: MaterialAPIFetchResponse): Material {
-        return new Material(res.id, res.name)
+    static createMaterialFromAPIResponse(res: MaterialAPIFetchResponse|MaterialLogsAPIFetchResponse): Material {
+        const material = new Material(res.id, res.name);
+
+        if ("Material_logs" in res && res.Material_logs !== undefined){
+            material.logs.loadAPIData(res)
+        }
+
+        return material
     }
 }

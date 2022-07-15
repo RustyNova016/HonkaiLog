@@ -6,7 +6,7 @@ import {getAPIsideUser} from "../../../../database/user";
 import {HttpStatusCode} from "../../../../tools/API/HttpStatusCodes";
 import {getIDFromQuery} from "../../../../tools/API/getIDFromQuery";
 
-export interface IMaterialLogsAPIResponse extends MaterialDBResponse {
+export interface MaterialLogsAPIFetchResponse extends MaterialDBResponse {
     Material_logs: MaterialLogDBResponse[];
 }
 

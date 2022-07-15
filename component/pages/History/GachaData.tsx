@@ -6,7 +6,7 @@ import {Col, Row} from "react-bootstrap";
 import {TimeFrameSelect} from "./TimeFrameSelect";
 import {GachaBanner} from "../../../tools/Models/GachaBanner";
 import {MaterialQuantity} from "../../../tools/Models/MaterialQuantity";
-import {MaterialContext} from "../../Contexts/MaterialContext";
+import {MaterialContext} from "../../../features/Material/contexts/MaterialContext";
 
 function GachaBannerInfo(props: { gachaBanner: GachaBanner }) {
     const gachaBanner = props.gachaBanner

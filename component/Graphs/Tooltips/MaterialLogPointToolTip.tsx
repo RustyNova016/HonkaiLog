@@ -1,7 +1,7 @@
 import {PointTooltipProps} from "@nivo/line";
 import ContentDiv from "../../Layout/ContentDiv";
 import {useContext} from "react";
-import {MaterialContext} from "../../Contexts/MaterialContext";
+import {MaterialContext} from "../../../features/Material/contexts/MaterialContext";
 
 export function MaterialLogPointToolTip(props: PointTooltipProps) {
     // Get the material

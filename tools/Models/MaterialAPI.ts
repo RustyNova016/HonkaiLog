@@ -1,6 +1,6 @@
 import {MaterialAPIFetchResponse} from "../../pages/api/material/[id]";
 import axios from "axios";
-import {APIRoutes} from "../../config/API routes";
+import {APIRoutes} from "../../data/API routes";
 import {HttpStatusCode} from "../API/HttpStatusCodes";
 import {Material} from "./Material";
 

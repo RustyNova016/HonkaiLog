@@ -2,7 +2,8 @@ import {UserDBResponse} from "../../database/user";
 import {Material} from "./Material";
 import {MaterialQuantity} from "./MaterialQuantity";
 import axios from "axios";
-import {APIRoutes} from "../../config/API routes";
+import {APIRoutes} from "../../data/API routes";
+import logger from "../Logger";
 
 /** Snapshot of a quantity at a given time */
 export class MaterialLog extends MaterialQuantity {
@@ -35,6 +36,8 @@ export class MaterialLog extends MaterialQuantity {
 
     static async createNewLog(quantity: MaterialQuantity){
         const res = await axios.post(APIRoutes.materialLogs, {count: quantity.quantity, MaterialId: quantity.material.id})
+
+        logger.info("Done sending!", "Material Log")
 
         // TODO: check for errors
     }

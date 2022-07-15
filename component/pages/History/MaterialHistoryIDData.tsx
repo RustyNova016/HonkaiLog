@@ -9,8 +9,10 @@ import {MaterialLogger} from "./MaterialLogger";
 import {GachaData} from "./GachaData";
 import {Fade} from "react-awesome-reveal";
 import {PageLoadingComponent} from "../../App Components/PageLoadingComponent";
-import {MaterialContext} from "../../Contexts/MaterialContext";
-import {useMaterialLogs} from "../../../tools/Database/Data Hooks/useMaterialLogs";
+import {MaterialContext} from "../../../features/Material/contexts/MaterialContext";
+import {useMaterialLogs} from "../../../features/Material/hooks/useMaterialLogs";
+import logger from "../../../tools/Logger";
+import {useMaterialLogORM} from "../../../features/Material/hooks/useMaterialLogORM";
 
 export interface MaterialHistoryIDDataProps {
     materialID: number;
@@ -22,8 +24,32 @@ export function MaterialHistoryIDData(props: MaterialHistoryIDDataProps) {
     const [material, setMaterial] = useState<Material>(new Material(-1, ""));
     const [isLoading, setLoading] = useState(false)
 
+
+    /////////////////////////////////////////////////////
+
     const data = useMaterialLogs(props.materialID)
-    console.log(data)
+    useEffect(() => {
+        return () => {
+            logger.info("Object Value: ", "useMaterialLogs test", data)
+        };
+    }, [data]);
+
+    /////////////////////////////////////////////////////
+
+    const d = useMaterialLogORM(props.materialID);
+
+    useEffect(() => {
+        return () => {
+            logger.info("Object Value: ", "ORM Object test", d)
+
+            if (d !== undefined) {
+                logger.info("Latest log Value: ", "ORM Object test", d.getInGameCount())
+                logger.info("Number of logs: ", "ORM Object test", d.logs.logs.length)
+            }
+        };
+    }, [d]);
+
+    /////////////////////////////////////////////////////
 
     const fetchMaterial = async () => {
         setLoading(true)
@@ -40,6 +66,10 @@ export function MaterialHistoryIDData(props: MaterialHistoryIDDataProps) {
     if (isLoading || material.id === -1) return <PageLoadingComponent subtext={"Preparing material data..."}/>
 
     return <>
+        {/*<MaterialLogContextProvider materialId={props.materialID}>
+            <MaterialHistoryIDContext material={}></MaterialHistoryIDContext>
+        </MaterialLogContextProvider>*/}
+
         <Fade>
             <MaterialHistoryIDContext material={material}></MaterialHistoryIDContext>
         </Fade>

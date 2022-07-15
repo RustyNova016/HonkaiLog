@@ -3,7 +3,7 @@ import {removeDaysFromToday} from "../../../../tools/Miscs";
 import {SectionTitle} from "../../../pageComponents/Theme/Theme";
 import ContentDiv from "../../../Layout/ContentDiv";
 import {MaterialLogsGraph} from "../../../../tools/MaterialLogsGraph";
-import {MaterialContext} from "../../../Contexts/MaterialContext";
+import {MaterialContext} from "../../../../features/Material/contexts/MaterialContext";
 import {MaterialUsageDataOptions} from "./MaterialUsageDataOptions";
 import {MaterialUsageDataResults} from "./MaterialUsageDataResults";
 
