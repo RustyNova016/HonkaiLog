@@ -1,17 +1,19 @@
-import {Dispatch, SetStateAction, useContext} from "react";
+import {Dispatch, SetStateAction} from "react";
 import {Button, ButtonGroup} from "react-bootstrap";
 import {removeDaysFromToday} from "../../../tools/Miscs";
-import {MaterialContext} from "../../../features/Material/contexts/MaterialContext";
+import {useMaterialFromContext} from "../../../features/Material/hooks/useMaterialFromContext";
+import {LoadingComponent} from "../../App Components/PageLoadingComponent";
 
 export function TimeFrameSelectButton(props: { dayValue: number | null, label: string, action: Dispatch<SetStateAction<Date>> }) {
     // Get the material
-    const material = useContext(MaterialContext)
+    const material = useMaterialFromContext(true);
+    if (material === undefined) return <LoadingComponent subtext={"Preparing material data..."}/>
 
     const onClick = function (event: any) {
         if (props.dayValue !== null) {
             return props.action(removeDaysFromToday(props.dayValue))
         } else {
-            if (material === undefined || material.logs === "loading") throw new Error("This shouldn't happen. Material isn't initialized");
+            if (material === undefined || !material.logs.loaded) throw new Error("This shouldn't happen. Material isn't initialized");
             return props.action(new Date(material.logs.getOldestLog().log_date))
         }
     };

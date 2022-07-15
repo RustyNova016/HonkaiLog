@@ -1,27 +1,27 @@
-import {PageSkeleton} from "../../component/pageComponents/GenericPageLayout";
 import {useRouter} from "next/router";
-import {MaterialHistoryIDData} from "../../component/pages/History/MaterialHistoryIDData";
-import {UserRedirect} from "../../component/App Components/userRedirect";
+import {MaterialIDContext} from "../../features/Material/contexts/MaterialIDContext";
+import {Page} from "../../layout/components/page";
+import {Fade} from "react-awesome-reveal";
+import {MaterialInfoPageContent} from "../../features/MaterialInfoPageContent";
 
-/** A page to display and create material logs
- *
- * The page got multiple layers of components:
- *  Page > API calls > Display
- */
-export default function MaterialHistoryIDPage() {
+/** A page to display information about a material and create material logs*/
+export default function MaterialInfo() {
     // Get the material ID
     const router = useRouter()
     let id_string = router.query.id;
+
     if (typeof id_string !== "string") {
         id_string = "1"; // TODO: Remove failsafe and actually tell that it's not valid
     }
 
     return <>
-        <PageSkeleton navbar={true}>
-            <UserRedirect>
-                <MaterialHistoryIDData materialID={parseInt(id_string)}/>
-            </UserRedirect>
-        </PageSkeleton>
+        <Page userNeeded={true} useNavbar={true}>
+            <MaterialIDContext.Provider value={parseInt(id_string)}>
+                <Fade>
+                    <MaterialInfoPageContent></MaterialInfoPageContent>
+                </Fade>
+            </MaterialIDContext.Provider>
+        </Page>
     </>
 }
 

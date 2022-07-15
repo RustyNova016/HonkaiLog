@@ -1,7 +1,7 @@
 // Generate a test IMaterialCountAPIResponse object
-import {IMaterialLogsAPIResponse} from "../pages/api/material/logs/[id]";
+import {MaterialLogsAPIFetchResponse} from "../pages/api/material/logs/[id]";
 
-export const TestMaterialCountAPIResponse: IMaterialLogsAPIResponse = {
+export const TestMaterialCountAPIResponse: MaterialLogsAPIFetchResponse = {
     createdAt: "2020-01-01T00:00:00.000Z",
     id: 1,
     name: "Test Material",
@@ -28,7 +28,7 @@ export const TestMaterialCountAPIResponse: IMaterialLogsAPIResponse = {
     ]
 }
 
-export const TestMaterialCountAPIResponse_NoLogs: IMaterialLogsAPIResponse = {
+export const TestMaterialCountAPIResponse_NoLogs: MaterialLogsAPIFetchResponse = {
     createdAt: "2020-01-01T00:00:00.000Z",
     id: 1,
     name: "Test Material 2",
@@ -36,7 +36,7 @@ export const TestMaterialCountAPIResponse_NoLogs: IMaterialLogsAPIResponse = {
     Material_logs: []
 }
 
-export const TestMaterialCountAPIResponse_bigger: IMaterialLogsAPIResponse = {
+export const TestMaterialCountAPIResponse_bigger: MaterialLogsAPIFetchResponse = {
     createdAt: "2020-01-01T00:00:00.000Z",
     id: 1,
     name: "Test Material",

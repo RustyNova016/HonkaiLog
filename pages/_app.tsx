@@ -6,11 +6,9 @@ import '../styles/SCSS/globals.scss'
 
 function MyApp({Component, pageProps}: AppProps) {
     return <>
-
         <SessionProvider>
             <Component {...pageProps} />
         </SessionProvider>
-
     </>
 }
 

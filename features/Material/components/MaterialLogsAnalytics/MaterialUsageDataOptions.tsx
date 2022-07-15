@@ -1,7 +1,7 @@
 import {MaterialLogsGraph} from "../../../../tools/MaterialLogsGraph";
 import {Col, Row} from "react-bootstrap";
-import {TimeFrameSelect} from "../TimeFrameSelect";
-import {SelectGraphType} from "../SelectGraphType";
+import {TimeFrameSelect} from "../../../../component/pages/History/TimeFrameSelect";
+import {SelectGraphType} from "../../../../component/pages/History/SelectGraphType";
 
 export interface MaterialUsageDataOptionsProps {
     dateHook: (value: (((prevState: Date) => Date) | Date)) => void;

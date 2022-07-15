@@ -1,12 +1,13 @@
-import ContentDiv from "../../Layout/ContentDiv";
-import {SectionTitle} from "../../pageComponents/Theme/Theme";
-import {useContext, useState} from "react";
+import ContentDiv from "../../../component/Layout/ContentDiv";
+import {SectionTitle} from "../../../component/pageComponents/Theme/Theme";
+import {useState} from "react";
 import {removeDaysFromToday, TimeTools} from "../../../tools/Miscs";
 import {Col, Row} from "react-bootstrap";
-import {TimeFrameSelect} from "./TimeFrameSelect";
+import {TimeFrameSelect} from "../../../component/pages/History/TimeFrameSelect";
 import {GachaBanner} from "../../../tools/Models/GachaBanner";
 import {MaterialQuantity} from "../../../tools/Models/MaterialQuantity";
-import {MaterialContext} from "../../../features/Material/contexts/MaterialContext";
+import {useMaterialFromContext} from "../../Material/hooks/useMaterialFromContext";
+import {LoadingComponent} from "../../../component/App Components/PageLoadingComponent";
 
 function GachaBannerInfo(props: { gachaBanner: GachaBanner }) {
     const gachaBanner = props.gachaBanner
@@ -30,7 +31,9 @@ function GachaBannerInfo(props: { gachaBanner: GachaBanner }) {
 
 export function GachaData() {
     // Get the material
-    const material = useContext(MaterialContext)
+    const material = useMaterialFromContext(true);
+    if (material === undefined) return <LoadingComponent subtext={"Preparing material data..."}/>
+
     const [lowerDate, setLowerDate] = useState<Date>(removeDaysFromToday(1));
 
     const expaBanner = new GachaBanner("EXPA", new MaterialQuantity(material, 280), 100, 1)

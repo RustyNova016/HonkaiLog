@@ -1,14 +1,14 @@
-import ContentDiv from "../../Layout/ContentDiv";
-import {SectionTitle} from "../../pageComponents/Theme/Theme";
+import ContentDiv from "../../../../component/Layout/ContentDiv";
+import {SectionTitle} from "../../../../component/pageComponents/Theme/Theme";
 import {Col, Row} from "react-bootstrap";
-import {MaterialLogInputForm} from "./MaterialLogInputForm";
-import {LoadingComponent} from "../../App Components/PageLoadingComponent";
-import {useMaterialLogORM} from "../../../features/Material/hooks/useMaterialLogORM";
+import {MaterialLogsManagerInputForm} from "./MaterialLogsManagerInputForm";
+import {LoadingComponent} from "../../../../component/App Components/PageLoadingComponent";
+import {useMaterialFromContext} from "../../hooks/useMaterialFromContext";
 
-/** Component that allow the user to log the material count */
-export function MaterialLogger() {
+/** Component that allow the user to manage and log the material count */
+export function MaterialLogsManager() {
     // Get the material
-    const material = useMaterialLogORM(1);
+    const material = useMaterialFromContext(true);
     if (material === undefined) return <LoadingComponent subtext={"Preparing material data..."}/>
 
     return <>
@@ -21,7 +21,7 @@ export function MaterialLogger() {
                         have {material.logs.getCurrentCount()} {material.name}</p>
                 </Col>
                 <Col lg={6}>
-                    <MaterialLogInputForm/>
+                    <MaterialLogsManagerInputForm/>
                 </Col>
             </Row>
         </ContentDiv>

@@ -1,8 +1,7 @@
 import styles from './CSS/BackgroundPicture.module.scss'
-import React, {CSSProperties, ReactNode, useState} from "react";
+import React, {CSSProperties, PropsWithChildren, useState} from "react";
 
-export interface BackgroundPictureProps {
-    children?: ReactNode;
+export interface BackgroundPictureProps extends PropsWithChildren {
     style?: CSSProperties;
 }
 

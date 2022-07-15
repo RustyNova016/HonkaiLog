@@ -1,8 +1,10 @@
 import styles from "./CSS/ContentDiv.module.scss";
-import {ChildrenProps, CSSClassesProps, CSSStylesProps} from "../../tools/Types";
+import {CSSClassesProps, CSSStylesProps} from "../../tools/Types";
 import {addCSSClasses} from "../../tools/Miscs";
+import {PropsWithChildren} from "react";
+import {ReturnChildren} from "../returnChildren";
 
-export interface ContentDivProps extends ChildrenProps, CSSClassesProps, CSSStylesProps {
+export interface ContentDivProps extends PropsWithChildren, CSSClassesProps, CSSStylesProps {
     sides?: boolean;
     top?: boolean;
 }
@@ -16,7 +18,7 @@ function ContentDiv(props: ContentDivProps) {
 
     return (
         <div className={addCSSClasses(ContentDivClasses)} style={props.style}>
-            {props.children}
+            <ReturnChildren {...props}/>
         </div>
     );
 }

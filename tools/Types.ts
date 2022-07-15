@@ -1,7 +1,8 @@
-export interface ChildrenProps {
-    children?: JSX.Element|JSX.Element[]
-}
+import {ReactNode} from "react";
 
+export interface PropsWithReactNodeChildren {
+    children?: ReactNode
+}
 export interface CSSClassesProps {
     className?: string;
 }

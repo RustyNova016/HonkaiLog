@@ -1,20 +1,23 @@
-import {useContext, useState} from "react";
+import {useState} from "react";
 import {removeDaysFromToday} from "../../../../tools/Miscs";
-import {SectionTitle} from "../../../pageComponents/Theme/Theme";
-import ContentDiv from "../../../Layout/ContentDiv";
+import {SectionTitle} from "../../../../component/pageComponents/Theme/Theme";
+import ContentDiv from "../../../../component/Layout/ContentDiv";
 import {MaterialLogsGraph} from "../../../../tools/MaterialLogsGraph";
-import {MaterialContext} from "../../../../features/Material/contexts/MaterialContext";
 import {MaterialUsageDataOptions} from "./MaterialUsageDataOptions";
 import {MaterialUsageDataResults} from "./MaterialUsageDataResults";
+import {useMaterialFromContext} from "../../hooks/useMaterialFromContext";
+import {LoadingComponent} from "../../../../component/App Components/PageLoadingComponent";
 
 export interface DataChartsProps {
 }
 
 export type GraphType = "count" | "gains" | "averages";
 
-export function MaterialUsageData(props: DataChartsProps) {
+export function MaterialLogsAnalytics(props: DataChartsProps) {
     // Get the material
-    const material = useContext(MaterialContext)
+    const material = useMaterialFromContext(true);
+    if (material === undefined) return <LoadingComponent subtext={"Preparing material data..."}/>
+
     const materialLogsGraph = new MaterialLogsGraph(material)
     const [lowerDate, setLowerDate] = useState<Date>(removeDaysFromToday(1));
     const [upperDate, setUpperDate] = useState(new Date());
@@ -24,10 +27,10 @@ export function MaterialUsageData(props: DataChartsProps) {
         <ContentDiv sides={true}>
             <SectionTitle title={"Material Usages"}></SectionTitle>
             <MaterialUsageDataOptions dateHook={setLowerDate} graphTypeHook={setGraphType}
-                              materialLogsGraph={materialLogsGraph}/>
+                                      materialLogsGraph={materialLogsGraph}/>
 
             <MaterialUsageDataResults lowerDate={lowerDate} upperDate={upperDate} material={material}
-                                   materialLogsGraph={materialLogsGraph} graphType={graphType}/>
+                                      materialLogsGraph={materialLogsGraph} graphType={graphType}/>
         </ContentDiv>
     </>;
 }

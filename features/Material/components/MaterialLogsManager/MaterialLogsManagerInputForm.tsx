@@ -1,24 +1,24 @@
 import {Button, Col, FormFloating, Row} from "react-bootstrap";
 import {useForm} from "react-hook-form";
 import {useState} from "react";
-import {getUseMaterialLogsKey} from "../../../features/Material/hooks/useMaterialLogs";
-import logger from "../../../tools/Logger";
-import {LoadingComponent} from "../../App Components/PageLoadingComponent";
-import {useMaterialLogORM} from "../../../features/Material/hooks/useMaterialLogORM";
+import {getUseMaterialLogsKey} from "../../hooks/useMaterialLogsAPI";
+import logger from "../../../../tools/Logger";
+import {LoadingComponent} from "../../../../component/App Components/PageLoadingComponent";
 import {useSWRConfig} from "swr";
+import {useMaterialFromContext} from "../../hooks/useMaterialFromContext";
 
 export interface IMaterialLogInputForm {
     count: number;
 }
 
-export interface MaterialLogInputProps {}
+export interface MaterialLogsManagerInputFormProps {}
 
-export function MaterialLogInputForm(props: MaterialLogInputProps) {
+export function MaterialLogsManagerInputForm(props: MaterialLogsManagerInputFormProps) {
     const [loading, setLoading] = useState(false);
     const {mutate} = useSWRConfig()
 
     // Get the material
-    const material = useMaterialLogORM(1);
+    const material = useMaterialFromContext(true);
     if (material === undefined) return <LoadingComponent subtext={"Preparing material data..."}/>
 
     // Handle form

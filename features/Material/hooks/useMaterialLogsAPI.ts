@@ -6,8 +6,8 @@ export function getUseMaterialLogsKey(id: number) {
     return `/api/material/logs/${id}`;
 }
 
-/** SWR hook that give a Material data alongside its logs */
-export function useMaterialLogs(id: number): SWRHookResult<MaterialLogsAPIFetchResponse> {
+/** SWR hook that give  material data from the API alongside its logs */
+export function useMaterialLogsAPI(id: number): SWRHookResult<MaterialLogsAPIFetchResponse> {
     return useSWRhook<MaterialLogsAPIFetchResponse>(getUseMaterialLogsKey(id))
 }
 

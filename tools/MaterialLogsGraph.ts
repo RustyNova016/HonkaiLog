@@ -1,4 +1,4 @@
-import {GraphType} from "../component/pages/History/Material Usage Data/MaterialUsageData";
+import {GraphType} from "../features/Material/components/MaterialLogsAnalytics/MaterialLogsAnalytics";
 import {Serie} from "@nivo/line";
 import {Material} from "./Models/Material";
 import {toTimestamp} from "./Miscs";

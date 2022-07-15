@@ -1,7 +1,9 @@
 import {Material} from "../../../../tools/Models/Material";
 import {MaterialLogsGraph} from "../../../../tools/MaterialLogsGraph";
-import {NoDataErrorComponent} from "../../../App Components/Errors/NoDataErrorComponent";
-import {MaterialHistoryGraph} from "../MaterialHistoryGraph";
+import {NoDataErrorComponent} from "../../../../component/App Components/Errors/NoDataErrorComponent";
+import {MaterialHistoryGraph} from "../../../../component/pages/History/MaterialHistoryGraph";
+import {useMaterialFromContext} from "../../hooks/useMaterialFromContext";
+import {LoadingComponent} from "../../../../component/App Components/PageLoadingComponent";
 
 interface MaterialUsageDataResultsProps {
     graphType: "count" | "gains" | "averages";
@@ -12,8 +14,11 @@ interface MaterialUsageDataResultsProps {
 }
 
 export function MaterialUsageDataResults(props: MaterialUsageDataResultsProps) {
+    // Get the material
+    const material = useMaterialFromContext(true);
+    if (material === undefined) return <LoadingComponent subtext={"Preparing material data..."}/>
+
     // Check if the material got logs
-    const material = props.material;
     const logs = material.logs;
     if (logs.getLogsBetween(props.lowerDate, props.upperDate).empty()) return <NoDataErrorComponent/>
 
