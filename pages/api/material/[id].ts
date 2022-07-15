@@ -1,7 +1,7 @@
 import {SequelizeCRUD} from "../../../tools/Database/SequelizeCRUD";
 import database from "../../../database/database";
 
-export interface MaterialApiResponse {
+export interface MaterialAPIFetchResponse {
     id: number,
     name: string
 }

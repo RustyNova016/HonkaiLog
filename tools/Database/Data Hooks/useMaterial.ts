@@ -1,8 +1,14 @@
-import axios from "axios";
+import useSWR from "swr";
+import {IMaterialLogsAPIResponse} from "../../../pages/api/material/logs/[id]";
+import {fetcher} from "./fetcher";
+import {APIRoutes} from "../../../config/API routes";
+import {Material} from "../../Models/Material";
 
-export async function fetcher<T>(key: string): Promise<T> {
-    return await axios.get(key).then((res) => res.data).catch((e) => {
-        console.log(e)
-        throw e;
-    });
+export function useMaterial(materialId: number, fetchLogs?: boolean) {
+    const key = APIRoutes.material + materialId;
+    const {data, error} = useSWR<IMaterialLogsAPIResponse, Error>(key, fetcher);
+
+    if (data !== undefined){
+        return Material.getMaterialFromAPIResponse(data)
+    }
 }

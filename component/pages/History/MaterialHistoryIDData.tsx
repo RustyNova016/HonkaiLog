@@ -1,13 +1,4 @@
-import {
-    JSXElementConstructor,
-    ReactElement,
-    ReactFragment,
-    ReactPortal,
-    useContext,
-    useEffect,
-    useRef,
-    useState
-} from "react";
+import {useEffect, useState} from "react";
 import {Container} from "react-bootstrap";
 import {PageTitle} from "../../pageComponents/Theme/Theme";
 import {ErrorBoundary} from "react-error-boundary";
@@ -19,6 +10,7 @@ import {GachaData} from "./GachaData";
 import {Fade} from "react-awesome-reveal";
 import {PageLoadingComponent} from "../../App Components/PageLoadingComponent";
 import {MaterialContext} from "../../Contexts/MaterialContext";
+import {useMaterialLogs} from "../../../tools/Database/Data Hooks/useMaterialLogs";
 
 export interface MaterialHistoryIDDataProps {
     materialID: number;
@@ -30,17 +22,15 @@ export function MaterialHistoryIDData(props: MaterialHistoryIDDataProps) {
     const [material, setMaterial] = useState<Material>(new Material(-1, ""));
     const [isLoading, setLoading] = useState(false)
 
-    const loadCallback = (mat: Material) => {
-        setMaterial(mat);
-        setLoading(false)
-    }
+    const data = useMaterialLogs(props.materialID)
+    console.log(data)
 
     const fetchMaterial = async () => {
         setLoading(true)
         const mat = await Material.getMaterialFromId(props.materialID)
         await mat.fetchLogs()
-        mat.stateHooks.push(setMaterial)
-        mat.loadCallbacks.push(loadCallback);
+        mat.materialHooks.addHook(setMaterial)
+        //mat.loadingHooks.addHook(setLoading)
         setMaterial(mat)
         setLoading(false)
     };
@@ -51,78 +41,27 @@ export function MaterialHistoryIDData(props: MaterialHistoryIDDataProps) {
 
     return <>
         <Fade>
-            <MaterialContext.Provider value={material}>
-                <Container>
-                    <PageTitle title={material.name + " history"}></PageTitle>
-
-                    <StateTest></StateTest>
-
-                    <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
-                        <MaterialLogger/>
-                    </ErrorBoundary>
-
-                    <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
-                        <MaterialUsageData/>
-                    </ErrorBoundary>
-
-                    <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
-                        <GachaData/>
-                    </ErrorBoundary>
-                </Container>
-            </MaterialContext.Provider>
+            <MaterialHistoryIDContext material={material}></MaterialHistoryIDContext>
         </Fade>
     </>
 }
 
-/** This component handles the context of the page */
-export function MaterialHistoryIDDataLayer(props: { materialID: number; }) {
-    const [material, setMaterial] = useState<Material>(new Material(-1, ""));
-    const [isLoading, setLoading] = useState(false)
+export function MaterialHistoryIDContext(props: { material: Material }) {
+    return <MaterialContext.Provider value={props.material}>
+        <Container>
+            <PageTitle title={props.material.name + " history"}></PageTitle>
 
+            <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
+                <MaterialLogger/>
+            </ErrorBoundary>
 
-}
+            <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
+                <MaterialUsageData/>
+            </ErrorBoundary>
 
-function StateTest() {
-    const [material, setMaterial] = useState<Material>(new Material(1, "test 1"));
-
-    const changeState = (e: any) => {
-        const material1 = new Material(1, "test 2");
-        const material2 = new Material(1, "test 1");
-
-        console.log("Is equal? ", material2 === material1)
-        console.log("Old Id? ", material.id)
-
-        if (material.id === 1) {
-            setMaterial(material1)
-        } else if (material.id === 2) {
-            setMaterial(material2)
-        }
-    }
-
-    return <>
-        <MaterialContext.Provider value={material}>
-            <button onClick={changeState}>Change state!</button>
-
-            <Counter message={"Lol"}></Counter>
-        </MaterialContext.Provider>
-
-    </>
-}
-
-export function Counter(props: { message: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | null | undefined; }) {
-    const renderCounter = useRef(0);
-    renderCounter.current = renderCounter.current + 1;
-
-    return <>
-        <h1>Renders: {renderCounter.current}, {props.message}</h1>;
-        <DysplayID></DysplayID>
-    </>
-}
-
-function DysplayID() {
-    const mat = useContext(MaterialContext)
-
-    return <>
-        <PageTitle title={mat.id + mat.name}></PageTitle>
-    </>
+            <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
+                <GachaData/>
+            </ErrorBoundary>
+        </Container>
+    </MaterialContext.Provider>
 }

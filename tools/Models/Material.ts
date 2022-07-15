@@ -2,33 +2,22 @@ import {MaterialLogCollection} from "./MaterialLogCollection";
 import logging from "../Logger";
 import {MaterialQuantity} from "./MaterialQuantity";
 import {MaterialAPI} from "./MaterialAPI";
+import {HookHandler} from "../React/HookHandler";
+import {MaterialAPIFetchResponse} from "../../pages/api/material/[id]";
 
 /** Class of a material object. E.G. Gold, crystals, exp material, etc... */
 export class Material extends MaterialAPI {
-    public loadCallbacks: ((a: Material) => void)[] = []
     public loadLogs: boolean = false
+    public loadingHooks: HookHandler<boolean> = new HookHandler<boolean>()
     public logs: MaterialLogCollection = new MaterialLogCollection();
+    public materialHooks: HookHandler<Material> = new HookHandler<Material>()
     public name: string;
-    public stateHooks: ((a: Material) => void)[] = []
-    private _id: number;
+    public id: number;
 
     constructor(id: number, name: string) {
         super();
-        this._id = id;
+        this.id = id;
         this.name = name;
-    }
-
-    get id(): number {
-        return this._id;
-    }
-
-    set id(value: number) {
-        // Invalidate any old values
-        this._id = value;
-        this.logs = new MaterialLogCollection();
-
-        // Populate with new value
-        this.loadData();
     }
 
     async addNewLog(count: number) {
@@ -37,6 +26,7 @@ export class Material extends MaterialAPI {
     }
 
     async fetchLogs() {
+        this.loadLogs = true
         await this.logs.fetchLogsOfMaterial(this)
     }
 
@@ -71,26 +61,48 @@ export class Material extends MaterialAPI {
 
     /** Force the update of the hooks, and rerender components */
     public async refreshPageData() {
+        this.loadingHooks.setHookValue(true)
+
         // We clean the hooks with a dummy material
-        for (const stateHook of this.stateHooks) {
-            stateHook(new Material(-1, "Loading"));
-        }
+        const dummyMaterial = new Material(-1, "Loading");
+        this.materialHooks.setHookValue(dummyMaterial)
 
         // Because of React's hook updates, we need to create a new instance of the class
         const newMaterial = await Material.getMaterialFromId(this.id)
 
-        if (this.loadLogs) {await newMaterial.fetchLogs()}
-
-        // Now we put it in all the hooks
-        for (const stateHook of this.stateHooks) {
-            stateHook(newMaterial);
+        console.log("Should we load the logs?", this.loadLogs)
+        if (this.loadLogs) {
+            console.log("Loading logs!")
+            newMaterial.loadLogs = true
+            await newMaterial.fetchLogs()
+        } else {
+            console.log("Not loading logs")
         }
 
-        console.log("Refreshed")
+        // Now we put it in all the hooks
+        this.materialHooks.setHookValue(newMaterial)
+        this.loadingHooks.setHookValue(false)
     }
 
     /** If the logs aren't set, send a warning in the console */
     private logNotSetWarning() {
         if (!this.hasLogs()) console.warn("The logs aren't set! The data isn't what it should be!")
+    }
+
+    /** Create a new instance of the material with the latest data from the API */
+    public async createNewInstance(): Promise<Material> {
+        const newMaterial = await Material.getMaterialFromId(this.id)
+
+        // We check if the logs are loaded. If so, the new material should also load the logs
+        if (this.logs.loaded) {
+            newMaterial.loadLogs = true
+            await newMaterial.fetchLogs()
+        }
+
+        return newMaterial
+    }
+
+    static getMaterialFromAPIResponse(res: MaterialAPIFetchResponse): Material {
+        return new Material(res.id, res.name)
     }
 }

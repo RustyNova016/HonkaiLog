@@ -1,4 +1,4 @@
-import {MaterialApiResponse} from "../../pages/api/material/[id]";
+import {MaterialAPIFetchResponse} from "../../pages/api/material/[id]";
 import axios from "axios";
 import {APIRoutes} from "../../config/API routes";
 import {HttpStatusCode} from "../API/HttpStatusCodes";
@@ -6,8 +6,8 @@ import {Material} from "./Material";
 
 export class MaterialAPI {
     /** Ask the API for the data of a material. */
-    static async getAPIMaterialData(id: number): Promise<MaterialApiResponse> {
-        const materialResponse = await axios.get<MaterialApiResponse>(APIRoutes.material + id)
+    static async getAPIMaterialData(id: number): Promise<MaterialAPIFetchResponse> {
+        const materialResponse = await axios.get<MaterialAPIFetchResponse>(APIRoutes.material + id)
 
         if (materialResponse.status === HttpStatusCode.Ok) {
             const data = materialResponse.data;

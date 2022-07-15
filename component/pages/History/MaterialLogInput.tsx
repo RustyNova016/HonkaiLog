@@ -16,16 +16,12 @@ export function MaterialLogInput(props: MaterialLogInputProps) {
     // Get the material
     const material = useContext(MaterialContext)
     const {register, handleSubmit, watch, formState: {errors}} = useForm<MaterialLogInputForm>();
-
-    const loadCallback = (mat: Material) => {
-        setLoading(false)
-    }
-
-    material.loadCallbacks.push(loadCallback);
+    material.loadingHooks.addHook(setLoading);
 
     const onSubmit = async (data: MaterialLogInputForm) => {
         setLoading(true)
         await material.addNewLog(data.count)
+        setLoading(false)
     }
 
     return <>

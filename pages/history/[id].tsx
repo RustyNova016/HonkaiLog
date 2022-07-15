@@ -3,7 +3,11 @@ import {useRouter} from "next/router";
 import {MaterialHistoryIDData} from "../../component/pages/History/MaterialHistoryIDData";
 import {UserRedirect} from "../../component/App Components/userRedirect";
 
-/** A page to display and create material logs */
+/** A page to display and create material logs
+ *
+ * The page got multiple layers of components:
+ *  Page > API calls > Display
+ */
 export default function MaterialHistoryIDPage() {
     // Get the material ID
     const router = useRouter()
