@@ -1,5 +1,5 @@
 import {PointTooltipProps} from "@nivo/line";
-import ContentDiv from "../../Layout/ContentDiv";
+import FramedDiv from "../../Layout/FramedDiv";
 import {useMaterialFromContext} from "../../../features/Material/hooks/useMaterialFromContext";
 import {LoadingComponent} from "../../App Components/PageLoadingComponent";
 
@@ -12,11 +12,11 @@ export function MaterialLogPointToolTip(props: PointTooltipProps) {
 
     return (
         <>
-            <ContentDiv sides={true}>
+            <FramedDiv sides={true}>
                 <p>
                     <>Count: {props.point.data.y} {material.name} <br/> {date.toLocaleString()}</>
                 </p>
-            </ContentDiv>
+            </FramedDiv>
         </>
     )
 }

@@ -4,6 +4,7 @@ import {NoDataErrorComponent} from "../../../../component/App Components/Errors/
 import {MaterialHistoryGraph} from "../../../../component/pages/History/MaterialHistoryGraph";
 import {useMaterialFromContext} from "../../hooks/useMaterialFromContext";
 import {LoadingComponent} from "../../../../component/App Components/PageLoadingComponent";
+import {Row} from "react-bootstrap";
 
 interface MaterialUsageDataResultsProps {
     graphType: "count" | "gains" | "averages";
@@ -23,12 +24,13 @@ export function MaterialUsageDataResults(props: MaterialUsageDataResultsProps) {
     if (logs.getLogsBetween(props.lowerDate, props.upperDate).empty()) return <NoDataErrorComponent/>
 
     return <>
-        <p>Showing data from the {props.lowerDate.toLocaleString()} to {props.upperDate.toLocaleString()}</p>
+        <Row>
+            <p>You gained {logs.getNetGainOfPeriod(props.lowerDate, props.upperDate)} {material.name} during this
+                period,
+                which is {logs.getAverageGainOfPeriod(props.lowerDate, props.upperDate)} {material.name} per day</p>
 
-        <p>You gained {logs.getNetGainOfPeriod(props.lowerDate, props.upperDate)} {material.name} during this period,
-            which is {logs.getAverageGainOfPeriod(props.lowerDate, props.upperDate)} {material.name} per day</p>
-
-        <MaterialHistoryGraph
-            series={props.materialLogsGraph.getGraphData(props.graphType, props.lowerDate, props.upperDate)}/>
+            <MaterialHistoryGraph
+                series={props.materialLogsGraph.getGraphData(props.graphType, props.lowerDate, props.upperDate)}/>
+        </Row>
     </>;
 }

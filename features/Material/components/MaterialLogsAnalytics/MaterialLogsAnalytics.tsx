@@ -1,12 +1,16 @@
 import {useState} from "react";
 import {removeDaysFromToday} from "../../../../tools/Miscs";
 import {SectionTitle} from "../../../../component/pageComponents/Theme/Theme";
-import ContentDiv from "../../../../component/Layout/ContentDiv";
+import FramedDiv from "../../../../component/Layout/FramedDiv";
 import {MaterialLogsGraph} from "../../../../tools/MaterialLogsGraph";
 import {MaterialUsageDataOptions} from "./MaterialUsageDataOptions";
 import {MaterialUsageDataResults} from "./MaterialUsageDataResults";
 import {useMaterialFromContext} from "../../hooks/useMaterialFromContext";
 import {LoadingComponent} from "../../../../component/App Components/PageLoadingComponent";
+import {TimeframeContextProvider} from "../../../../context/TimeframeContext";
+import {Row} from "react-bootstrap";
+import {TimeframeSelection} from "../../../../component/pages/History/TimeFrameSelect";
+import {TimeframeDates} from "./TimeframeDates";
 
 export interface DataChartsProps {
 }
@@ -24,13 +28,24 @@ export function MaterialLogsAnalytics(props: DataChartsProps) {
     const [graphType, setGraphType] = useState<GraphType>("count");
 
     return <>
-        <ContentDiv sides={true}>
-            <SectionTitle title={"Material Usages"}></SectionTitle>
-            <MaterialUsageDataOptions dateHook={setLowerDate} graphTypeHook={setGraphType}
-                                      materialLogsGraph={materialLogsGraph}/>
+        <TimeframeContextProvider>
+            <FramedDiv sides={true}>
+                <SectionTitle title={"Material Usages"}></SectionTitle>
 
-            <MaterialUsageDataResults lowerDate={lowerDate} upperDate={upperDate} material={material}
-                                      materialLogsGraph={materialLogsGraph} graphType={graphType}/>
-        </ContentDiv>
+                <Row>
+                    <TimeframeSelection/><p><TimeframeDates/></p>
+                </Row>
+
+
+                <Row>
+                    <MaterialUsageDataOptions dateHook={setLowerDate} graphTypeHook={setGraphType}
+                                              materialLogsGraph={materialLogsGraph}/>
+                </Row>
+
+
+                <MaterialUsageDataResults lowerDate={lowerDate} upperDate={upperDate} material={material}
+                                          materialLogsGraph={materialLogsGraph} graphType={graphType}/>
+            </FramedDiv>
+        </TimeframeContextProvider>
     </>;
 }

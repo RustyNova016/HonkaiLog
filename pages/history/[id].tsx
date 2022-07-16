@@ -2,7 +2,7 @@ import {useRouter} from "next/router";
 import {MaterialIDContext} from "../../features/Material/contexts/MaterialIDContext";
 import {Page} from "../../layout/components/page";
 import {Fade} from "react-awesome-reveal";
-import {MaterialInfoPageContent} from "../../features/MaterialInfoPageContent";
+import {MaterialInfoPageContent} from "../../features/Material/pages/MaterialInfoPageContent";
 
 /** A page to display information about a material and create material logs*/
 export default function MaterialInfo() {

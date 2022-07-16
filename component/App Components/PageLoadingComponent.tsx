@@ -1,5 +1,5 @@
 import {CenteredDiv} from "../Layout/CenteredDiv";
-import ContentDiv from "../Layout/ContentDiv";
+import FramedDiv from "../Layout/FramedDiv";
 import styles from "./CSS/LoadingComponent.module.scss";
 import {Grid} from 'react-loading-icons'
 import {Fade} from "react-awesome-reveal";
@@ -24,9 +24,9 @@ export interface PageLoadingComponentProps extends LoadingComponentProps {}
 export function PageLoadingComponent(props: PageLoadingComponentProps) {
     return <CenteredDiv>
         <Fade>
-            <ContentDiv sides={true} className={styles.flexboxCentered}>
+            <FramedDiv sides={true} className={styles.flexboxCentered}>
                 <LoadingComponent {...props}/>
-            </ContentDiv>
+            </FramedDiv>
         </Fade>
     </CenteredDiv>;
 }

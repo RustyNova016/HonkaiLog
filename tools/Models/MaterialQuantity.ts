@@ -2,7 +2,7 @@ import {Material} from "./Material";
 
 /** A class that represent a quantity of materials. Like a stack of items */
 export class MaterialQuantity {
-    material: Material;
+    readonly material: Material;
     quantity: number;
 
     constructor(material: Material, quantity: number) {

@@ -1,12 +1,12 @@
-import {useMaterialFromContext} from "./Material/hooks/useMaterialFromContext";
-import {LoadingComponent} from "../component/App Components/PageLoadingComponent";
+import {useMaterialFromContext} from "../hooks/useMaterialFromContext";
+import {LoadingComponent} from "../../../component/App Components/PageLoadingComponent";
 import {Container} from "react-bootstrap";
-import {PageTitle} from "../component/pageComponents/Theme/Theme";
+import {PageTitle} from "../../../component/pageComponents/Theme/Theme";
 import {ErrorBoundary} from "react-error-boundary";
-import {ErrorFallback, ErrorHandler} from "../component/App Components/ErrorFallback";
-import {MaterialLogsManager} from "./Material/components/MaterialLogsManager/MaterialLogsManager";
-import {MaterialLogsAnalytics} from "./Material/components/MaterialLogsAnalytics/MaterialLogsAnalytics";
-import {GachaData} from "./Gacha/components/GachaData";
+import {ErrorFallback, ErrorHandler} from "../../../component/App Components/ErrorFallback";
+import {MaterialLogsManager} from "../components/MaterialLogsManager/MaterialLogsManager";
+import {MaterialLogsAnalytics} from "../components/MaterialLogsAnalytics/MaterialLogsAnalytics";
+import {GachaData} from "../../Gacha/components/GachaData";
 
 
 export function MaterialInfoPageContent() {

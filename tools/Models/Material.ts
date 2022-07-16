@@ -8,12 +8,12 @@ import {MaterialLogsAPIFetchResponse} from "../../pages/api/material/logs/[id]";
 
 /** Class of a material object. E.G. Gold, crystals, exp material, etc... */
 export class Material extends MaterialAPI {
+    public id: number;
     public loadLogs: boolean = false
     public loadingHooks: HookHandler<boolean> = new HookHandler<boolean>()
     public logs: MaterialLogCollection = new MaterialLogCollection(this);
     public materialHooks: HookHandler<Material> = new HookHandler<Material>()
     public name: string;
-    public id: number;
 
     constructor(id: number, name: string) {
         super();
@@ -21,9 +21,31 @@ export class Material extends MaterialAPI {
         this.name = name;
     }
 
+    static createMaterialFromAPIResponse(res: MaterialAPIFetchResponse | MaterialLogsAPIFetchResponse): Material {
+        const material = new Material(res.id, res.name);
 
+        if ("Material_logs" in res && res.Material_logs !== undefined) {
+            material.logs.loadAPIData(res)
+        }
 
-    async addNewLog(count: number) {
+        return material
+    }
+
+    /** Create a new instance of the material with the latest data from the API */
+    public async createNewInstance(): Promise<Material> {
+        const newMaterial = await Material.getMaterialFromId(this.id)
+
+        // We check if the logs are loaded. If so, the new material should also load the logs
+        if (this.logs.loaded) {
+            newMaterial.loadLogs = true
+            await newMaterial.fetchLogs()
+        }
+
+        return newMaterial
+    }
+
+    /** Create a log and save it to the database */
+    async createNewLog(count: number) {
         await this.logs.addNewLog(new MaterialQuantity(this, count))
     }
 
@@ -89,28 +111,5 @@ export class Material extends MaterialAPI {
     /** If the logs aren't set, send a warning in the console */
     private logNotSetWarning() {
         if (!this.hasLogs()) console.warn("The logs aren't set! The data isn't what it should be!")
-    }
-
-    /** Create a new instance of the material with the latest data from the API */
-    public async createNewInstance(): Promise<Material> {
-        const newMaterial = await Material.getMaterialFromId(this.id)
-
-        // We check if the logs are loaded. If so, the new material should also load the logs
-        if (this.logs.loaded) {
-            newMaterial.loadLogs = true
-            await newMaterial.fetchLogs()
-        }
-
-        return newMaterial
-    }
-
-    static createMaterialFromAPIResponse(res: MaterialAPIFetchResponse|MaterialLogsAPIFetchResponse): Material {
-        const material = new Material(res.id, res.name);
-
-        if ("Material_logs" in res && res.Material_logs !== undefined){
-            material.logs.loadAPIData(res)
-        }
-
-        return material
     }
 }

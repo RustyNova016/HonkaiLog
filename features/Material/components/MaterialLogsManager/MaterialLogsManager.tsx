@@ -1,4 +1,4 @@
-import ContentDiv from "../../../../component/Layout/ContentDiv";
+import FramedDiv from "../../../../component/Layout/FramedDiv";
 import {SectionTitle} from "../../../../component/pageComponents/Theme/Theme";
 import {Col, Row} from "react-bootstrap";
 import {MaterialLogsManagerInputForm} from "./MaterialLogsManagerInputForm";
@@ -12,7 +12,7 @@ export function MaterialLogsManager() {
     if (material === undefined) return <LoadingComponent subtext={"Preparing material data..."}/>
 
     return <>
-        <ContentDiv sides={true}>
+        <FramedDiv sides={true}>
             <SectionTitle title={material.name + " logs"}></SectionTitle>
 
             <Row>
@@ -24,6 +24,6 @@ export function MaterialLogsManager() {
                     <MaterialLogsManagerInputForm/>
                 </Col>
             </Row>
-        </ContentDiv>
+        </FramedDiv>
     </>;
 }

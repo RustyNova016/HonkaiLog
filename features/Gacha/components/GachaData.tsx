@@ -1,4 +1,4 @@
-import ContentDiv from "../../../component/Layout/ContentDiv";
+import FramedDiv from "../../../component/Layout/FramedDiv";
 import {SectionTitle} from "../../../component/pageComponents/Theme/Theme";
 import {useState} from "react";
 import {removeDaysFromToday, TimeTools} from "../../../tools/Miscs";
@@ -38,7 +38,7 @@ export function GachaData() {
 
     const expaBanner = new GachaBanner("EXPA", new MaterialQuantity(material, 280), 100, 1)
 
-    return <ContentDiv sides={true}>
+    return <FramedDiv sides={true}>
         <SectionTitle title={"Gacha"}></SectionTitle>
 
         <Row>
@@ -48,5 +48,5 @@ export function GachaData() {
         </Row>
 
         <GachaBannerInfo gachaBanner={expaBanner}/>
-    </ContentDiv>;
+    </FramedDiv>;
 }
