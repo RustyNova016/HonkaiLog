@@ -5,12 +5,12 @@ import FramedDiv from "../../../../component/Layout/FramedDiv";
 import {MaterialLogsGraph} from "../../../../tools/MaterialLogsGraph";
 import {MaterialUsageDataOptions} from "./MaterialUsageDataOptions";
 import {MaterialUsageDataResults} from "./MaterialUsageDataResults";
-import {useMaterialFromContext} from "../../hooks/useMaterialFromContext";
 import {LoadingComponent} from "../../../../component/App Components/PageLoadingComponent";
 import {TimeframeContextProvider} from "../../../../context/TimeframeContext";
 import {Row} from "react-bootstrap";
 import {TimeframeSelection} from "../../../../component/pages/History/TimeFrameSelect";
 import {TimeframeDates} from "./TimeframeDates";
+import {useMaterialWithLogsFromRouter} from "../../hooks/useMaterialWithLogsFromRouter";
 
 export interface DataChartsProps {
 }
@@ -19,7 +19,7 @@ export type GraphType = "count" | "gains" | "averages";
 
 export function MaterialLogsAnalytics(props: DataChartsProps) {
     // Get the material
-    const material = useMaterialFromContext(true);
+    const material = useMaterialWithLogsFromRouter();
     if (material === undefined) return <LoadingComponent subtext={"Preparing material data..."}/>
 
     const materialLogsGraph = new MaterialLogsGraph(material)

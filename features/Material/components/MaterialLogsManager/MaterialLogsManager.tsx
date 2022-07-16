@@ -3,12 +3,12 @@ import {SectionTitle} from "../../../../component/pageComponents/Theme/Theme";
 import {Col, Row} from "react-bootstrap";
 import {MaterialLogsManagerInputForm} from "./MaterialLogsManagerInputForm";
 import {LoadingComponent} from "../../../../component/App Components/PageLoadingComponent";
-import {useMaterialFromContext} from "../../hooks/useMaterialFromContext";
+import {useMaterialWithLogsFromRouter} from "../../hooks/useMaterialWithLogsFromRouter";
 
 /** Component that allow the user to manage and log the material count */
 export function MaterialLogsManager() {
     // Get the material
-    const material = useMaterialFromContext(true);
+    const material = useMaterialWithLogsFromRouter();
     if (material === undefined) return <LoadingComponent subtext={"Preparing material data..."}/>
 
     return <>

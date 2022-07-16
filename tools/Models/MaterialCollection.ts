@@ -29,12 +29,6 @@ export class MaterialCollection {
         logging.info("Creating material id: " + id, "MaterialCollection")
         const material = await Material.getMaterialFromId(id);
 
-        if (fetchLogs){
-            logging.info("Fetching log for material id: " + id, "MaterialCollection")
-            await material.fetchLogs()
-            logging.info("Log fetched", "MaterialCollection")
-            logging.info("HasLogs state: " + material.hasLogs(), "MaterialCollection")
-        }
 
         this.materials.push(material);
         return material;

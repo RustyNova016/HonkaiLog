@@ -4,12 +4,12 @@ import {useState} from "react";
 import {removeDaysFromToday, TimeTools} from "../../../tools/Miscs";
 import {Col, Row} from "react-bootstrap";
 import {TimeFrameSelect} from "../../../component/pages/History/TimeFrameSelect";
-import {GachaBanner} from "../../../tools/Models/GachaBanner";
-import {MaterialQuantity} from "../../../tools/Models/MaterialQuantity";
-import {useMaterialFromContext} from "../../Material/hooks/useMaterialFromContext";
 import {LoadingComponent} from "../../../component/App Components/PageLoadingComponent";
+import {useMaterialWithLogsFromRouter} from "../../Material/hooks/useMaterialWithLogsFromRouter";
+import {GachaBannerWithLogs} from "../../../tools/Models/GachaBannerWithLogs";
+import {MaterialQuantityWithLogs} from "../../../tools/Models/MaterialQuantityWithLogs";
 
-function GachaBannerInfo(props: { gachaBanner: GachaBanner }) {
+function GachaBannerInfo(props: { gachaBanner: GachaBannerWithLogs }) {
     const gachaBanner = props.gachaBanner
     return <Row>
         <p>{gachaBanner.name} gacha banner:</p>
@@ -31,12 +31,12 @@ function GachaBannerInfo(props: { gachaBanner: GachaBanner }) {
 
 export function GachaData() {
     // Get the material
-    const material = useMaterialFromContext(true);
+    const material = useMaterialWithLogsFromRouter();
     if (material === undefined) return <LoadingComponent subtext={"Preparing material data..."}/>
 
     const [lowerDate, setLowerDate] = useState<Date>(removeDaysFromToday(1));
 
-    const expaBanner = new GachaBanner("EXPA", new MaterialQuantity(material, 280), 100, 1)
+    const expaBanner = new GachaBannerWithLogs("EXPA", 100, 1, new MaterialQuantityWithLogs(material, 280))
 
     return <FramedDiv sides={true}>
         <SectionTitle title={"Gacha"}></SectionTitle>

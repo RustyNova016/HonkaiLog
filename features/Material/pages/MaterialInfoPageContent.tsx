@@ -1,4 +1,3 @@
-import {useMaterialFromContext} from "../hooks/useMaterialFromContext";
 import {LoadingComponent} from "../../../component/App Components/PageLoadingComponent";
 import {Container} from "react-bootstrap";
 import {PageTitle} from "../../../component/pageComponents/Theme/Theme";
@@ -7,11 +6,12 @@ import {ErrorFallback, ErrorHandler} from "../../../component/App Components/Err
 import {MaterialLogsManager} from "../components/MaterialLogsManager/MaterialLogsManager";
 import {MaterialLogsAnalytics} from "../components/MaterialLogsAnalytics/MaterialLogsAnalytics";
 import {GachaData} from "../../Gacha/components/GachaData";
+import {useMaterialWithLogsFromRouter} from "../hooks/useMaterialWithLogsFromRouter";
 
 
 export function MaterialInfoPageContent() {
     // Get the material
-    const material = useMaterialFromContext(true);
+    const material = useMaterialWithLogsFromRouter();
     if (material === undefined) return <LoadingComponent subtext={"Preparing material data..."}/>
 
     return <Container>

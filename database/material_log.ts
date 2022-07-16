@@ -6,7 +6,7 @@ import {SequelizeTableCommonDBResults} from "../tools/Types";
 import {UserDBResponse} from "./user";
 import {MaterialDBResponse} from "./material";
 
-export interface MaterialLogDBResponse extends SequelizeTableCommonDBResults {
+export interface MaterialLogItemJSON extends SequelizeTableCommonDBResults {
     count: number;
     id: number;
     log_date: string;

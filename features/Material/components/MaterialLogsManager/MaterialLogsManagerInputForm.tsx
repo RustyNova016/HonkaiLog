@@ -1,11 +1,11 @@
 import {Button, Col, FormFloating, Row} from "react-bootstrap";
 import {useForm} from "react-hook-form";
 import {useState} from "react";
-import {getUseMaterialLogsKey} from "../../hooks/useMaterialLogsAPI";
 import logger from "../../../../tools/Logger";
 import {LoadingComponent} from "../../../../component/App Components/PageLoadingComponent";
 import {useSWRConfig} from "swr";
-import {useMaterialFromContext} from "../../hooks/useMaterialFromContext";
+import {useMaterialWithLogsFromRouter} from "../../hooks/useMaterialWithLogsFromRouter";
+import {getMaterialLogsAPIKey} from "../../hooks/useMaterialLogsAPI";
 
 export interface IMaterialLogInputForm {
     count: number;
@@ -18,7 +18,7 @@ export function MaterialLogsManagerInputForm(props: MaterialLogsManagerInputForm
     const {mutate} = useSWRConfig()
 
     // Get the material
-    const material = useMaterialFromContext(true);
+    const material = useMaterialWithLogsFromRouter();
     if (material === undefined) return <LoadingComponent subtext={"Preparing material data..."}/>
 
     // Handle form
@@ -28,8 +28,8 @@ export function MaterialLogsManagerInputForm(props: MaterialLogsManagerInputForm
         logger.info("User submitting log for material " + material.name + " with value " + data.count, "MaterialLogInput")
 
         setLoading(true)
-        await material.createNewLog(data.count)
-        await mutate(getUseMaterialLogsKey(material.id))
+        await material.makeLog(data.count)
+        await mutate(getMaterialLogsAPIKey(material.id))
         setLoading(false)
     }
 

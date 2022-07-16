@@ -1,14 +1,18 @@
 import {useRouter} from "next/router";
-import {MaterialIDContext} from "../../features/Material/contexts/MaterialIDContext";
-import {Page} from "../../layout/components/page";
+import {MaterialIDContext} from "../../../features/Material/contexts/MaterialIDContext";
+import {Page} from "../../../layout/components/page";
 import {Fade} from "react-awesome-reveal";
-import {MaterialInfoPageContent} from "../../features/Material/pages/MaterialInfoPageContent";
+import {MaterialInfoPageContent} from "../../../features/Material/pages/MaterialInfoPageContent";
+import {ParsedUrlQuery} from "querystring";
 
 /** A page to display information about a material and create material logs*/
 export default function MaterialInfo() {
     // Get the material ID
     const router = useRouter()
-    let id_string = router.query.id;
+    const query: ParsedUrlQuery = router.query;
+    console.log("Query from page:", query)
+
+    let id_string = query.id;
 
     if (typeof id_string !== "string") {
         id_string = "1"; // TODO: Remove failsafe and actually tell that it's not valid

@@ -1,30 +1,16 @@
 import {GraphType} from "../features/Material/components/MaterialLogsAnalytics/MaterialLogsAnalytics";
 import {Serie} from "@nivo/line";
-import {Material} from "./Models/Material";
 import {toTimestamp} from "./Miscs";
-import {MaterialLogCollection} from "./Models/MaterialLogCollection";
 import {DatumConstructor} from "./Types/DatumConstructor";
 import {LogDatum} from "./Types/LogDatum";
+import {MaterialWithLogs} from "./Models/MaterialWithLogs";
 
-export class MaterialWithLogs extends Material {
-    override logs: MaterialLogCollection
-
-    constructor(id: number, name: string, logs: MaterialLogCollection) {
-        super(id, name);
-        this.logs = logs;
-    }
-
-    static getFromMaterial(material: Material) {
-        if (material.logs === "loading") throw new Error("Longs aren't initialised")
-        return new MaterialWithLogs(material.id, material.name, material.logs)
-    }
-}
 
 export class MaterialLogsGraph {
     material: MaterialWithLogs;
 
-    constructor(material: Material) {
-        this.material = MaterialWithLogs.getFromMaterial(material);
+    constructor(material: MaterialWithLogs) {
+        this.material = material;
     }
 
     getGraphData(graphType: GraphType, dateFrom?: Date, dateTo?: Date): Serie[] {

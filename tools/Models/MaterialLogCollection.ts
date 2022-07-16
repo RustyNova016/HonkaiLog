@@ -5,34 +5,48 @@ import {MaterialLogsAPIFetchResponse} from "../../pages/api/material/logs/[id]";
 import {APIRoutes} from "../../data/API routes";
 import {TimeTools} from "../Miscs";
 import {MaterialQuantity} from "./MaterialQuantity";
-import {adapter} from "next/dist/server/web/adapter";
+import {MaterialWithLogs} from "./MaterialWithLogs";
 
 /** List of all the MaterialLogs of an material. It can be used to calculate data about the usage of the materials */
 export class MaterialLogCollection {
-    loaded: boolean = false;
-    logs: MaterialLog[] = [];
-    readonly material: Material;
+    readonly logs: MaterialLog[] = [];
+    readonly material: MaterialWithLogs;
 
-    constructor(material: Material, logs?: MaterialLog[]) {
+    constructor(material: MaterialWithLogs, logs?: MaterialLog[], APIResponseData?: MaterialLogsAPIFetchResponse) {
         this.material = material
+
+        let loaded = false
         if (logs !== undefined) {
-            this.logs = logs;
-            this.loaded = true
+            this.addLogs(logs)
+            loaded = true
         }
+
+        if (APIResponseData !== undefined) {
+            this.addLogsFromAPIResponse(APIResponseData)
+            loaded = true
+        }
+
+        if (!loaded) throw new Error("MaterialLogCollection wasn't loaded with any data!")
     }
 
-    /** Take API data and put it inside the log list */
-    public loadAPIData(res: MaterialLogsAPIFetchResponse) {
-        this.addLogsFromAPIResponse(res, this.material)
+    /** Add a log to the log array */
+    public addLog(log: MaterialLog) {
+        // TODO: Check for duplicates/Optimizations
+        this.logs.push(log)
+    }
+
+    /** Add multiple logs to the array */
+    public addLogs(logs: MaterialLog[]) {
+        for (const log of logs) {
+            this.addLog(log);
+        }
     }
 
     /** Put the MaterialLog objects into the array using an API response as input data */
-    public addLogsFromAPIResponse(res: MaterialLogsAPIFetchResponse, material: Material): void {
+    public addLogsFromAPIResponse(res: MaterialLogsAPIFetchResponse): void {
         for (const materialLog of res.Material_logs) {
-            this.logs.push(new MaterialLog(material, materialLog.count, materialLog.id, new Date(materialLog.log_date), materialLog.userId))
+            this.addLog(MaterialLog.fromJSON(materialLog, this.material))
         }
-
-        this.loaded = true
     }
 
     public async addNewLog(quantity: MaterialQuantity) {
@@ -47,7 +61,7 @@ export class MaterialLogCollection {
     public async fetchLogsOfMaterial(material: Material): Promise<void> {
         const logs = await axios.get<MaterialLogsAPIFetchResponse>(APIRoutes.materialLogs + material.id);
 
-        this.addLogsFromAPIResponse(logs.data, material);
+        this.addLogsFromAPIResponse(logs.data);
     }
 
     getAverageDelta(): number {
@@ -151,6 +165,11 @@ export class MaterialLogCollection {
     getTimeframeMilliseconds(dateFrom: Date | undefined, dateTo: Date | undefined) {
         const {dateLowerBound, dateUpperBound} = this.getTimeframe(dateFrom, dateTo);
         return TimeTools.getDateDifference(dateUpperBound, dateLowerBound);
+    }
+
+    /** Take API data and put it inside the log list */
+    public loadAPIData(res: MaterialLogsAPIFetchResponse) {
+        this.addLogsFromAPIResponse(res)
     }
 
     /** Throw an error if this.logs is empty. Useful to stop calculations without data */

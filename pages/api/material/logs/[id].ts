@@ -1,13 +1,14 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import database from "../../../../database/database";
 import {MaterialDBResponse} from "../../../../database/material";
-import {MaterialLogDBResponse} from "../../../../database/material_log";
+import {MaterialLogItemJSON} from "../../../../database/material_log";
 import {getAPIsideUser} from "../../../../database/user";
 import {HttpStatusCode} from "../../../../tools/API/HttpStatusCodes";
 import {getIDFromQuery} from "../../../../tools/API/getIDFromQuery";
 
+/** Response from the API for any fetching operation */
 export interface MaterialLogsAPIFetchResponse extends MaterialDBResponse {
-    Material_logs: MaterialLogDBResponse[];
+    Material_logs: MaterialLogItemJSON[];
 }
 
 /** Return the logs for material with the given id */

@@ -1,0 +1,29 @@
+import {MaterialLogCollection} from "./MaterialLogCollection";
+import {MaterialLog} from "./MaterialLog";
+import {MaterialLogsAPIFetchResponse} from "../../pages/api/material/logs/[id]";
+import {Material} from "./Material";
+import {MaterialQuantity} from "./MaterialQuantity";
+
+export class MaterialWithLogs extends Material {
+    public logs: MaterialLogCollection
+
+    constructor(id: number, name: string, logs?: MaterialLog[], APIResponseData?: MaterialLogsAPIFetchResponse) {
+        super(id, name);
+        this.logs = new MaterialLogCollection(this, undefined, APIResponseData)
+    }
+
+    /** Create a MaterialWithLogs instance with the data from the API */
+    static createMaterialWithLogsFromAPIResponse(res: MaterialLogsAPIFetchResponse): MaterialWithLogs {
+        return new MaterialWithLogs(res.id, res.name, undefined, res);
+    }
+
+    /** Return the current count of material that the user has in game... Well, the count they last logged. */
+    getInGameCount() {
+        return this.logs.getCurrentCount();
+    }
+
+    /** Create a log and save it to the database */
+    async makeLog(count: number) {
+        await this.logs.addNewLog(new MaterialQuantity(this, count))
+    }
+}

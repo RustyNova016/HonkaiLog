@@ -7,9 +7,9 @@ export class GachaBanner {
     nbPullsForGuaranty: number
     pullCost: MaterialQuantity
 
-    constructor(name: string, prices: MaterialQuantity, NbPullsForGuaranty: number, NbGuarantyForCompletion: number) {
+    constructor(name: string, NbPullsForGuaranty: number, NbGuarantyForCompletion: number, pullCost: MaterialQuantity) {
         this.name = name;
-        this.pullCost = prices;
+        this.pullCost = pullCost;
         this.nbPullsForGuaranty = NbPullsForGuaranty;
         this.nbGuarantyForCompletion = NbGuarantyForCompletion;
     }
@@ -22,12 +22,6 @@ export class GachaBanner {
         )
     }
 
-    /** Return the number of days before the user obtain enough materials to complete the gacha */
-    getDaysToFullCompletionFounds(dateFrom?: Date, dateTo?: Date): number {
-        const costOfCompletion = this.getCostToCompletion();
-        return Math.ceil(costOfCompletion.getDaysToMatchQuantity(dateFrom, dateTo))
-    }
-
     /** Get the name of the material needed to gacha */
     getGetCostMaterialName(): string {
         return this.pullCost.material.name;
@@ -37,15 +31,4 @@ export class GachaBanner {
     getNBPullsForCompletion(): number {
         return this.nbPullsForGuaranty * this.nbGuarantyForCompletion;
     }
-
-    /** The number of pulls possible with the current count of materials */
-    getNBPullsPossible(): number {
-        return Math.trunc(this.pullCost.material.getInGameCount() / this.pullCost.quantity);
-    }
-
-    /** Percentage of the banner capable to be done */
-    getPercentageAchievable(): number {
-        return 100 * (this.getNBPullsPossible() / this.getNBPullsForCompletion())
-    }
 }
-

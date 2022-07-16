@@ -1,11 +1,11 @@
 import {PointTooltipProps} from "@nivo/line";
 import FramedDiv from "../../Layout/FramedDiv";
-import {useMaterialFromContext} from "../../../features/Material/hooks/useMaterialFromContext";
 import {LoadingComponent} from "../../App Components/PageLoadingComponent";
+import {useMaterialWithLogsFromRouter} from "../../../features/Material/hooks/useMaterialWithLogsFromRouter";
 
 export function MaterialLogPointToolTip(props: PointTooltipProps) {
     // Get the material
-    const material = useMaterialFromContext(true);
+    const material = useMaterialWithLogsFromRouter();
     if (material === undefined) return <LoadingComponent subtext={"Preparing material data..."}/>
 
     const date = new Date(props.point.data.x);
