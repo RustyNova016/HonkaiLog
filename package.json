@@ -25,7 +25,7 @@
         "bootstrap-icons": "^1.9.1",
         "class-transformer": "^0.5.1",
         "mysql2": "^2.3.3",
-        "next": "12.1.6",
+        "next": "12.2.2",
         "next-auth": "^4.5.0",
         "react": "18.2.0",
         "react-awesome-reveal": "^4.0.0-beta.2",
