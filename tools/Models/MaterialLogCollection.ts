@@ -6,54 +6,118 @@ import {APIRoutes} from "../../data/API routes";
 import {TimeTools} from "../Miscs";
 import {MaterialQuantity} from "./MaterialQuantity";
 import {MaterialWithLogs} from "./MaterialWithLogs";
+import {Timeframe} from "../../context/TimeframeContext";
 
 /** List of all the MaterialLogs of an material. It can be used to calculate data about the usage of the materials */
 export class MaterialLogCollection {
     readonly logs: MaterialLog[] = [];
     readonly material: MaterialWithLogs;
 
-    constructor(material: MaterialWithLogs, logs?: MaterialLog[], APIResponseData?: MaterialLogsAPIFetchResponse) {
-        this.material = material
+    constructor(material: MaterialWithLogs, logs?: MaterialLog[]) {
+        this.material = material;
+        this.addLogs(logs);
+    }
 
-        let loaded = false
+    /** Create a MaterialLogCollection object with a wider input range */
+    public static getMaterialLogCollection(material: MaterialWithLogs, logs?: MaterialLog[], APIResponseData?: MaterialLogsAPIFetchResponse) {
+        let logsArray: MaterialLog[] = []
+
+        if (logs === undefined && APIResponseData === undefined) {
+            throw new Error("Cannot create collection: Both data sources are undefined");
+        }
+
         if (logs !== undefined) {
-            this.addLogs(logs)
-            loaded = true
+            logsArray = [...logsArray, ...logs]
+        }
+
+        if (APIResponseData?.Material_logs !== undefined) {
+            for (const materialLog of APIResponseData?.Material_logs) {
+                logsArray.push(MaterialLog.fromJSON(materialLog, material))
+            }
+        }
+
+        return new MaterialLogCollection(material, logsArray);
+    }
+
+    /** Put the MaterialLog objects into the array using an API response as input data */
+    public addAPIResponseLogs(res: MaterialLogsAPIFetchResponse): void {
+        for (const materialLog of res.Material_logs) {
+            this.addMaterialLog(MaterialLog.fromJSON(materialLog, this.material))
+        }
+    }
+
+    /** Add logs from any source
+     *  @return boolean Return true if logs got added
+     */
+    public addLogs(logs?: MaterialLog[], APIResponseData?: MaterialLogsAPIFetchResponse): boolean {
+        let logAdded = false
+
+        if (logs !== undefined) {
+            this.addMaterialLogs(logs)
+            logAdded = true
         }
 
         if (APIResponseData !== undefined) {
-            this.addLogsFromAPIResponse(APIResponseData)
-            loaded = true
+            this.addAPIResponseLogs(APIResponseData)
+            logAdded = true
         }
 
-        if (!loaded) throw new Error("MaterialLogCollection wasn't loaded with any data!")
+        this.sortChronologically()
+
+        return logAdded
     }
 
     /** Add a log to the log array */
-    public addLog(log: MaterialLog) {
+    public addMaterialLog(log: MaterialLog) {
         // TODO: Check for duplicates/Optimizations
         this.logs.push(log)
     }
 
     /** Add multiple logs to the array */
-    public addLogs(logs: MaterialLog[]) {
+    public addMaterialLogs(logs: MaterialLog[]) {
         for (const log of logs) {
-            this.addLog(log);
+            this.addMaterialLog(log);
         }
     }
 
-    /** Put the MaterialLog objects into the array using an API response as input data */
-    public addLogsFromAPIResponse(res: MaterialLogsAPIFetchResponse): void {
-        for (const materialLog of res.Material_logs) {
-            this.addLog(MaterialLog.fromJSON(materialLog, this.material))
+    /** Return the net gain of the collection. */
+    public calcGainAmount(): number {
+        let gain = 0;
+        let delta = 0;
+
+        for (let i = 0; i < this.logs.length; i++) {
+            if (i !== 0) {
+                delta = this.logs[i - 1].getChronologicalDifference(this.logs[i])
+            }
+
+            if (delta > 0) {
+                gain += delta;
+            }
         }
+
+        return gain;
     }
 
-    public async addNewLog(quantity: MaterialQuantity) {
-        await MaterialLog.createNewLog(quantity)
+    /** Give how much the user spent of the material */
+    public calcSpentAmount(): number {
+        let totalSpent = 0;
+        let delta = 0;
+
+        for (let i = 0; i < this.logs.length; i++) {
+            if (i !== 0) {
+                delta = this.logs[i - 1].getChronologicalDifference(this.logs[i])
+            }
+
+            if (delta < 0) {
+                totalSpent += delta;
+            }
+        }
+
+        return totalSpent;
     }
 
-    empty(): boolean {
+    /** Return true if the collection is empty */
+    public empty(): boolean {
         return this.logs.length === 0;
     }
 
@@ -61,13 +125,19 @@ export class MaterialLogCollection {
     public async fetchLogsOfMaterial(material: Material): Promise<void> {
         const logs = await axios.get<MaterialLogsAPIFetchResponse>(APIRoutes.materialLogs + material.id);
 
-        this.addLogsFromAPIResponse(logs.data);
+        this.addAPIResponseLogs(logs.data);
+    }
+
+    /** Filter the logs according to a test into a new MaterialLogCollection */
+    public filter(test: (value: MaterialLog, index: number, array: MaterialLog[]) => boolean): MaterialLogCollection {
+        return new MaterialLogCollection(this.material, this.logs.filter(test))
     }
 
     getAverageDelta(): number {
         return (this.getLatestLog().quantity - this.getOldestLog().quantity) / this.getNbDays();
     }
 
+    /** @deprecated */
     getAverageDeltaOfPeriod(dateFrom?: Date, dateTo?: Date): number {
         const {dateLowerBound, dateUpperBound} = this.getTimeframe(dateFrom, dateTo);
 
@@ -76,9 +146,10 @@ export class MaterialLogCollection {
 
     getAverageGain(): number {
         const nbDays = this.getNbDays();
-        return this.getNetGain() / nbDays;
+        return this.calcGainAmount() / nbDays;
     }
 
+    /** @deprecated */
     getAverageGainOfPeriod(dateFrom?: Date, dateTo?: Date): number {
         const {dateLowerBound, dateUpperBound} = this.getTimeframe(dateFrom, dateTo);
 
@@ -92,15 +163,17 @@ export class MaterialLogCollection {
     }
 
     /** Returns the gain or loss of the whole collection. */
-    getDelta(): number {
+    calcDifference(): number {
         return this.getLatestLog().quantity - this.getOldestLog().quantity;
     }
 
-    /** Returns the gain or loss of a period. */
+    /** Returns the gain or loss of a period.
+     * @deprecated
+     */
     getDeltaOfPeriod(dateFrom?: Date, dateTo?: Date): number {
         const {dateLowerBound, dateUpperBound} = this.getTimeframe(dateFrom, dateTo);
 
-        return this.getLogsBetween(dateLowerBound, dateUpperBound).getDelta();
+        return this.getLogsBetween(dateLowerBound, dateUpperBound).calcDifference();
     }
 
     getLatestLog() {
@@ -108,6 +181,7 @@ export class MaterialLogCollection {
         return this.logs[this.logs.length - 1];
     }
 
+    /** @deprecated */
     getLogsBetween(dateFrom?: Date, dateTo?: Date): MaterialLogCollection {
         const {dateLowerBound, dateUpperBound} = this.getTimeframe(dateFrom, dateTo);
 
@@ -121,41 +195,31 @@ export class MaterialLogCollection {
         )
     }
 
+    /** Return the logs of a specific timeframe */
+    getLogsInTimeframe(timeframe: Timeframe): MaterialLogCollection {
+        return this.filter((log) => log.inTimeframe(timeframe))
+    }
+
     getNbDays(): number {
         const time = this.getLatestLog().log_date.getTime() - this.getOldestLog().log_date.getTime();
         return time / (1000 * 60 * 60 * 24);
-    }
-
-    /** Return the net gain of the collection. */
-    getNetGain(): number {
-        let gain = 0;
-        let delta = 0;
-
-        for (let i = 0; i < this.logs.length; i++) {
-            if (i !== 0) {
-                delta = this.logs[i - 1].getChronologicalDelta(this.logs[i])
-            }
-
-            if (delta > 0) {
-                gain += delta;
-            }
-        }
-
-        return gain;
     }
 
     /** Returns the net gain of the period. */
     getNetGainOfPeriod(dateFrom?: Date, dateTo?: Date): number {
         const {dateLowerBound, dateUpperBound} = this.getTimeframe(dateFrom, dateTo);
 
-        return this.getLogsBetween(dateLowerBound, dateUpperBound).getNetGain();
+        return this.getLogsBetween(dateLowerBound, dateUpperBound).calcGainAmount();
     }
 
+    /** Return the oldest log in the list */
     getOldestLog() {
         return this.logs[0];
     }
 
-    /** Returns the timeframe of the history. If no date is given, the timeframe is from the oldest logs to the latest logs.*/
+    /** Returns the timeframe of the history. If no date is given, the timeframe is from the oldest logs to the latest logs.
+     * @deprecated
+     */
     getTimeframe(dateFrom: Date | undefined, dateTo: Date | undefined) {
         const dateLowerBound = dateFrom || this.getOldestLog().log_date;
         const dateUpperBound = dateTo || this.getLatestLog().log_date;
@@ -167,16 +231,27 @@ export class MaterialLogCollection {
         return TimeTools.getDateDifference(dateUpperBound, dateLowerBound);
     }
 
-    /** Take API data and put it inside the log list */
-    public loadAPIData(res: MaterialLogsAPIFetchResponse) {
-        this.addLogsFromAPIResponse(res)
+    /** Create a log and save it to the database */
+    public async makeLog(matQuantity: MaterialQuantity, quantity: number) {
+        await MaterialLog.makeLog(new MaterialQuantity(this.material, quantity))
     }
 
-    /** Throw an error if this.logs is empty. Useful to stop calculations without data */
+    /** Throw an error if logs is empty. Useful to stop calculations without data */
     throwOnEmptyArray() {
         if (this.empty()) {
             // This bitch empty! YEET!
             throw new Error("No logs are in the array.")
         }
+    }
+
+    /** Sort this.log from oldest to newest log */
+    private sortChronologically() {
+        this.logs.sort((a, b) => {
+            if (a.isOlderThan(b)) {
+                return -1
+            } else {
+                return 1
+            }
+        })
     }
 }

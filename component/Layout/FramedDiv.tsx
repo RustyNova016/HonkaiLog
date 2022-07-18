@@ -1,11 +1,11 @@
 import styles from "./CSS/FramedDiv.module.scss";
-import {CSSClassesProps, CSSStylesProps} from "../../tools/Types";
+import {PropsWithClass, PropsWithStyle} from "../../tools/Types";
 import {addCSSClasses} from "../../tools/Miscs";
 import {PropsWithChildren} from "react";
 import {ReturnChildren} from "../returnChildren";
 import {Container} from "react-bootstrap";
 
-export interface FramedDivProps extends PropsWithChildren, CSSClassesProps, CSSStylesProps {
+export interface FramedDivProps extends PropsWithChildren, PropsWithClass, PropsWithStyle {
     sides?: boolean;
     top?: boolean;
 }

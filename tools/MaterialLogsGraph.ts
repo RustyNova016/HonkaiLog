@@ -1,4 +1,4 @@
-import {GraphType} from "../features/Material/components/MaterialLogsAnalytics/MaterialLogsAnalytics";
+import {GraphType} from "../features/Material/components/HistorySummary/MaterialLogsAnalytics";
 import {Serie} from "@nivo/line";
 import {toTimestamp} from "./Miscs";
 import {DatumConstructor} from "./Types/DatumConstructor";
@@ -113,7 +113,7 @@ export class MaterialLogsGraph {
                     deltaData.push(
                         {
                             x: toTimestamp(log.log_date),
-                            y: this.material.logs.logs[index - 1].getDelta(log)
+                            y: this.material.logs.logs[index - 1].getQuantityDifference(log)
                         }
                     )
                 }
@@ -130,7 +130,7 @@ export class MaterialLogsGraph {
                 }
 
                 if (new Date(log.log_date) >= dateLowerBound && new Date(log.log_date) <= dateUpperBound) {
-                    let delta = this.material.logs.logs[index - 1].getDelta(log)
+                    let delta = this.material.logs.logs[index - 1].getQuantityDifference(log)
                     if (delta < 0) {
                         delta = 0;
                     }
@@ -155,7 +155,7 @@ export class MaterialLogsGraph {
                 }
 
                 if (new Date(log.log_date) >= dateLowerBound && new Date(log.log_date) <= dateUpperBound) {
-                    let delta = this.material.logs.logs[index - 1].getDelta(log)
+                    let delta = this.material.logs.logs[index - 1].getQuantityDifference(log)
                     if (delta > 0) {
                         delta = 0;
                     }

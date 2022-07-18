@@ -4,9 +4,9 @@ import {PageTitle} from "../../../component/pageComponents/Theme/Theme";
 import {ErrorBoundary} from "react-error-boundary";
 import {ErrorFallback, ErrorHandler} from "../../../component/App Components/ErrorFallback";
 import {MaterialLogsManager} from "../components/MaterialLogsManager/MaterialLogsManager";
-import {MaterialLogsAnalytics} from "../components/MaterialLogsAnalytics/MaterialLogsAnalytics";
 import {GachaData} from "../../Gacha/components/GachaData";
 import {useMaterialWithLogsFromRouter} from "../hooks/useMaterialWithLogsFromRouter";
+import {HistorySummary} from "../components/HistorySummary/HistorySummary";
 
 
 export function MaterialInfoPageContent() {
@@ -22,7 +22,7 @@ export function MaterialInfoPageContent() {
         </ErrorBoundary>
 
         <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
-            <MaterialLogsAnalytics/>
+            <HistorySummary/>
         </ErrorBoundary>
 
         <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>

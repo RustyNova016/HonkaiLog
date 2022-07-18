@@ -1,9 +1,7 @@
-import {Dispatch, SetStateAction, useContext, useState} from "react";
-import {Button, ButtonGroup, Dropdown, DropdownButton} from "react-bootstrap";
+import {Dispatch, SetStateAction} from "react";
+import {Button, ButtonGroup} from "react-bootstrap";
 import {removeDaysFromToday} from "../../../tools/Miscs";
 import {LoadingComponent} from "../../App Components/PageLoadingComponent";
-import {TimeframeContext} from "../../../context/TimeframeContext";
-import {timeframeSelectOptions} from "../../../data/TimeframeSelectOptions";
 import {useMaterialWithLogsFromRouter} from "../../../features/Material/hooks/useMaterialWithLogsFromRouter";
 
 export function TimeFrameSelectButton(props: { dayValue: number | null, label: string, action: Dispatch<SetStateAction<Date>> }) {
@@ -34,27 +32,5 @@ export function TimeFrameSelect(props: { dateHook: (value: (((prevState: Date) =
             <TimeFrameSelectButton dayValue={null} label={"All Time"} action={props.dateHook}/>
         </ButtonGroup>;
 
-    </>
-}
-
-export function TimeframeSelection() {
-    const timeframeContext = useContext(TimeframeContext);
-    const [buttonTitle, setButtonTitle] = useState("Select a timeframe");
-
-    const buttonOptions = []
-    for (const timeframeSelectOption of timeframeSelectOptions) {
-        const OnClick = () => {
-            setButtonTitle(timeframeSelectOption.name + " ago")
-            timeframeContext.setStartDate(removeDaysFromToday(timeframeSelectOption.nbDays))
-            return true
-        }
-
-        buttonOptions.push(<Dropdown.Item onClick={OnClick}>{timeframeSelectOption.name + " ago"}</Dropdown.Item>)
-    }
-
-    return <>
-        <DropdownButton id="dropdown-basic-button" title={buttonTitle}>
-            {buttonOptions}
-        </DropdownButton>
     </>
 }

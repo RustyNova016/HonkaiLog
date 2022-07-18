@@ -1,6 +1,6 @@
 import {Dispatch, SetStateAction} from "react";
 import {Form} from "react-bootstrap";
-import {GraphType} from "../../../features/Material/components/MaterialLogsAnalytics/MaterialLogsAnalytics";
+import {GraphType} from "../../../features/Material/components/HistorySummary/MaterialLogsAnalytics";
 import {MaterialLogsGraph} from "../../../tools/MaterialLogsGraph";
 
 export interface SelectGraphTypeProps {

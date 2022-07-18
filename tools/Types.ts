@@ -1,13 +1,8 @@
-import {ReactNode} from "react";
-
-export interface PropsWithReactNodeChildren {
-    children?: ReactNode
-}
-export interface CSSClassesProps {
+export interface PropsWithClass {
     className?: string;
 }
 
-export interface CSSStylesProps {
+export interface PropsWithStyle {
     style?: React.CSSProperties;
 }
 
