@@ -1,181 +1,72 @@
-import {GraphType} from "../features/Material/components/HistorySummary/MaterialLogsAnalytics";
-import {Serie} from "@nivo/line";
+import {Datum, Serie} from "@nivo/line";
 import {toTimestamp} from "./Miscs";
 import {DatumConstructor} from "./Types/DatumConstructor";
 import {LogDatum} from "./Types/LogDatum";
 import {MaterialWithLogs} from "./Models/MaterialWithLogs";
+import {MaterialGraphTypes} from "../data/MaterialGraphTypes";
+import {MaterialLogCollection} from "./Models/MaterialLogCollection";
+import _ from "lodash";
 
+export interface HistoryLogDatum extends Datum {
+    x: number;
+    y: number;
+}
 
-export class MaterialLogsGraph {
-    material: MaterialWithLogs;
-
-    constructor(material: MaterialWithLogs) {
-        this.material = material;
-    }
-
-    getGraphData(graphType: GraphType, dateFrom?: Date, dateTo?: Date): Serie[] {
-        switch (graphType) {
-            case "count":
-                return this.generateCountGraphData(dateFrom, dateTo);
-
-            case "gains":
-                return this.generateGainsGraphData(dateFrom, dateTo);
-
-            case "averages":
-                return this.generateAveragesGraphData(dateFrom, dateTo);
-
-            default:
-                return [];
-        }
-    }
-
-    private createSeries(name: string, data: DatumConstructor, dateFrom?: Date, dateTo?: Date): Serie {
-        const {dateLowerBound, dateUpperBound} = this.material.logs.getTimeframe(dateFrom, dateTo);
-
+/** Util class that generate graph data */
+export class GraphData {
+    protected static createSeries(name: string, data: Datum[]): Serie {
         return {
             id: name,
-            data: data(dateLowerBound, dateUpperBound).sort((a, b) => a.x - b.x)
+            data: data
+        }
+    }
+}
+
+
+/** Util class that generate graph data of a MaterialLogCollection */
+export class MaterialHistoryGraphData extends GraphData {
+    public static generateMaterialHistoryGraphData(logs: MaterialLogCollection, type: MaterialGraphTypes): Serie {
+        switch (type) {
+            case "quantity":
+                return this.generateQuantityGraphData(logs);
+
+            case "average":
+                return this.generateAverageGraphData(logs);
         }
     }
 
-    private generateAveragesGraphData(dateFrom?: Date, dateTo?: Date): Serie[] {
-        const generateAverageDeltaDatum: DatumConstructor = (dateLowerBound, dateUpperBound) => {
-            const averageData: LogDatum[] = [];
-            const logs = this.material.logs.getLogsBetween(dateLowerBound, dateUpperBound);
+    private static calculateAverageGainGraphDatum(logs: MaterialLogCollection): HistoryLogDatum[] {
+        const output: HistoryLogDatum[] = []
+        const i = new MaterialLogCollection(logs.material, [])
 
-            logs.logs.forEach((log, index) => {
-                if (index === 0) {return;} // Cannot apply average to first log
+        for (const log of logs.logs) {
+            i.addLogs([log])
 
-                averageData.push({
-                    x: toTimestamp(log.log_date),
-                    y: logs.getAverageDeltaOfPeriod(dateLowerBound, log.log_date)
-                })
+            output.push({
+                x: toTimestamp(log.log_date),
+                y: _.round(i.calcAvgGain(), 0)
             })
-
-            return averageData;
-        };
-
-        const generateAverageGainDatum: DatumConstructor = (dateLowerBound, dateUpperBound) => {
-            const averageData: LogDatum[] = [];
-            const logs = this.material.logs.getLogsBetween(dateLowerBound, dateUpperBound);
-
-
-            logs.logs.forEach((log, index) => {
-                if (index === 0) {return;} // Cannot apply average to first log
-
-                averageData.push({
-                    x: toTimestamp(log.log_date),
-                    y: logs.getAverageGainOfPeriod(dateLowerBound, log.log_date)
-                })
-            })
-
-            return averageData;
-        };
-
-        return [
-            //this.createSeries("Average Delta", generateAverageDeltaDatum, dateFrom, dateTo),
-            this.createSeries("Average Gain", generateAverageGainDatum, dateFrom, dateTo)
-        ];
+        }
+        return output
     }
 
-    private generateCountGraphData(dateFrom?: Date, dateTo?: Date): Serie[] {
-        let getCountDatum: DatumConstructor = (dateLowerBound, dateUpperBound) => {
-            const countData: LogDatum[] = [];
+    private static calculateQuantityGraphDatum(logs: MaterialLogCollection): HistoryLogDatum[] {
+        const output: HistoryLogDatum[] = []
 
-            this.material.logs.logs.forEach((log) => {
-                if (new Date(log.log_date) >= dateLowerBound && new Date(log.log_date) <= dateUpperBound) {
-                    countData.push(
-                        {
-                            x: toTimestamp(log.log_date),
-                            y: log.quantity
-                        }
-                    )
-                }
+        for (const log of logs.logs) {
+            output.push({
+                x: toTimestamp(log.log_date),
+                y: log.quantity
             })
-
-            return countData;
-        };
-
-        return [this.createSeries("count", getCountDatum, dateFrom, dateTo)];
+        }
+        return output
     }
 
-    //TODO: Redo this
-    private generateGainsGraphData(dateFrom?: Date, dateTo?: Date): Serie[] {
-        const generateDeltaDatum: DatumConstructor = (dateLowerBound, dateUpperBound) => {
-            const deltaData: LogDatum[] = [];
+    private static generateQuantityGraphData(logs: MaterialLogCollection): Serie {
+        return this.createSeries("Quantity", this.calculateQuantityGraphDatum(logs))
+    }
 
-            this.material.logs.logs.forEach((log, index) => {
-                if (index === 0) {
-                    return;
-                }
-
-                if (new Date(log.log_date) >= dateLowerBound && new Date(log.log_date) <= dateUpperBound) {
-                    deltaData.push(
-                        {
-                            x: toTimestamp(log.log_date),
-                            y: this.material.logs.logs[index - 1].getQuantityDifference(log)
-                        }
-                    )
-                }
-            })
-
-            return deltaData;
-        }
-        const generateGainDatum: DatumConstructor = (dateLowerBound, dateUpperBound) => {
-            const gainData: LogDatum[] = [];
-
-            this.material.logs.logs.forEach((log, index) => {
-                if (index === 0) {
-                    return;
-                }
-
-                if (new Date(log.log_date) >= dateLowerBound && new Date(log.log_date) <= dateUpperBound) {
-                    let delta = this.material.logs.logs[index - 1].getQuantityDifference(log)
-                    if (delta < 0) {
-                        delta = 0;
-                    }
-
-                    gainData.push(
-                        {
-                            x: toTimestamp(log.log_date),
-                            y: delta
-                        }
-                    )
-                }
-            })
-
-            return gainData;
-        }
-        const generateLossDatum: DatumConstructor = (dateLowerBound, dateUpperBound) => {
-            const lossData: LogDatum[] = [];
-
-            this.material.logs.logs.forEach((log, index) => {
-                if (index === 0) {
-                    return;
-                }
-
-                if (new Date(log.log_date) >= dateLowerBound && new Date(log.log_date) <= dateUpperBound) {
-                    let delta = this.material.logs.logs[index - 1].getQuantityDifference(log)
-                    if (delta > 0) {
-                        delta = 0;
-                    }
-
-                    lossData.push(
-                        {
-                            x: toTimestamp(log.log_date),
-                            y: delta
-                        }
-                    )
-                }
-            })
-
-            return lossData;
-        }
-
-        return [
-            this.createSeries("Delta", generateDeltaDatum, dateFrom, dateTo),
-            this.createSeries("Gains", generateGainDatum, dateFrom, dateTo),
-            this.createSeries("Losses", generateLossDatum, dateFrom, dateTo),
-        ];
+    private static generateAverageGraphData(logs: MaterialLogCollection): Serie {
+        return this.createSeries("Average", this.calculateAverageGainGraphDatum(logs))
     }
 }

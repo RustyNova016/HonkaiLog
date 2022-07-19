@@ -1,19 +1,17 @@
-import {Material} from "./Material";
 import {MaterialLog} from "./MaterialLog";
-import axios from "axios";
 import {MaterialLogsAPIFetchResponse} from "../../pages/api/material/logs/[id]";
-import {APIRoutes} from "../../data/API routes";
-import {TimeTools} from "../Miscs";
 import {MaterialQuantity} from "./MaterialQuantity";
 import {MaterialWithLogs} from "./MaterialWithLogs";
-import {Timeframe} from "../../context/TimeframeContext";
+import {ITimeframe} from "../../context/TimeframeContext";
+import {TimeRef} from "../../utils/TimeTools";
+import {Timeframe} from "../../utils/classes/Timeframe";
 
-/** List of all the MaterialLogs of an material. It can be used to calculate data about the usage of the materials */
+/** List of all the MaterialLogs of a material. It can be used to calculate data about the usage of the materials */
 export class MaterialLogCollection {
     readonly logs: MaterialLog[] = [];
     readonly material: MaterialWithLogs;
 
-    constructor(material: MaterialWithLogs, logs?: MaterialLog[]) {
+    constructor(material: MaterialWithLogs, logs: MaterialLog[]) {
         this.material = material;
         this.addLogs(logs);
     }
@@ -39,13 +37,6 @@ export class MaterialLogCollection {
         return new MaterialLogCollection(material, logsArray);
     }
 
-    /** Put the MaterialLog objects into the array using an API response as input data */
-    public addAPIResponseLogs(res: MaterialLogsAPIFetchResponse): void {
-        for (const materialLog of res.Material_logs) {
-            this.addMaterialLog(MaterialLog.fromJSON(materialLog, this.material))
-        }
-    }
-
     /** Add logs from any source
      *  @return boolean Return true if logs got added
      */
@@ -67,21 +58,39 @@ export class MaterialLogCollection {
         return logAdded
     }
 
-    /** Add a log to the log array */
-    public addMaterialLog(log: MaterialLog) {
-        // TODO: Check for duplicates/Optimizations
-        this.logs.push(log)
+    /** Return the average delta of the period */
+    public calcAvgDelta(per: TimeRef = "days"): number {
+        return this.calcNetDelta() / this.getTimeElapsedToToday(per);
     }
 
-    /** Add multiple logs to the array */
-    public addMaterialLogs(logs: MaterialLog[]) {
-        for (const log of logs) {
-            this.addMaterialLog(log);
-        }
+    /** Return the average gain of the period */
+    public calcAvgGain(per: TimeRef = "days"): number {
+        const timeElapsed = this.getTimeElapsed(per);
+        if (timeElapsed === 0) return 0
+
+        return this.calcNetGain() / timeElapsed;
+    }
+
+    /** Return the average gain of the period */
+    public calcAvgGainUntilToday(per: TimeRef = "days"): number {
+        const timeElapsed = this.getTimeElapsedToToday(per)
+        if (timeElapsed === 0) return 0
+
+        return this.calcNetGain() / timeElapsed;
+    }
+
+    /** Return the average loss of the period */
+    public calcAvgLoss(per: TimeRef = "days"): number {
+        return this.calcNetLoss() / this.getTimeElapsedToToday(per);
+    }
+
+    /** Returns the gain or loss of the whole collection. */
+    public calcNetDelta(): number {
+        return this.getLatestLog().quantity - this.getOldestLog().quantity;
     }
 
     /** Return the net gain of the collection. */
-    public calcGainAmount(): number {
+    public calcNetGain(): number {
         let gain = 0;
         let delta = 0;
 
@@ -99,7 +108,7 @@ export class MaterialLogCollection {
     }
 
     /** Give how much the user spent of the material */
-    public calcSpentAmount(): number {
+    public calcNetLoss(): number {
         let totalSpent = 0;
         let delta = 0;
 
@@ -121,32 +130,15 @@ export class MaterialLogCollection {
         return this.logs.length === 0;
     }
 
-    /** Initialize the logs with a material object */
-    public async fetchLogsOfMaterial(material: Material): Promise<void> {
-        const logs = await axios.get<MaterialLogsAPIFetchResponse>(APIRoutes.materialLogs + material.id);
-
-        this.addAPIResponseLogs(logs.data);
-    }
-
     /** Filter the logs according to a test into a new MaterialLogCollection */
     public filter(test: (value: MaterialLog, index: number, array: MaterialLog[]) => boolean): MaterialLogCollection {
         return new MaterialLogCollection(this.material, this.logs.filter(test))
     }
 
-    getAverageDelta(): number {
-        return (this.getLatestLog().quantity - this.getOldestLog().quantity) / this.getNbDays();
-    }
-
     /** @deprecated */
-    getAverageDeltaOfPeriod(dateFrom?: Date, dateTo?: Date): number {
-        const {dateLowerBound, dateUpperBound} = this.getTimeframe(dateFrom, dateTo);
-
-        return this.getLogsBetween(dateLowerBound, dateUpperBound).getAverageDelta();
-    }
-
     getAverageGain(): number {
         const nbDays = this.getNbDays();
-        return this.calcGainAmount() / nbDays;
+        return this.calcNetGain() / nbDays;
     }
 
     /** @deprecated */
@@ -157,26 +149,13 @@ export class MaterialLogCollection {
     }
 
     /** Return the current count of material that the user has in game... Well, the count they last logged. */
-    getCurrentCount(): number {
-        if (this.empty()) return 0;
+    public getCurrentCount(): number {
+        this.throwOnEmptyArray()
         return this.getLatestLog().quantity;
     }
 
-    /** Returns the gain or loss of the whole collection. */
-    calcDifference(): number {
-        return this.getLatestLog().quantity - this.getOldestLog().quantity;
-    }
-
-    /** Returns the gain or loss of a period.
-     * @deprecated
-     */
-    getDeltaOfPeriod(dateFrom?: Date, dateTo?: Date): number {
-        const {dateLowerBound, dateUpperBound} = this.getTimeframe(dateFrom, dateTo);
-
-        return this.getLogsBetween(dateLowerBound, dateUpperBound).calcDifference();
-    }
-
-    getLatestLog() {
+    /** Return the newest log */
+    public getLatestLog() {
         this.throwOnEmptyArray();
         return this.logs[this.logs.length - 1];
     }
@@ -196,25 +175,43 @@ export class MaterialLogCollection {
     }
 
     /** Return the logs of a specific timeframe */
-    getLogsInTimeframe(timeframe: Timeframe): MaterialLogCollection {
-        return this.filter((log) => log.inTimeframe(timeframe))
+    public getLogsInTimeframe(timeframe: ITimeframe, addPreviousLog?: boolean): MaterialLogCollection {
+        const filteredLogs = this.filter((log) => log.inTimeframe(timeframe));
+
+        if (addPreviousLog) {
+            for (let i = 0; i < this.logs.length; i++) {
+                if (this.logs[i].log_date > timeframe.start) {
+                    if (i !== 0) {
+                        filteredLogs.addLogs([this.logs[i - 1]])
+                    }
+                }
+            }
+        }
+
+        return filteredLogs
     }
 
-    getNbDays(): number {
+    /** Return the number of days between each ends of the period
+     *  @deprecated
+     */
+    public getNbDays(): number {
         const time = this.getLatestLog().log_date.getTime() - this.getOldestLog().log_date.getTime();
         return time / (1000 * 60 * 60 * 24);
     }
 
-    /** Returns the net gain of the period. */
-    getNetGainOfPeriod(dateFrom?: Date, dateTo?: Date): number {
-        const {dateLowerBound, dateUpperBound} = this.getTimeframe(dateFrom, dateTo);
-
-        return this.getLogsBetween(dateLowerBound, dateUpperBound).calcGainAmount();
+    /** Return the oldest log in the list */
+    public getOldestLog() {
+        return this.logs[0];
     }
 
-    /** Return the oldest log in the list */
-    getOldestLog() {
-        return this.logs[0];
+    /** Return the amount of time elapsed between the oldest log and the newest log */
+    public getTimeElapsed(timeRef: TimeRef = "milliseconds"): number {
+        return new Timeframe(this.getOldestLog().log_date, this.getLatestLog().log_date).getTimeDifference(timeRef);
+    }
+
+    /** Return the amount of time elapsed between the oldest log and today */
+    public getTimeElapsedToToday(timeRef: TimeRef = "milliseconds"): number {
+        return new Timeframe(this.getOldestLog().log_date, new Date).getTimeDifference(timeRef);
     }
 
     /** Returns the timeframe of the history. If no date is given, the timeframe is from the oldest logs to the latest logs.
@@ -226,21 +223,28 @@ export class MaterialLogCollection {
         return {dateLowerBound, dateUpperBound};
     }
 
-    getTimeframeMilliseconds(dateFrom: Date | undefined, dateTo: Date | undefined) {
-        const {dateLowerBound, dateUpperBound} = this.getTimeframe(dateFrom, dateTo);
-        return TimeTools.getDateDifference(dateUpperBound, dateLowerBound);
-    }
-
     /** Create a log and save it to the database */
-    public async makeLog(matQuantity: MaterialQuantity, quantity: number) {
+    public async makeLog(quantity: number) {
         await MaterialLog.makeLog(new MaterialQuantity(this.material, quantity))
     }
 
-    /** Throw an error if logs is empty. Useful to stop calculations without data */
-    throwOnEmptyArray() {
-        if (this.empty()) {
-            // This bitch empty! YEET!
-            throw new Error("No logs are in the array.")
+    /** Put the MaterialLog objects into the array using an API response as input data */
+    private addAPIResponseLogs(res: MaterialLogsAPIFetchResponse): void {
+        for (const materialLog of res.Material_logs) {
+            this.addMaterialLog(MaterialLog.fromJSON(materialLog, this.material))
+        }
+    }
+
+    /** Add a log to the log array */
+    private addMaterialLog(log: MaterialLog) {
+        // TODO: Check for duplicates/Optimizations
+        this.logs.push(log)
+    }
+
+    /** Add multiple logs to the array */
+    private addMaterialLogs(logs: MaterialLog[]) {
+        for (const log of logs) {
+            this.addMaterialLog(log);
         }
     }
 
@@ -253,5 +257,13 @@ export class MaterialLogCollection {
                 return 1
             }
         })
+    }
+
+    /** Throw an error if logs is empty. Useful to stop calculations without data */
+    private throwOnEmptyArray() {
+        if (this.empty()) {
+            // This bitch empty! YEET!
+            throw new Error("No logs are in the array.")
+        }
     }
 }

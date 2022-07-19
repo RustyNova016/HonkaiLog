@@ -6,7 +6,7 @@ import {ErrorFallback, ErrorHandler} from "../../../component/App Components/Err
 import {MaterialLogsManager} from "../components/MaterialLogsManager/MaterialLogsManager";
 import {GachaData} from "../../Gacha/components/GachaData";
 import {useMaterialWithLogsFromRouter} from "../hooks/useMaterialWithLogsFromRouter";
-import {HistorySummary} from "../components/HistorySummary/HistorySummary";
+import {HistoryData} from "../components/HistoryData/HistoryData";
 
 
 export function MaterialInfoPageContent() {
@@ -22,7 +22,7 @@ export function MaterialInfoPageContent() {
         </ErrorBoundary>
 
         <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
-            <HistorySummary/>
+            <HistoryData/>
         </ErrorBoundary>
 
         <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>

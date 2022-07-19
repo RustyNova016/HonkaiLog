@@ -1,6 +1,6 @@
 export interface TimeframeSelectOption {
-    nbDays: number
     name: string
+    nbDays: number
 }
 
 export const timeframeSelectOptions: TimeframeSelectOption[] = [

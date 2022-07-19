@@ -2,7 +2,7 @@ import {createContext, PropsWithChildren, useState} from "react";
 import {ReturnChildren} from "../component/returnChildren";
 import {removeDaysFromToday} from "../tools/Miscs";
 
-export interface Timeframe {
+export interface ITimeframe {
     end: Date
     start: Date
 }
@@ -10,7 +10,7 @@ export interface Timeframe {
 export interface ITimeframeContext {
     setEndDate: (date: Date) => void
     setStartDate: (date: Date) => void
-    timeframe: Timeframe
+    timeframe: ITimeframe
 }
 
 export const TimeframeContext = createContext<ITimeframeContext>({

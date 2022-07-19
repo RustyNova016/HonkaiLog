@@ -29,36 +29,3 @@ export function toTimestamp(date: string | Date) {
     }
 }
 
-export class TimeTools {
-    static convertMilisecondsToDays(miliseconds: number): number {
-        return miliseconds / (1000 * 60 * 60 * 24);
-    }
-
-    static getDateDifference(date1: Date, date2: Date): number {
-        return date1.getTime() - date2.getTime();
-    }
-
-    static removeDaysFromDate(date: Date, days: number): Date {
-        const newDate = new Date(date);
-        newDate.setDate(newDate.getDate() - days);
-        return newDate;
-    }
-
-    static AddDaysToDate(date: Date, days: number): Date {
-        const newDate = new Date(date);
-        newDate.setDate(newDate.getDate() + days);
-        return newDate;
-    }
-
-    static removeDaysFromToday(days: number): Date {
-        return TimeTools.removeDaysFromDate(new Date(), days);
-    }
-
-    static toTimestamp(date: string | Date) {
-        if (typeof date === "string") {
-            return Date.parse(date);
-        } else {
-            return date.getTime();
-        }
-    }
-}

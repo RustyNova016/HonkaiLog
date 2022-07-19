@@ -1,13 +1,14 @@
 import FramedDiv from "../../../component/Layout/FramedDiv";
 import {SectionTitle} from "../../../component/pageComponents/Theme/Theme";
 import {useState} from "react";
-import {removeDaysFromToday, TimeTools} from "../../../tools/Miscs";
+import {removeDaysFromToday} from "../../../tools/Miscs";
 import {Col, Row} from "react-bootstrap";
 import {TimeFrameSelect} from "../../../component/pages/History/TimeFrameSelect";
 import {LoadingComponent} from "../../../component/App Components/PageLoadingComponent";
 import {useMaterialWithLogsFromRouter} from "../../Material/hooks/useMaterialWithLogsFromRouter";
 import {GachaBannerWithLogs} from "../../../tools/Models/GachaBannerWithLogs";
 import {MaterialQuantityWithLogs} from "../../../tools/Models/MaterialQuantityWithLogs";
+import {TimeTools} from "../../../utils/TimeTools";
 
 function GachaBannerInfo(props: { gachaBanner: GachaBannerWithLogs }) {
     const gachaBanner = props.gachaBanner

@@ -1,5 +1,5 @@
 import {useContext, useId, useState} from "react";
-import {TimeframeContext} from "../../../context/TimeframeContext";
+import {ITimeframeContext, TimeframeContext} from "../../../context/TimeframeContext";
 import {timeframeSelectOptions} from "../../../data/TimeframeSelectOptions";
 import {removeDaysFromToday} from "../../../tools/Miscs";
 import {Dropdown, DropdownButton} from "react-bootstrap";
@@ -7,6 +7,7 @@ import {PropsWithClass, PropsWithStyle} from "../../../tools/Types";
 
 export interface TimeframeSelectionProps extends PropsWithStyle, PropsWithClass {
     size?: 'sm' | 'lg'
+    timeframe?: ITimeframeContext
 }
 
 /** A dropdown button to select a timeframe */

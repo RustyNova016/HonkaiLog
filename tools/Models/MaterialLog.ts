@@ -6,7 +6,7 @@ import logger from "../Logger";
 import {MaterialLogItemJSON} from "../../database/material_log";
 import {MaterialWithLogs} from "./MaterialWithLogs";
 import {MaterialQuantityWithLogs} from "./MaterialQuantityWithLogs";
-import {Timeframe} from "../../context/TimeframeContext";
+import {ITimeframe} from "../../context/TimeframeContext";
 
 /** Snapshot of a quantity at a given time */
 export class MaterialLog extends MaterialQuantityWithLogs {
@@ -53,7 +53,7 @@ export class MaterialLog extends MaterialQuantityWithLogs {
     }
 
     /** Return true if the log was made during that timeframe */
-    public inTimeframe(timeframe: Timeframe) {
+    public inTimeframe(timeframe: ITimeframe) {
         const afterStart = new Date(this.log_date) >= timeframe.start;
         const beforeEnd = new Date(this.log_date) <= timeframe.end;
         return afterStart && beforeEnd;

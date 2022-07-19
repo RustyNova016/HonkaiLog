@@ -23,11 +23,4 @@ export class MaterialWithLogs extends Material {
     getInGameCount() {
         return this.logs.getCurrentCount();
     }
-
-    /** Create a log and save it to the database
-     *  @deprecated
-     */
-    async makeLog(count: number) {
-        await this.logs.makeLog(new MaterialQuantity(this, count), count)
-    }
 }

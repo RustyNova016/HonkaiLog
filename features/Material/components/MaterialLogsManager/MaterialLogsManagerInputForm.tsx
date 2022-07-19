@@ -28,7 +28,7 @@ export function MaterialLogsManagerInputForm(props: MaterialLogsManagerInputForm
         logger.info("User submitting log for material " + material.name + " with value " + data.count, "MaterialLogInput")
 
         setLoading(true)
-        await material.makeLog(data.count)
+        await material.logs.makeLog(data.count)
         await mutate(getMaterialLogsAPIKey(material.id))
         setLoading(false)
     }
