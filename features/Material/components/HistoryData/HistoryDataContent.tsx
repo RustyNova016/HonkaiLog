@@ -35,7 +35,7 @@ export function HistoryDataContent() {
                 </Stack>
             </Row>
 
-            <Row>
+            <Row style={{marginBottom: "2em"}}>
                 <HistoryDataSummary logs={logs}/>
             </Row>
 

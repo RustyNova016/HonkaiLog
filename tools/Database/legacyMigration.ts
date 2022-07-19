@@ -1,10 +1,13 @@
 import {legacyData} from "./legacyData";
-import Material_log from "../../database/material_log";
+import material_log from "../../database/material_log";
+import axios from "axios";
+import {APIRoutes} from "../../data/API routes";
 
-export function addLegacyData() {
+export async function addLegacyData() {
     const data = legacyData.filter((value, index, array) => {
         const isCorrectUser = value.id_user === "2";
-        const isCorrectMaterial = value.id_material === "1"
+        const isCorrectMaterial = value.id_material === "1";
+
         return isCorrectUser && isCorrectMaterial
     })
 
@@ -15,14 +18,14 @@ export function addLegacyData() {
             id: value.id_log,
             count: value.quantity,
             log_date: value.time_stamp,
+            materialId: 1,
+            userId: "e736a1d4-ea2b-4aaf-99de-c749ce57cf55",
             createdAt: value.time_stamp,
-            updatedAt: value.time_stamp,
-            userId: userId,
-            materialId: 1
+            updatedAt: value.time_stamp
         })
     })
 
     for (const datawithcorrectvalue of datawithcorrectvalues) {
-        Material_log.create(datawithcorrectvalue)
+        const res = await axios.post(APIRoutes.materialLogs, datawithcorrectvalue).catch(reason => {throw new Error(reason)})
     }
 }

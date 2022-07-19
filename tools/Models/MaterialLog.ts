@@ -30,7 +30,7 @@ export class MaterialLog extends MaterialQuantityWithLogs {
     static async makeLog(quantity: MaterialQuantity) {
         const res = await axios.post(APIRoutes.materialLogs, {
             count: quantity.quantity,
-            MaterialId: quantity.material.id
+            materialId: quantity.material.id
         })
 
         logger.info("Done sending!", "Material Log")

@@ -28,12 +28,12 @@ export function HistoryDataGraph(props: HistoryDataGraphProps) {
     }, [props]);
 
     if (loading) {
-        return <div style={{height: "75vh"}}>
+        return <div style={{height: "50vh"}}>
             <PageLoadingComponent subtext={"Crunching the latest data"}></PageLoadingComponent>
         </div>
     }
 
-    return <div style={{height: "75vh"}}>
+    return <div style={{height: "50vh"}}>
         <ResponsiveLine
             data={dataSerie}
             margin={{top: 50, right: 110, bottom: 50, left: 60}}

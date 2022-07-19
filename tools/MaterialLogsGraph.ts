@@ -37,16 +37,20 @@ export class MaterialHistoryGraphData extends GraphData {
 
     private static calculateAverageGainGraphDatum(logs: MaterialLogCollection): HistoryLogDatum[] {
         const output: HistoryLogDatum[] = []
-        const i = new MaterialLogCollection(logs.material, [])
+        const collection = new MaterialLogCollection(logs.material, [])
 
+        // Todo: Ignore massive spike at the start of the curve
         for (const log of logs.logs) {
-            i.addLogs([log])
+            collection.addLogs([log])
 
             output.push({
                 x: toTimestamp(log.log_date),
-                y: _.round(i.calcAvgGain(), 0)
+                y: _.round(collection.calcAvgGain(), 0)
             })
         }
+
+        // Remove the first point since it's always 0
+        output.shift()
         return output
     }
 
