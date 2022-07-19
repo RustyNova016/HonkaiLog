@@ -5,6 +5,7 @@ import {MaterialWithLogs} from "./MaterialWithLogs";
 import {ITimeframe} from "../../context/TimeframeContext";
 import {TimeRef} from "../../utils/TimeTools";
 import {Timeframe} from "../../utils/classes/Timeframe";
+import _ from "lodash";
 
 /** List of all the MaterialLogs of a material. It can be used to calculate data about the usage of the materials */
 export class MaterialLogCollection {
@@ -68,7 +69,7 @@ export class MaterialLogCollection {
         const timeElapsed = this.getTimeElapsed(per);
         if (timeElapsed === 0) return 0
 
-        return this.calcNetGain() / timeElapsed;
+        return _.divide(this.calcNetGain(), timeElapsed);
     }
 
     /** Return the average gain of the period */

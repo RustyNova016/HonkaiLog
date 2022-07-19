@@ -1,3 +1,5 @@
+export const lol = "lol"
+
 //import {MaterialHistory} from "../tools/Database/MaterialHistory";
 //import {TestMaterialCountAPIResponse} from "./Test Data";
 //import {MaterialHistoryLog} from "../tools/Database/MaterialHistoryLog";

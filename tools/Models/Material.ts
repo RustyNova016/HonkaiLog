@@ -16,12 +16,12 @@ export class Material extends MaterialAPI {
     }
 
     /** Create a Material instance with the data from the API */
-    static createMaterialFromAPIResponse(res: MaterialAPIFetchResponse | MaterialLogsAPIFetchResponse): Material {
+    static createMaterialFromAPIResponse(res: MaterialAPIFetchResponse): Material {
         return new Material(res.id, res.name);
     }
 
     /** Create a new instance of the material with logs */
-    public getLogs(logs?: MaterialLog[], APIResponseData?: MaterialLogsAPIFetchResponse): MaterialWithLogs {
+    public addLogs(logs?: MaterialLog[], APIResponseData?: MaterialLogsAPIFetchResponse): MaterialWithLogs {
         return new MaterialWithLogs(this.id, this.name, logs, APIResponseData)
     }
 

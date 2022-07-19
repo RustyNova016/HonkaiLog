@@ -4,8 +4,11 @@ import {APIRoutes} from "../../data/API routes";
 import {HttpStatusCode} from "../API/HttpStatusCodes";
 import {Material} from "./Material";
 
+/** @deprecated */
 export class MaterialAPI {
-    /** Ask the API for the data of a material. */
+    /** Ask the API for the data of a material.
+     *  @deprecated
+     */
     static async getAPIMaterialData(id: number): Promise<MaterialAPIFetchResponse> {
         const materialResponse = await axios.get<MaterialAPIFetchResponse>(APIRoutes.material + id)
 
@@ -20,7 +23,9 @@ export class MaterialAPI {
         }
     }
 
-    /** Create a Material instance with populated data */
+    /** Create a Material instance with populated data
+     *  @deprecated
+     */
     static async getMaterialFromId(id: number): Promise<Material> {
         const data = await Material.getAPIMaterialData(id)
         return new Material(data.id, data.name)

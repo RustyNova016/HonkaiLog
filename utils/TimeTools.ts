@@ -42,6 +42,12 @@ export class TimeTools {
             return date.getTime();
         }
     }
+
+    static addDaysToDay(date: Date, days: number): Date {
+        const newDate = new Date(date);
+        newDate.setDate(newDate.getDate() + days);
+        return newDate;
+    }
 }
 
 export type TimeRef = "milliseconds" | "days";
