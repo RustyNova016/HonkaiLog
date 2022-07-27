@@ -1,10 +1,20 @@
 import {MaterialQuantity} from "./MaterialQuantity";
+import {LogSource} from "./MaterialLog";
+import {GachaBannerWithUserData} from "./GachaBannerWithUserData";
+import {MaterialQuantityWithUserData} from "./MaterialQuantityWithUserData";
 
 /** An object corresponding to a gacha banner. */
 export class GachaBanner {
+    /** Name of the banner */
     name: string
+
+    /** The number of guaranties to complete the banner */
     nbGuarantyForCompletion: number
+
+    /** The number of pull to do before hitting pity */
     nbPullsForGuaranty: number
+
+    /** Cost to pull the gacha */
     pullCost: MaterialQuantity
 
     constructor(name: string, NbPullsForGuaranty: number, NbGuarantyForCompletion: number, pullCost: MaterialQuantity) {
@@ -14,21 +24,16 @@ export class GachaBanner {
         this.nbGuarantyForCompletion = NbGuarantyForCompletion;
     }
 
-    /** The cost of completing the banner */
-    getCostToCompletion(): MaterialQuantity {
+    /** The cost for completing the banner */
+    public calcCostForCompletion(): MaterialQuantity {
         return new MaterialQuantity(
             this.pullCost.material,
-            this.pullCost.quantity * this.getNBPullsForCompletion()
+            this.pullCost.quantity * this.calcNBPullsForBannerCompletion()
         )
     }
 
-    /** Get the name of the material needed to gacha */
-    getGetCostMaterialName(): string {
-        return this.pullCost.material.name;
-    }
-
     /** The number of pull for full banner completion */
-    getNBPullsForCompletion(): number {
+    calcNBPullsForBannerCompletion(): number {
         return this.nbPullsForGuaranty * this.nbGuarantyForCompletion;
     }
 }

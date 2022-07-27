@@ -6,7 +6,7 @@ export interface PropsWithStyle {
     style?: React.CSSProperties;
 }
 
-export interface SequelizeTableCommonDBResults {
+export interface SequelizeTableCommonDBResults extends Object{
     createdAt: string;
     updatedAt: string;
 }

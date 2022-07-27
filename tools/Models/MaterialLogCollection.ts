@@ -1,7 +1,7 @@
-import {MaterialLog} from "./MaterialLog";
+import {LogSource, MaterialLog} from "./MaterialLog";
 import {MaterialLogsAPIFetchResponse} from "../../pages/api/material/logs/[id]";
 import {MaterialQuantity} from "./MaterialQuantity";
-import {MaterialWithLogs} from "./MaterialWithLogs";
+import {MaterialWithUserData} from "./MaterialWithUserData";
 import {ITimeframe} from "../../context/TimeframeContext";
 import {TimeRef} from "../../utils/TimeTools";
 import {Timeframe} from "../../utils/classes/Timeframe";
@@ -9,37 +9,27 @@ import _ from "lodash";
 
 /** List of all the MaterialLogs of a material. It can be used to calculate data about the usage of the materials */
 export class MaterialLogCollection {
+    /** List of the logs contained in the collection */
     readonly logs: MaterialLog[] = [];
-    readonly material: MaterialWithLogs;
 
-    constructor(material: MaterialWithLogs, logs: MaterialLog[]) {
+    /** Which material this collection belong to */
+    readonly material: MaterialWithUserData;
+
+    constructor(material: MaterialWithUserData, logSource: LogSource) {
         this.material = material;
-        this.addLogs(logs);
+        this.insertLogs(logSource)
     }
+    public insertLogs(logSource: LogSource){
+        const logs = MaterialLog.toLogs(logSource);
 
-    /** Create a MaterialLogCollection object with a wider input range */
-    public static getMaterialLogCollection(material: MaterialWithLogs, logs?: MaterialLog[], APIResponseData?: MaterialLogsAPIFetchResponse) {
-        let logsArray: MaterialLog[] = []
-
-        if (logs === undefined && APIResponseData === undefined) {
-            throw new Error("Cannot create collection: Both data sources are undefined");
+        for (const log of logs) {
+            this.addMaterialLog(log);
         }
-
-        if (logs !== undefined) {
-            logsArray = [...logsArray, ...logs]
-        }
-
-        if (APIResponseData?.Material_logs !== undefined) {
-            for (const materialLog of APIResponseData?.Material_logs) {
-                logsArray.push(MaterialLog.fromJSON(materialLog, material))
-            }
-        }
-
-        return new MaterialLogCollection(material, logsArray);
     }
 
     /** Add logs from any source
      *  @return boolean Return true if logs got added
+     *  @deprecated
      */
     public addLogs(logs?: MaterialLog[], APIResponseData?: MaterialLogsAPIFetchResponse): boolean {
         let logAdded = false
@@ -239,6 +229,7 @@ export class MaterialLogCollection {
     /** Add a log to the log array */
     private addMaterialLog(log: MaterialLog) {
         // TODO: Check for duplicates/Optimizations
+        // TODO: Check if the material is the same
         this.logs.push(log)
     }
 

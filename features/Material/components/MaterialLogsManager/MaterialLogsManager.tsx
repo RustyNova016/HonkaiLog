@@ -18,7 +18,7 @@ export function MaterialLogsManager() {
             <Row>
                 <Col lg={6} className={"display-flex align-content-center"}>
                     <p className={"text-"}>You have currently
-                        have {material.logs.getCurrentCount()} {material.name}</p>
+                        have {material.logCollection.getCurrentCount()} {material.name}</p>
                 </Col>
                 <Col lg={6}>
                     <MaterialLogsManagerInputForm/>

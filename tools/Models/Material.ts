@@ -1,16 +1,16 @@
-import {MaterialAPI} from "./MaterialAPI";
 import {MaterialAPIFetchResponse} from "../../pages/api/material/[id]";
-import {MaterialLogsAPIFetchResponse} from "../../pages/api/material/logs/[id]";
-import {MaterialWithLogs} from "./MaterialWithLogs";
-import {MaterialLog} from "./MaterialLog";
+import {MaterialWithUserData} from "./MaterialWithUserData";
+import {LogSource} from "./MaterialLog";
 
 /** Class of a material object. E.G. Gold, crystals, exp material, etc... */
-export class Material extends MaterialAPI {
+export class Material {
+    /** ID of the material in the database */
     public id: number;
+
+    /** Name of the material */
     public name: string;
 
     constructor(id: number, name: string) {
-        super();
         this.id = id;
         this.name = name;
     }
@@ -20,13 +20,14 @@ export class Material extends MaterialAPI {
         return new Material(res.id, res.name);
     }
 
-    /** Create a new instance of the material with logs */
-    public addLogs(logs?: MaterialLog[], APIResponseData?: MaterialLogsAPIFetchResponse): MaterialWithLogs {
-        return new MaterialWithLogs(this.id, this.name, logs, APIResponseData)
+    /** Create a new instance of the material with userdata */
+    public addUserData(logSource: LogSource): MaterialWithUserData {
+        return new MaterialWithUserData(this.id, this.name, logSource)
     }
 
     /** Output true if the material have the same ID */
     public isSameMaterial(mat: Material): boolean {
+        // TODO: Deep comparison
         return this.id === mat.id;
     }
 }

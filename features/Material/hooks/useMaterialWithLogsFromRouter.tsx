@@ -1,6 +1,6 @@
 import {useRouter} from "next/router";
 import {useMaterialWithLogs} from "./useMaterialWithLogs";
-import {MaterialWithLogs} from "../../../tools/Models/MaterialWithLogs";
+import {MaterialWithUserData} from "../../../tools/Models/MaterialWithUserData";
 
 /** Return the materialID parameter of the url */
 export function useRouterMaterialId(): number | undefined {
@@ -17,7 +17,7 @@ export function useRouterMaterialId(): number | undefined {
 }
 
 /** Give a MaterialWithLogs object directly from the router */
-export function useMaterialWithLogsFromRouter(): MaterialWithLogs | undefined {
+export function useMaterialWithLogsFromRouter(): MaterialWithUserData | undefined {
     const id = useRouterMaterialId();
     if (id === undefined) return undefined
 

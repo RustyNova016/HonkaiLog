@@ -4,17 +4,30 @@ import axios from "axios";
 import {APIRoutes} from "../../data/API routes";
 import logger from "../Logger";
 import {MaterialLogItemJSON} from "../../database/material_log";
-import {MaterialWithLogs} from "./MaterialWithLogs";
-import {MaterialQuantityWithLogs} from "./MaterialQuantityWithLogs";
+import {MaterialWithUserData} from "./MaterialWithUserData";
+import {MaterialQuantityWithUserData} from "./MaterialQuantityWithUserData";
 import {ITimeframe} from "../../context/TimeframeContext";
+import {MaterialLogCollection} from "./MaterialLogCollection";
+
+export type LogSource =
+    MaterialLogCollection
+    | MaterialQuantityWithUserData
+    | MaterialWithUserData
+    | MaterialLog
+    | MaterialLog[];
 
 /** Snapshot of a quantity at a given time */
-export class MaterialLog extends MaterialQuantityWithLogs {
+export class MaterialLog extends MaterialQuantity {
+    /** ID of the log in the database */
     id: number;
+
+    /** Date of the log */
     log_date: Date;
+
+    /** ID of the user having made the log */
     userId: UserDBResponse["id"];
 
-    constructor(material: MaterialWithLogs, quantity: number, id: number, log_date: Date, userId: UserDBResponse["id"]) {
+    constructor(material: MaterialWithUserData, quantity: number, id: number, log_date: Date, userId: UserDBResponse["id"]) {
         super(material, quantity);
         this.id = id;
         this.log_date = log_date;
@@ -22,7 +35,7 @@ export class MaterialLog extends MaterialQuantityWithLogs {
     }
 
     /** Create a MaterialLog instance from a json object */
-    static fromJSON(jsonLog: MaterialLogItemJSON, material: MaterialWithLogs): MaterialLog {
+    static fromJSON(jsonLog: MaterialLogItemJSON, material: MaterialWithUserData): MaterialLog {
         return new MaterialLog(material, jsonLog.count, jsonLog.id, new Date(jsonLog.log_date), jsonLog.userId);
     }
 
@@ -36,6 +49,31 @@ export class MaterialLog extends MaterialQuantityWithLogs {
         logger.info("Done sending!", "Material Log")
 
         // TODO: check for errors
+    }
+
+    /** Convert anything log related to MaterialLog */
+    public static toLogs(logSource: LogSource): MaterialLog[] {
+        if (logSource instanceof Array) {
+            return logSource
+        }
+
+        if (logSource instanceof MaterialLog) {
+            return [logSource]
+        }
+
+        if (logSource instanceof MaterialLogCollection) {
+            return logSource.logs
+        }
+
+        if (logSource instanceof MaterialQuantityWithUserData) {
+            return this.toLogs(logSource.material.logCollection)
+        }
+
+        if (logSource instanceof MaterialWithUserData) {
+            return this.toLogs(logSource.logCollection)
+        }
+
+        return logSource;
     }
 
     /** Return the difference of the quantity of material between two logs sorted in chronological order*/

@@ -1,8 +1,5 @@
 import {Datum, Serie} from "@nivo/line";
 import {toTimestamp} from "./Miscs";
-import {DatumConstructor} from "./Types/DatumConstructor";
-import {LogDatum} from "./Types/LogDatum";
-import {MaterialWithLogs} from "./Models/MaterialWithLogs";
 import {MaterialGraphTypes} from "../data/MaterialGraphTypes";
 import {MaterialLogCollection} from "./Models/MaterialLogCollection";
 import _ from "lodash";
@@ -66,11 +63,11 @@ export class MaterialHistoryGraphData extends GraphData {
         return output
     }
 
-    private static generateQuantityGraphData(logs: MaterialLogCollection): Serie {
-        return this.createSeries("Quantity", this.calculateQuantityGraphDatum(logs))
-    }
-
     private static generateAverageGraphData(logs: MaterialLogCollection): Serie {
         return this.createSeries("Average", this.calculateAverageGainGraphDatum(logs))
+    }
+
+    private static generateQuantityGraphData(logs: MaterialLogCollection): Serie {
+        return this.createSeries("Quantity", this.calculateQuantityGraphDatum(logs))
     }
 }

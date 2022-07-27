@@ -28,7 +28,7 @@ export function MaterialLogsManagerInputForm(props: MaterialLogsManagerInputForm
         logger.info("User submitting log for material " + material.name + " with value " + data.count, "MaterialLogInput")
 
         setLoading(true)
-        await material.logs.makeLog(data.count)
+        await material.logCollection.makeLog(data.count)
         await mutate(getMaterialLogsAPIKey(material.id))
         setLoading(false)
     }
@@ -39,7 +39,7 @@ export function MaterialLogsManagerInputForm(props: MaterialLogsManagerInputForm
                 <Col lg={8}>
                     <FormFloating className={"mb-3"}>
                         <input className="form-control"
-                               defaultValue={material.logs.getCurrentCount()} {...register("count")} />
+                               defaultValue={material.logCollection.getCurrentCount()} {...register("count")} />
                         <label>{material.name} count</label>
                     </FormFloating>
                 </Col>

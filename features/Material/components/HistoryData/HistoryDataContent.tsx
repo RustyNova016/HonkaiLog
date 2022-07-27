@@ -21,7 +21,7 @@ export function HistoryDataContent() {
     const {timeframe} = useContext(TimeframeContext);
 
     // Log Data
-    const logs = material.logs.getLogsInTimeframe(timeframe, true)
+    const logs = material.logCollection.getLogsInTimeframe(timeframe, true)
 
     // Graph data
     const [materialGraphType, setMaterialGraphType] = useState<MaterialGraphTypes>("quantity");
