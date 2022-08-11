@@ -404,11 +404,6 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@fortawesome/fontawesome-common-types@6.1.1":
-  version "6.1.1"
-  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-common-types/-/fontawesome-common-types-6.1.1.tgz#7dc996042d21fc1ae850e3173b5c67b0549f9105"
-  integrity sha512-wVn5WJPirFTnzN6tR95abCx+ocH+3IFLXAgyavnf9hUmN0CfWoDjPT/BAWsUVwSlYYVBeCLJxaqi7ZGe4uSjBA==
-
 "@fortawesome/fontawesome-common-types@6.1.2":
   version "6.1.2"
   resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-common-types/-/fontawesome-common-types-6.1.2.tgz#c1095b1bbabf19f37f9ff0719db38d92a410bcfe"
@@ -428,12 +423,12 @@
   dependencies:
     "@fortawesome/fontawesome-common-types" "6.1.2"
 
-"@fortawesome/free-solid-svg-icons@^6.1.1":
-  version "6.1.1"
-  resolved "https://registry.yarnpkg.com/@fortawesome/free-solid-svg-icons/-/free-solid-svg-icons-6.1.1.tgz#3369e673f8fe8be2fba30b1ec274d47490a830a6"
-  integrity sha512-0/5exxavOhI/D4Ovm2r3vxNojGZioPwmFrKg0ZUH69Q68uFhFPs6+dhAToh6VEQBntxPRYPuT5Cg1tpNa9JUPg==
+"@fortawesome/free-solid-svg-icons@^6.1.2":
+  version "6.1.2"
+  resolved "https://registry.yarnpkg.com/@fortawesome/free-solid-svg-icons/-/free-solid-svg-icons-6.1.2.tgz#491d668b8a6603698d0ce1ac620f66fd22b74c84"
+  integrity sha512-lTgZz+cMpzjkHmCwOG3E1ilUZrnINYdqMmrkv30EC3XbRsGlbIOL8H9LaNp5SV4g0pNJDfQ4EdTWWaMvdwyLiQ==
   dependencies:
-    "@fortawesome/fontawesome-common-types" "6.1.1"
+    "@fortawesome/fontawesome-common-types" "6.1.2"
 
 "@fortawesome/react-fontawesome@^0.2.0":
   version "0.2.0"
@@ -4548,10 +4543,10 @@ react-error-boundary@^3.1.4:
   dependencies:
     "@babel/runtime" "^7.12.5"
 
-react-hook-form@^7.33.1:
-  version "7.33.1"
-  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-7.33.1.tgz#8c4410e3420788d3b804d62cc4c142915c2e46d0"
-  integrity sha512-ydTfTxEJdvgjCZBj5DDXRc58oTEfnFupEwwTAQ9FSKzykEJkX+3CiAkGtAMiZG7IPWHuzgT6AOBfogiKhUvKgg==
+react-hook-form@^7.34.0:
+  version "7.34.0"
+  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-7.34.0.tgz#22883b5e014e5c5e35f3061d0e3862153b0df2ec"
+  integrity sha512-s0/TJ09NVlEk2JPp3yit1WnMuPNBXFmUKEQPulgDi9pYBw/ZmmAFHe6AXWq73Y+kp8ye4OcMf0Jv+i/qLPektg==
 
 react-icons@^4.4.0:
   version "4.4.0"
