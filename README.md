@@ -1,5 +1,5 @@
 # Honkai Log
- 
+
 Next.js webapp that help you plan your daily progress in Honkai Impact!
 
 
