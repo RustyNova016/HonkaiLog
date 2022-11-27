@@ -1,4 +1,3 @@
-const {env} = require("./env");
 const path = require('path');
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -10,7 +9,6 @@ const nextConfig = {
         buildActivityPosition: 'bottom-right',
         buildActivity: true,
     },
-    env: env,
     sassOptions: {
         includePaths: [path.join(__dirname, 'styles')],
     },
