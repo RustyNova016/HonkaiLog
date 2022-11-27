@@ -15,4 +15,10 @@ updates:
     target-branch: "develop"
     schedule:
       interval: "daily"
+      
+  - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/" # Location of package manifests
+    target-branch: "dev"
+    schedule:
+      interval: "daily"
 
