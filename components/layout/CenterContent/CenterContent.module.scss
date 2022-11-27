@@ -1,0 +1,9 @@
+.flexboxCentered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  // TODO: Fix layout height bug
+  height: 95vh;
+  width: 100%;
+}

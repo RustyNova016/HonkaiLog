@@ -1,0 +1,8 @@
+@import "../../../app/variables.module";
+
+.background {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: $background-color;
+}

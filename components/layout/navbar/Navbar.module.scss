@@ -1,0 +1,27 @@
+@import "../../../app/variables.module";
+
+.navbar{
+  background-color: $accent-color;
+  min-height: 5%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  font-size: 1vw;
+  align-items: center;
+  padding-right: 1%;
+  padding-left: 1%;
+
+  .left {
+    display: flex;
+    width: 100%;
+    //border: #0070f3 solid;
+  }
+
+  .right {
+    display: flex;
+    width: 100%;
+    //border: chartreuse solid;
+    align-content: center;
+    justify-content: flex-end;
+  }
+}
