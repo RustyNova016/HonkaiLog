@@ -2351,10 +2351,10 @@ styled-jsx@5.1.0:
   dependencies:
     client-only "0.0.1"
 
-supabase@^1.15.1:
-  version "1.15.1"
-  resolved "https://registry.yarnpkg.com/supabase/-/supabase-1.15.1.tgz#7ea41df5ebe35e1c1400946c19490e2056961472"
-  integrity sha512-cX7IMQqTBbHekKh88ys+MxIxvZOntE3mT2eH6EU3YdKSwx0p4jhWn31R4cmGcB3yV3IfP3uPfbO12TH5IjZiCg==
+supabase@^1.17.0:
+  version "1.17.0"
+  resolved "https://registry.yarnpkg.com/supabase/-/supabase-1.17.0.tgz#58d7943f2280df8f01b923e3b5b0d8c1a5a9094b"
+  integrity sha512-136z2KLXdWMWauVMZmy+lZIcLaNO5oKrrwjKz9x4qVY882wVZu2jgUBddqzopa4tArjY8Mfq2gnrk8f8ui/Evg==
   dependencies:
     node-fetch "^3.2.10"
     tar "6.1.12"
