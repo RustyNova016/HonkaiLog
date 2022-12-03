@@ -9,7 +9,7 @@ import {ErrorBoundary} from "react-error-boundary";
 export function GenericPageLayout(props: { children: React.ReactNode, hideFooter?: boolean, pushFooter?: boolean; }) {
     return (
         <>
-            {PageHead()}
+            {/*{PageHead()}*/}
             <BackgroundPicture>
 
                 <div style={{height: "100%"}} className={props.pushFooter ? styles.footerPush : ""}>

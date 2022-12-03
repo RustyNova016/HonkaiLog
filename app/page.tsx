@@ -1,3 +1,5 @@
+"use client";
+//TODO: Make most server component. Maybe encapsulate <Fade>?
 import type {NextPage} from 'next'
 import styles from '../styles/Home.module.scss'
 import {GenericPageLayout} from "../component/pageComponents/GenericPageLayout";
@@ -9,7 +11,6 @@ import {PageTitle} from "../component/pageComponents/Theme/Theme";
 
 const Home: NextPage = () => {
     return (<>
-            <GenericPageLayout pushFooter={true}>
                 <PageContainer>
                     <Fade direction={"down"} cascade={true}>
                         <PageTitle title={"Welcome to HonkaiLog!"}/>
@@ -27,7 +28,6 @@ const Home: NextPage = () => {
                                        imagelink={"/images/icons/BP.png"}/>
                     </Fade>
                 </PageContainer>
-            </GenericPageLayout>
         </>
     )
 }
