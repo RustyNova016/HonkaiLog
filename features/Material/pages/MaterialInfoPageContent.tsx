@@ -1,4 +1,3 @@
-import {LoadingComponent} from "../../../component/App Components/PageLoadingComponent";
 import {Container} from "react-bootstrap";
 import {PageTitle} from "../../../component/pageComponents/Theme/Theme";
 import {ErrorBoundary} from "react-error-boundary";
@@ -7,6 +6,7 @@ import {MaterialLogsManager} from "../components/MaterialLogsManager/MaterialLog
 import {GachaData} from "../../Gacha/components/GachaData";
 import {useMaterialWithLogsFromRouter} from "../hooks/useMaterialWithLogsFromRouter";
 import {HistoryData} from "../components/HistoryData/HistoryData";
+import {LoadingComponent} from "../../../component/UI Components/Loading Icons/LoadingComponent";
 
 
 export function MaterialInfoPageContent() {

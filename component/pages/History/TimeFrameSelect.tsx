@@ -1,8 +1,8 @@
 import {Dispatch, SetStateAction} from "react";
 import {Button, ButtonGroup} from "react-bootstrap";
 import {removeDaysFromToday} from "../../../tools/Miscs";
-import {LoadingComponent} from "../../App Components/PageLoadingComponent";
 import {useMaterialWithLogsFromRouter} from "../../../features/Material/hooks/useMaterialWithLogsFromRouter";
+import {LoadingComponent} from "../../UI Components/Loading Icons/LoadingComponent";
 
 export function TimeFrameSelectButton(props: { dayValue: number | null, label: string, action: Dispatch<SetStateAction<Date>> }) {
     // Get the material

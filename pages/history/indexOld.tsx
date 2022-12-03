@@ -1,6 +1,6 @@
 import {useSession} from "next-auth/react";
 import {GenericPageLayout} from "../../component/pageComponents/GenericPageLayout";
-import {Navigation} from "../../component/Layout/Navigation";
+import {Navigation} from "../../components/UI/Navigation/Navigation";
 
 export default function MatHistory () {
     const session = useSession();

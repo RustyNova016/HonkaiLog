@@ -1,7 +1,6 @@
 import {useContext, useState} from "react";
 import {SectionTitle} from "../../../../component/pageComponents/Theme/Theme";
 import FramedDiv from "../../../../component/Layout/FramedDiv";
-import {LoadingComponent} from "../../../../component/App Components/PageLoadingComponent";
 import {TimeframeContext} from "../../../../context/TimeframeContext";
 import {Row, Stack} from "react-bootstrap";
 import {useMaterialWithLogsFromRouter} from "../../hooks/useMaterialWithLogsFromRouter";
@@ -10,6 +9,7 @@ import {TimeframeSelection} from "./TimeframeSelection";
 import {MaterialGraphTypes} from "../../../../data/MaterialGraphTypes";
 import {HistoryDataGraph} from "./Graph/HistoryDataGraph";
 import {GraphTypeSelection} from "./Graph/GraphTypeSelection";
+import {LoadingComponent} from "../../../../component/UI Components/Loading Icons/LoadingComponent";
 
 
 export function HistoryDataContent() {

@@ -1,7 +1,7 @@
 import {PointTooltipProps} from "@nivo/line";
 import FramedDiv from "../../Layout/FramedDiv";
-import {LoadingComponent} from "../../App Components/PageLoadingComponent";
 import {useMaterialWithLogsFromRouter} from "../../../features/Material/hooks/useMaterialWithLogsFromRouter";
+import {LoadingComponent} from "../../UI Components/Loading Icons/LoadingComponent";
 
 export function MaterialLogPointToolTip(props: PointTooltipProps) {
     // Get the material

@@ -2,10 +2,10 @@ import {Button, Col, FormFloating, Row} from "react-bootstrap";
 import {useForm} from "react-hook-form";
 import {useState} from "react";
 import logger from "../../../../tools/Logger";
-import {LoadingComponent} from "../../../../component/App Components/PageLoadingComponent";
 import {useSWRConfig} from "swr";
 import {useMaterialWithLogsFromRouter} from "../../hooks/useMaterialWithLogsFromRouter";
 import {getMaterialLogsAPIKey} from "../../hooks/useMaterialLogsAPI";
+import {LoadingComponent} from "../../../../component/UI Components/Loading Icons/LoadingComponent";
 
 export interface IMaterialLogInputForm {
     count: number;

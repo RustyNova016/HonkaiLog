@@ -4,11 +4,11 @@ import {useState} from "react";
 import {removeDaysFromToday} from "../../../tools/Miscs";
 import {Col, Row} from "react-bootstrap";
 import {TimeFrameSelect} from "../../../component/pages/History/TimeFrameSelect";
-import {LoadingComponent} from "../../../component/App Components/PageLoadingComponent";
 import {useMaterialWithLogsFromRouter} from "../../Material/hooks/useMaterialWithLogsFromRouter";
 import {GachaBannerWithUserData} from "../../../tools/Models/GachaBannerWithUserData";
 import {TimeTools} from "../../../utils/TimeTools";
 import {useGachaBannerWithUserData} from "../hooks/UseGachaBannerWithUserData";
+import {LoadingComponent} from "../../../component/UI Components/Loading Icons/LoadingComponent";
 
 function GachaBannerInfo(props: { gachaBanner: GachaBannerWithUserData }) {
     const gachaBanner = props.gachaBanner

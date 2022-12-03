@@ -2,8 +2,8 @@ import FramedDiv from "../../../../component/Layout/FramedDiv";
 import {SectionTitle} from "../../../../component/pageComponents/Theme/Theme";
 import {Col, Row} from "react-bootstrap";
 import {MaterialLogsManagerInputForm} from "./MaterialLogsManagerInputForm";
-import {LoadingComponent} from "../../../../component/App Components/PageLoadingComponent";
 import {useMaterialWithLogsFromRouter} from "../../hooks/useMaterialWithLogsFromRouter";
+import {LoadingComponent} from "../../../../component/UI Components/Loading Icons/LoadingComponent";
 
 /** Component that allow the user to manage and log the material count */
 export function MaterialLogsManager() {

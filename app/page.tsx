@@ -1,5 +1,4 @@
-"use client";
-//TODO: Make most server component. Maybe encapsulate <Fade>?
+"use client";//TODO: Make most server component. Maybe encapsulate <Fade>?
 import type {NextPage} from 'next'
 import styles from '../styles/Home.module.scss'
 import {GenericPageLayout} from "../component/pageComponents/GenericPageLayout";
