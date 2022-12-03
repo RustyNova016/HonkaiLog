@@ -8,7 +8,8 @@ import {PageTitle} from "../component/pageComponents/Theme/Theme";
 
 
 const Home: NextPage = () => {
-    return (<>
+    return (
+        <>
             <GenericPageLayout pushFooter={true}>
                 <PageContainer>
                     <Fade direction={"down"} cascade={true}>
@@ -22,6 +23,7 @@ const Home: NextPage = () => {
                         <SmallLinkCard link={"history"} title={"Material History"}
                                        description={"Keep an history of your materials to see how many you are making over a period of time"}
                                        imagelink={"/images/icons/HonkaiCube.png"}/>
+
                         <SmallLinkCard link={"404"} title={"Battlepass Checker"}
                                        description={"Not sure if you can finish the battlepass in time? Use this tool to find out"}
                                        imagelink={"/images/icons/BP.png"}/>

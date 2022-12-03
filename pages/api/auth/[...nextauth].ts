@@ -13,4 +13,5 @@ export default NextAuth({
         secret: "test",
     },
     adapter: AuthDBAdapter,
+    debug: true
 });

@@ -2,6 +2,8 @@
 import {MaterialLogsAPIFetchResponse} from "../pages/api/material/logs/[id]";
 import {MaterialLogItemJSON} from "../database/material_log";
 import {TimeTools} from "../utils/TimeTools";
+import {testMaterial} from "../tools/Models/tests/MaterialWithUserData.test";
+import {MaterialQuantity} from "../tools/Models/MaterialQuantity";
 
 export const TestMaterialCountAPIResponse: MaterialLogsAPIFetchResponse = {
     createdAt: "2020-01-01T00:00:00.000Z",
@@ -49,6 +51,17 @@ export const TestMaterialLogAPIResponse_bigger: MaterialLogsAPIFetchResponse = {
         generateFakeLog(250, 3),
         generateFakeLog(400, 4)
     ]
+}
+
+export const __test_data = {
+    gachaBanner: {
+        EXPABanner: {
+            name: "",
+            nbGuarantyForCompletion: 1,
+            nbPullsForGuaranty: 100,
+            pullCost: new MaterialQuantity(testMaterial, 280)
+        }
+    }
 }
 
 export function generateFakeLog(count: number, day: number): MaterialLogItemJSON {
