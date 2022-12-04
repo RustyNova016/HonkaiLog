@@ -1,23 +1,25 @@
 import {UserDBResponse} from "../../database/user";
-import {MaterialQuantity} from "./MaterialQuantity";
+import {MaterialQuantity} from "../../tools/Models/MaterialQuantity";
 import axios from "axios";
 import {APIRoutes} from "../../data/API routes";
-import logger from "../Logger";
+import logger from "../../tools/Logger";
 import {MaterialLogItemJSON} from "../../database/material_logs";
-import {MaterialWithUserData} from "./MaterialWithUserData";
-import {MaterialQuantityWithUserData} from "./MaterialQuantityWithUserData";
+import {MaterialWithUserData} from "@/utils/Objects/MaterialWithUserData";
+import {MaterialQuantityWithUserData} from "../../tools/Models/MaterialQuantityWithUserData";
 import {ITimeframe} from "../../context/TimeframeContext";
 import {MaterialLogCollection} from "./MaterialLogCollection";
+import {z} from "zod";
+import {MaterialQuantityLogJSONZod, UserMaterialDataZod} from "@/lib/Validations/material";
 
 export type LogSource =
     MaterialLogCollection
     | MaterialQuantityWithUserData
     | MaterialWithUserData
-    | MaterialLog
-    | MaterialLog[];
+    | MaterialQuantityLog
+    | MaterialQuantityLog[];
 
 /** Snapshot of a quantity at a given time */
-export class MaterialLog extends MaterialQuantity {
+export class MaterialQuantityLog extends MaterialQuantity {
     /** ID of the log in the database */
     id: number;
 
@@ -27,16 +29,21 @@ export class MaterialLog extends MaterialQuantity {
     /** ID of the user having made the log */
     userId: UserDBResponse["id"];
 
-    constructor(material: MaterialWithUserData, quantity: number, id: number, log_date: Date, userId: UserDBResponse["id"]) {
+    constructor(id: number, quantity: number, material: MaterialWithUserData, log_date: Date, userId: string) {
         super(material, quantity);
         this.id = id;
         this.log_date = log_date;
         this.userId = userId;
     }
 
-    /** Create a MaterialLog instance from a json object */
-    static fromJSON(jsonLog: MaterialLogItemJSON, material: MaterialWithUserData): MaterialLog {
-        return new MaterialLog(material, jsonLog.count, jsonLog.id, new Date(jsonLog.log_date), jsonLog.userId);
+    static parse(data: z.infer<typeof MaterialQuantityLogJSONZod>, material: MaterialWithUserData){
+        return new MaterialQuantityLog(data.id, data.count, material, new Date(data.log_date), material.userID)
+    }
+
+    /** Create a MaterialQuantityLog instance from a json object
+     * @deprecated */
+    static fromJSON(jsonLog: MaterialLogItemJSON, material: MaterialWithUserData): MaterialQuantityLog {
+        return new MaterialQuantityLog(jsonLog.id, jsonLog.count, material, new Date(jsonLog.log_date), jsonLog.userId);
     }
 
     /** Create a log and save it to the database */
@@ -51,13 +58,13 @@ export class MaterialLog extends MaterialQuantity {
         // TODO: check for errors
     }
 
-    /** Convert anything log related to MaterialLog */
-    public static toLogs(logSource: LogSource): MaterialLog[] {
+    /** Convert anything log related to MaterialQuantityLog */
+    public static toLogs(logSource: LogSource): MaterialQuantityLog[] {
         if (logSource instanceof Array) {
             return logSource
         }
 
-        if (logSource instanceof MaterialLog) {
+        if (logSource instanceof MaterialQuantityLog) {
             return [logSource]
         }
 
@@ -77,7 +84,7 @@ export class MaterialLog extends MaterialQuantity {
     }
 
     /** Return the difference of the quantity of material between two logs sorted in chronological order*/
-    public getChronologicalDifference(log: MaterialLog): number {
+    public getChronologicalDifference(log: MaterialQuantityLog): number {
         if (this.isOlderThan(log)) {
             return log.quantity - this.quantity;
         } else {
@@ -86,7 +93,7 @@ export class MaterialLog extends MaterialQuantity {
     }
 
     /** Return the difference of the quantity of material between two logs */
-    public getQuantityDifference(log: MaterialLog): number {
+    public getQuantityDifference(log: MaterialQuantityLog): number {
         return this.quantity - log.quantity;
     }
 
@@ -98,7 +105,7 @@ export class MaterialLog extends MaterialQuantity {
     }
 
     /** Return true if the log is older than the log compared against*/
-    public isOlderThan(log: MaterialLog): boolean {
+    public isOlderThan(log: MaterialQuantityLog): boolean {
         return this.log_date.getTime() < log.log_date.getTime();
     }
 }

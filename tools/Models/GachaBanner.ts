@@ -1,5 +1,5 @@
 import {MaterialQuantity} from "./MaterialQuantity";
-import {LogSource} from "./MaterialLog";
+import {LogSource} from "@/utils/Objects/MaterialQuantityLog";
 import {GachaBannerWithUserData} from "./GachaBannerWithUserData";
 import {MaterialQuantityWithUserData} from "./MaterialQuantityWithUserData";
 

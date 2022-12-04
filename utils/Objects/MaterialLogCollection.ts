@@ -1,16 +1,18 @@
-import {LogSource, MaterialLog} from "./MaterialLog";
+import {LogSource, MaterialQuantityLog} from "@/utils/Objects/MaterialQuantityLog";
 import {MaterialLogsAPIFetchResponse} from "../../pages/api/material/logs/[id]";
-import {MaterialQuantity} from "./MaterialQuantity";
-import {MaterialWithUserData} from "./MaterialWithUserData";
+import {MaterialQuantity} from "../../tools/Models/MaterialQuantity";
+import {MaterialWithUserData} from "@/utils/Objects/MaterialWithUserData";
 import {ITimeframe} from "../../context/TimeframeContext";
-import {TimeRef} from "../../utils/TimeTools";
-import {Timeframe} from "../../utils/classes/Timeframe";
+import {TimeRef} from "../TimeTools";
+import {Timeframe} from "../classes/Timeframe";
 import _ from "lodash";
+import {z} from "zod";
+import {MaterialQuantityLogJSONArrayZod} from "@/lib/Validations/material";
 
 /** List of all the Material_logs of a material. It can be used to calculate data about the usage of the materials */
 export class MaterialLogCollection {
     /** List of the logs contained in the collection */
-    readonly logs: MaterialLog[] = [];
+    readonly logs: MaterialQuantityLog[] = [];
 
     /** Which material this collection belong to */
     readonly material: MaterialWithUserData;
@@ -19,19 +21,22 @@ export class MaterialLogCollection {
         this.material = material;
         this.insertLogs(logSource)
     }
-    public insertLogs(logSource: LogSource){
-        const logs = MaterialLog.toLogs(logSource);
 
-        for (const log of logs) {
-            this.addMaterialLog(log);
+    static parse(data: z.infer<typeof MaterialQuantityLogJSONArrayZod>, material: MaterialWithUserData){
+        const materialQuantityLogs = [];
+
+        for (const materialQuantityLogJSON of data) {
+            materialQuantityLogs.push(MaterialQuantityLog.parse(materialQuantityLogJSON, material));
         }
+
+        return new MaterialLogCollection(material, materialQuantityLogs);
     }
 
     /** Add logs from any source
      *  @return boolean Return true if logs got added
      *  @deprecated
      */
-    public addLogs(logs?: MaterialLog[], APIResponseData?: MaterialLogsAPIFetchResponse): boolean {
+    public addLogs(logs?: MaterialQuantityLog[], APIResponseData?: MaterialLogsAPIFetchResponse): boolean {
         let logAdded = false
 
         if (logs !== undefined) {
@@ -122,7 +127,7 @@ export class MaterialLogCollection {
     }
 
     /** Filter the logs according to a test into a new MaterialLogCollection */
-    public filter(test: (value: MaterialLog, index: number, array: MaterialLog[]) => boolean): MaterialLogCollection {
+    public filter(test: (value: MaterialQuantityLog, index: number, array: MaterialQuantityLog[]) => boolean): MaterialLogCollection {
         return new MaterialLogCollection(this.material, this.logs.filter(test))
     }
 
@@ -214,27 +219,35 @@ export class MaterialLogCollection {
         return {dateLowerBound, dateUpperBound};
     }
 
-    /** Create a log and save it to the database */
-    public async makeLog(quantity: number) {
-        await MaterialLog.makeLog(new MaterialQuantity(this.material, quantity))
+    public insertLogs(logSource: LogSource) {
+        const logs = MaterialQuantityLog.toLogs(logSource);
+
+        for (const log of logs) {
+            this.addMaterialLog(log);
+        }
     }
 
-    /** Put the MaterialLog objects into the array using an API response as input data */
+    /** Create a log and save it to the database */
+    public async makeLog(quantity: number) {
+        await MaterialQuantityLog.makeLog(new MaterialQuantity(this.material, quantity))
+    }
+
+    /** Put the MaterialQuantityLog objects into the array using an API response as input data */
     private addAPIResponseLogs(res: MaterialLogsAPIFetchResponse): void {
         for (const materialLog of res.Material_logs) {
-            this.addMaterialLog(MaterialLog.fromJSON(materialLog, this.material))
+            this.addMaterialLog(MaterialQuantityLog.fromJSON(materialLog, this.material))
         }
     }
 
     /** Add a log to the log array */
-    private addMaterialLog(log: MaterialLog) {
+    private addMaterialLog(log: MaterialQuantityLog) {
         // TODO: Check for duplicates/Optimizations
         // TODO: Check if the material is the same
         this.logs.push(log)
     }
 
     /** Add multiple logs to the array */
-    private addMaterialLogs(logs: MaterialLog[]) {
+    private addMaterialLogs(logs: MaterialQuantityLog[]) {
         for (const log of logs) {
             this.addMaterialLog(log);
         }

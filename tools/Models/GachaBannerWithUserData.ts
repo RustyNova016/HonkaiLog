@@ -3,7 +3,7 @@ import {MaterialQuantityWithUserData} from "./MaterialQuantityWithUserData";
 import _ from "lodash";
 import {MaterialQuantity} from "./MaterialQuantity";
 import {TimeRef} from "../../utils/TimeTools";
-import {LogSource} from "./MaterialLog";
+import {LogSource} from "@/utils/Objects/MaterialQuantityLog";
 
 /** A GachaBanner with access to the logs of the user for analytics */
 export class GachaBannerWithUserData extends GachaBanner {

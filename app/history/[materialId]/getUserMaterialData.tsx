@@ -1,21 +1,7 @@
 import {getServerUser} from "@/lib/NextAuth/GetSession";
 import database from "../../../database/database";
-import {z} from "zod";
-
-const MaterialDataZodShape = {
-    id: z.number(),
-    name: z.string()
-};
-export const MaterialDataZod = z.object(MaterialDataZodShape)
-
-export const MaterialLogDataZog = z.object({
-    id: z.number()
-})
-
-export const UserMaterialDataZod = z.object({
-    ...MaterialDataZodShape,
-    Material_logs: z.array(MaterialLogDataZog)
-})
+import {UserMaterialDataZod} from "@/lib/Validations/material";
+import {MaterialWithUserData} from "@/utils/Objects/MaterialWithUserData";
 
 export async function getUserMaterialData(idMaterial: string) {
     const user = await getServerUser();
@@ -32,5 +18,9 @@ export async function getUserMaterialData(idMaterial: string) {
         }
     });
 
-    return materialWithLogs
+    return UserMaterialDataZod.parse(materialWithLogs);
+}
+
+export async function getUserMaterial(idMaterial: string){
+    return MaterialWithUserData.parse(await getUserMaterialData(idMaterial), (await getServerUser()).id);
 }

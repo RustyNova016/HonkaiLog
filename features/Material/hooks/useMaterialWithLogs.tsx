@@ -1,7 +1,7 @@
 import {useMaterialLogsAPI} from "./useMaterialLogsAPI";
-import {MaterialWithUserData} from "../../../tools/Models/MaterialWithUserData";
-import {MaterialLog} from "../../../tools/Models/MaterialLog";
-import {Material} from "../../../tools/Models/Material";
+import {MaterialWithUserData} from "@/utils/Objects/MaterialWithUserData";
+import {MaterialQuantityLog} from "@/utils/Objects/MaterialQuantityLog";
+import {Material} from "@/utils/Objects/Material";
 import {useMaterial} from "./useMaterial";
 
 /** Retrieve a MaterialWithLogs object from the API */
@@ -15,9 +15,9 @@ export function useMaterialWithLogs(id: number): MaterialWithUserData | undefine
         // First, convert the Material Object into a MaterialWithUserData object
         const userMat = material.addUserData([])
 
-        // Then, convert the API results into MaterialLog objects and add them
+        // Then, convert the API results into MaterialQuantityLog objects and add them
         for (const materialLog of data.Material_logs) {
-            userMat.logCollection.insertLogs(MaterialLog.fromJSON(materialLog, userMat));
+            userMat.logCollection.insertLogs(MaterialQuantityLog.fromJSON(materialLog, userMat));
         }
 
         return userMat

@@ -1,7 +1,7 @@
-import {MaterialWithUserData} from "./MaterialWithUserData";
+import {MaterialWithUserData} from "@/utils/Objects/MaterialWithUserData";
 import {MaterialQuantity} from "./MaterialQuantity";
 import {TimeRef} from "../../utils/TimeTools";
-import {LogSource} from "./MaterialLog";
+import {LogSource} from "@/utils/Objects/MaterialQuantityLog";
 
 /** A MaterialQuantity class with its material having logs */
 export class MaterialQuantityWithUserData extends MaterialQuantity {

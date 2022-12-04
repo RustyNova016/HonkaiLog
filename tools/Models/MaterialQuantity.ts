@@ -1,4 +1,4 @@
-import {Material} from "./Material";
+import {Material} from "@/utils/Objects/Material";
 
 /** A class that represent a quantity of materials. Like a stack of items */
 export class MaterialQuantity {

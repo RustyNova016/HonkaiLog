@@ -20,11 +20,17 @@
         "incremental": true,
         "baseUrl": ".",
         "paths": {
+            "@/app/*": [
+                "app/*"
+            ],
             "@/components/*": [
                 "components/*"
             ],
             "@/lib/*": [
                 "lib/*"
+            ],
+            "@/utils/*": [
+                "utils/*"
             ]
         },
         "plugins": [
