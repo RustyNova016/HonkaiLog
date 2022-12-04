@@ -1,8 +1,9 @@
-import NextAuth from "next-auth"
-import {AuthCallbacks, AuthProviders} from "../../../tools/NextAuth/tools";
-import {AuthDBAdapter} from "../../../database/database";
+import NextAuth, {NextAuthOptions} from "next-auth"
+import {AuthDBAdapter} from "@/lib/NextAuth/AuthDBAdapter";
+import {AuthCallbacks} from "@/lib/NextAuth/AuthCallbacks";
+import {AuthProviders} from "@/lib/NextAuth/AuthProviders";
 
-export default NextAuth({
+export const authOptions: NextAuthOptions = {
     providers: AuthProviders,
     callbacks: AuthCallbacks,
     secret: "test",
@@ -13,4 +14,5 @@ export default NextAuth({
         secret: "test",
     },
     adapter: AuthDBAdapter,
-});
+};
+export default NextAuth(authOptions);

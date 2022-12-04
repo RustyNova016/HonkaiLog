@@ -8,7 +8,7 @@ const nextConfig = {
     },
     experimental: {
         appDir: true,
-        serverComponentsExternalPackages: ['sequelize', "pg-hstore", "next-auth"],
+        serverComponentsExternalPackages: ['sequelize'],
 
     },
     devIndicators: {

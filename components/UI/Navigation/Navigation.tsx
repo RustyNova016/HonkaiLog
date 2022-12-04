@@ -1,17 +1,18 @@
 import {NavigationUserInfo} from "./NavigationUserInfo";
-import {CSSProperties} from "react";
+import {CSSProperties, Suspense} from "react";
 import Link from "next/link";
-import {ROUTES} from "../../../utils/globals/routes";
+import {ROUTESOLD} from "../../../utils/globals/ROUTESOLD";
 
 export function Navigation() {
     return <>
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark" style={{height: "5vh"}}>
             <div className="container-fluid">
-                <Link href={ROUTES.home} className={"navbar-brand"}>HonkaiLog</Link>
-
-                <div className={"btn btn-outline-primary inline-flex items-center"}>
-                    <NavigationUserInfo/>
-                </div>
+                <Link href={ROUTESOLD.home} className={"navbar-brand"}>HonkaiLog</Link>
+                <Suspense fallback={<p>Loading User...</p>}>
+                    <div className={"inline-flex items-center"}>
+                        <NavigationUserInfo/>
+                    </div>
+                </Suspense>
             </div>
         </nav>
     </>;
