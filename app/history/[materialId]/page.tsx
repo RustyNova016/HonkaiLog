@@ -1,6 +1,7 @@
 import {z} from "zod";
 import {getUserMaterialData, UserMaterialDataZod} from "./getUserMaterialData";
 import {CenterContent} from "@/components/Layouts/CenterContent";
+import {FadingIn} from "@/components/Animators/FadingIn";
 
 
 export default async function Page({params}: any) {
@@ -12,8 +13,9 @@ export default async function Page({params}: any) {
 
     return <>
         <CenterContent>
-            <div>Hello</div>
-
+            <FadingIn>
+                <div>Hello</div>
+            </FadingIn>
         </CenterContent>
     </>
 }

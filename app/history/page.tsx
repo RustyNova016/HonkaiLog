@@ -1,7 +1,10 @@
 import Link from "next/link";
+import {CenterContent} from "@/components/Layouts/CenterContent";
 
 export default function Page() {
     return <>
-        <Link href={"/history/1"}>Here's the page you're looking for</Link>
+        <CenterContent>
+            <Link href={"/history/1"}>Go to crystal page</Link>
+        </CenterContent>
     </>
 }

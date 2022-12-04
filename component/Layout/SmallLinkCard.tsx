@@ -1,3 +1,4 @@
+"use client"
 import Link from "next/link";
 import style from "./CSS/SmallLinkCard.module.scss";
 import {Col, Row} from "react-bootstrap";
@@ -9,7 +10,7 @@ export function SmallLinkCard(props: { title: string, description?: string, link
             <Row>
                 {props.imagelink ? <Col md={3}>
                     <div className={style.cardPicDiv}>
-                        <Image src={props.imagelink} width={150} height={150}/>
+                        <Image src={props.imagelink} width={150} height={150} alt={""}/>
                     </div>
                 </Col> : null}
                 <Col>

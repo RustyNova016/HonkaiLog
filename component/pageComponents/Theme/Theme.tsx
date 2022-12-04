@@ -1,3 +1,4 @@
+"use client";
 import style from './CSS/theme.module.scss';
 import {Row} from "react-bootstrap";
 
