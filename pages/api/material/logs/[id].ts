@@ -5,6 +5,8 @@ import {MaterialLogItemJSON} from "../../../../database/material_log";
 import {getAPIsideUser} from "../../../../database/user";
 import {HttpStatusCode} from "../../../../tools/API/HttpStatusCodes";
 import {getIDFromQuery} from "../../../../tools/API/getIDFromQuery";
+import {z} from "zod";
+import {MaterialLogFetchJSONZod} from "../../../../utils/Zod/Materials";
 
 /** Response from the API for any fetching operation */
 export interface MaterialLogsAPIFetchResponse extends MaterialDBResponse {
@@ -26,11 +28,23 @@ export default async function MaterialCountAPIHandler(req: NextApiRequest, res: 
         }
     });
 
+    console.log("Material: ", materialWithLogs)
+
+
     if (materialWithLogs === null) {
-        res.status(HttpStatusCode.Ok).json([]);
+        res.status(500)
         return;
     } else {
-        res.status(HttpStatusCode.Ok).json(materialWithLogs);
+        try {
+            const materialLogJSON: z.infer<typeof MaterialLogFetchJSONZod> = {
+                name: materialWithLogs.name
+            };
+
+            const parsedMaterialLogJSON = MaterialLogFetchJSONZod.parse(materialLogJSON)
+            res.status(HttpStatusCode.Ok).json(materialLogJSON);
+        } catch (e) {
+            res.status(500)
+        }
         return;
     }
 }

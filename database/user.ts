@@ -1,10 +1,11 @@
 import sequelize from "../tools/Database/SequelizeConnection";
 import {database} from "./database";
 import {SequelizeTableCommonDBResults} from "../tools/Types";
-import {DefaultUser} from "next-auth";
+import {DefaultUser, unstable_getServerSession} from "next-auth";
 import {NextApiRequest, NextApiResponse} from "next";
 import {getSession} from "next-auth/react";
 import {HttpStatusCode} from "../tools/API/HttpStatusCodes";
+import {authOptions} from "../pages/api/auth/[...nextauth]";
 
 export interface UserDBResponse extends SequelizeTableCommonDBResults {
     id: number;
@@ -21,7 +22,7 @@ export function associateUser(models: typeof database) {
 }
 
 export async function getAPIsideUser(req: NextApiRequest, res: NextApiResponse): Promise<SessionUser> {
-    const session = await getSession({req})
+    const session = await unstable_getServerSession(req, res, authOptions)
 
     if (session === null) {
         const error = new Error("No session found");
