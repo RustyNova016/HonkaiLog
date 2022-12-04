@@ -1,6 +1,6 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import {getSession} from "next-auth/react";
-import material_log from "../../../../database/material_log";
+import material_log from "../../../../database/material_logs";
 import {HttpStatusCode} from "../../../../tools/API/HttpStatusCodes";
 import {MaterialDBResponse} from "../../../../database/material";
 import {UserDBResponse} from "../../../../database/user";

@@ -1,5 +1,3 @@
-"use client";
-// TODO: Transform to server component
 import styles from './CSS/BackgroundPicture.module.scss'
 import React, {CSSProperties, PropsWithChildren, useState} from "react";
 
@@ -16,13 +14,14 @@ export const backgroundPics = [
     "dark_lord.png"
 ]
 
+
 /** Put a picture as page background
  *
  * @param props
  * @constructor
  */
 export function BackgroundPicture(props: BackgroundPictureProps) {
-    const [backgroundPicture, setBackgroundPicture] = useState(backgroundPics[Math.floor(Math.random() * backgroundPics.length)]);
+    const backgroundPicture = backgroundPics[Math.floor(Math.random() * backgroundPics.length)];
 
     return (
         <div style={{...props.style, backgroundImage: `url(/images/background/` + backgroundPicture + `)`}}

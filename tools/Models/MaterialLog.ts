@@ -3,7 +3,7 @@ import {MaterialQuantity} from "./MaterialQuantity";
 import axios from "axios";
 import {APIRoutes} from "../../data/API routes";
 import logger from "../Logger";
-import {MaterialLogItemJSON} from "../../database/material_log";
+import {MaterialLogItemJSON} from "../../database/material_logs";
 import {MaterialWithUserData} from "./MaterialWithUserData";
 import {MaterialQuantityWithUserData} from "./MaterialQuantityWithUserData";
 import {ITimeframe} from "../../context/TimeframeContext";

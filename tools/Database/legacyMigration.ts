@@ -1,5 +1,5 @@
 import {legacyData} from "./legacyData";
-import material_log from "../../database/material_log";
+import material_log from "../../database/material_logs";
 import axios from "axios";
 import {APIRoutes} from "../../data/API routes";
 

@@ -7,7 +7,7 @@ import {TimeRef} from "../../utils/TimeTools";
 import {Timeframe} from "../../utils/classes/Timeframe";
 import _ from "lodash";
 
-/** List of all the MaterialLogs of a material. It can be used to calculate data about the usage of the materials */
+/** List of all the Material_logs of a material. It can be used to calculate data about the usage of the materials */
 export class MaterialLogCollection {
     /** List of the logs contained in the collection */
     readonly logs: MaterialLog[] = [];

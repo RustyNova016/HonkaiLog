@@ -1,13 +1,13 @@
 /** Initialize the database models */
 import Material from "./material";
-import Material_log from "./material_log";
+import Material_logs from "./material_logs";
 import sequelize from "../tools/Database/SequelizeConnection";
 import {associateUser} from "./user";
 
 
 export const database = {
     Material,
-    Material_log,
+    Material_log: Material_logs,
     User: sequelize.models.user,
 }
 

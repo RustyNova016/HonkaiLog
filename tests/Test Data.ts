@@ -1,6 +1,6 @@
 // Generate a test IMaterialCountAPIResponse object
 import {MaterialLogsAPIFetchResponse} from "../pages/api/material/logs/[id]";
-import {MaterialLogItemJSON} from "../database/material_log";
+import {MaterialLogItemJSON} from "../database/material_logs";
 import {TimeTools} from "../utils/TimeTools";
 
 export const TestMaterialCountAPIResponse: MaterialLogsAPIFetchResponse = {

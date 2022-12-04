@@ -14,22 +14,22 @@ export interface MaterialLogItemJSON extends SequelizeTableCommonDBResults {
     userId: UserDBResponse["id"];
 }
 
-class Material_log extends DBModel<Material_log> {
+class Material_logs extends DBModel<Material_logs> {
     //declare count: number;
     //declare id: number;
     //declare log_date: string;
 
     static associate(models: typeof database) {
-        Material_log.belongsTo(models.Material, {
+        Material_logs.belongsTo(models.Material, {
             foreignKey: 'materialId',
         });
-        Material_log.belongsTo(models.User, {
+        Material_logs.belongsTo(models.User, {
             foreignKey: 'userId'
         });
     }
 }
 
-Material_log.init({
+Material_logs.init({
     id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -48,4 +48,4 @@ Material_log.init({
     sequelize,
 })
 
-export default Material_log;
+export default Material_logs;
