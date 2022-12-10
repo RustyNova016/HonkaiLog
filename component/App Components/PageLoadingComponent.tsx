@@ -1,6 +1,6 @@
 import {CenteredDiv} from "../Layout/CenteredDiv";
 import FramedDiv from "../Layout/FramedDiv";
-import styles from "./CSS/LoadingComponent.module.scss";
+import styles from "@/components/UI/Loading/LoadingComponent.module.scss";
 import {Fade} from "react-awesome-reveal";
 import {LoadingComponent, LoadingComponentProps} from "../UI Components/Loading Icons/LoadingComponent";
 

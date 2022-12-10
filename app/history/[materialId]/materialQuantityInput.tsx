@@ -19,7 +19,7 @@ export function MaterialQuantityInput(props: { defaultQuantity: number, material
         <form onSubmit={handleSubmit(OnSubmit)}>
             <label htmlFor="MaterialQuantityInput">Material Quantity</label>
             <div className="input-group mb-3">
-                <input type={"number"} className="form-control" {...register("quantity")} />
+                <input defaultValue={props.defaultQuantity} type={"number"} className="form-control" {...register("quantity")} />
                 <button className="btn btn-primary" type="submit" id="button-addon2">Save</button>
             </div>
         </form>
