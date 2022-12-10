@@ -2,7 +2,8 @@ import {MaterialAPIFetchResponse} from "../../pages/api/material/[id]";
 import {MaterialWithUserData} from "./MaterialWithUserData";
 import {LogSource} from "./MaterialQuantityLog";
 import {z} from "zod";
-import {MaterialDataZod, UserMaterialDataZod} from "@/lib/Validations/material";
+import {MaterialDataZod} from "@/lib/Zod/Validations/material";
+import {UserMaterialDataZod} from "@/lib/Zod/Validations/UserMaterial";
 
 /** Class of a material object. E.G. Gold, crystals, exp material, etc... */
 export class Material {

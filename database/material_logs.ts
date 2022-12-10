@@ -5,9 +5,29 @@ import database from "./database";
 import {SequelizeTableCommonDBResults} from "../tools/Types";
 import {UserDBResponse} from "./user";
 import {MaterialDBResponse} from "./material";
+import { Table, Column, Model, HasMany } from 'sequelize-typescript';
+
+/*@Table
+class Material_logs extends Model {
+  @Column
+  id: number;
+
+  @Column
+  quantity: number;
+
+  @Column
+  log_date: string;
+
+
+  @HasMany(() => database.Material)
+  hobbies: Mate[];
+}*/
+
+
+
 
 export interface MaterialLogItemJSON extends SequelizeTableCommonDBResults {
-    count: number;
+    quantity: number;
     id: number;
     log_date: string;
     materialId: MaterialDBResponse["id"];
@@ -15,13 +35,14 @@ export interface MaterialLogItemJSON extends SequelizeTableCommonDBResults {
 }
 
 class Material_logs extends DBModel<Material_logs> {
-    //declare count: number;
+    //declare quantity: number;
     //declare id: number;
     //declare log_date: string;
 
     static associate(models: typeof database) {
         Material_logs.belongsTo(models.Material, {
             foreignKey: 'materialId',
+
         });
         Material_logs.belongsTo(models.User, {
             foreignKey: 'userId'
@@ -36,7 +57,7 @@ Material_logs.init({
         primaryKey: true,
         autoIncrement: true
     },
-    count: {
+    quantity: {
         type: DataTypes.INTEGER,
         allowNull: false,
     },

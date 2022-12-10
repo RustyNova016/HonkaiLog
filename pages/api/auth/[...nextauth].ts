@@ -1,7 +1,9 @@
 import NextAuth, {NextAuthOptions} from "next-auth"
-import {AuthDBAdapter} from "@/lib/NextAuth/AuthDBAdapter";
 import {AuthCallbacks} from "@/lib/NextAuth/AuthCallbacks";
 import {AuthProviders} from "@/lib/NextAuth/AuthProviders";
+import {PrismaAdapter} from "@next-auth/prisma-adapter";
+import prisma from '@/lib/prismadb'
+
 
 export const authOptions: NextAuthOptions = {
     providers: AuthProviders,
@@ -13,6 +15,6 @@ export const authOptions: NextAuthOptions = {
     jwt: {
         secret: "test",
     },
-    adapter: AuthDBAdapter,
+    adapter: PrismaAdapter(prisma),
 };
 export default NextAuth(authOptions);

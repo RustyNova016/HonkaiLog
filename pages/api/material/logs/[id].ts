@@ -20,7 +20,7 @@ export default async function MaterialCountAPIHandler(req: NextApiRequest, res: 
             id: getIDFromQuery(req, res)
         },
         include: {
-            model: database.Material_log,
+            model: database.Material_logs,
             required: false,
             where: {
                 userId: await getAPIsideUser(req, res).then((user) => user.id)

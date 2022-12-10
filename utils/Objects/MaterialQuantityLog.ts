@@ -9,7 +9,7 @@ import {MaterialQuantityWithUserData} from "../../tools/Models/MaterialQuantityW
 import {ITimeframe} from "../../context/TimeframeContext";
 import {MaterialLogCollection} from "./MaterialLogCollection";
 import {z} from "zod";
-import {MaterialQuantityLogJSONZod, UserMaterialDataZod} from "@/lib/Validations/material";
+import {MaterialQuantityCreateReq, MaterialQuantityLogZod} from "@/lib/Zod/Validations/MaterialQuantityLog";
 
 export type LogSource =
     MaterialLogCollection
@@ -17,6 +17,17 @@ export type LogSource =
     | MaterialWithUserData
     | MaterialQuantityLog
     | MaterialQuantityLog[];
+
+export async function saveMaterialQuantityLogFromMatQuan(quantity: MaterialQuantity) {
+    return await axios.post(APIRoutes.materialLogs, {
+        count: quantity.quantity,
+        materialId: quantity.material.id
+    });
+}
+
+export async function saveMaterialQuantityLog(data: z.infer<typeof MaterialQuantityCreateReq>) {
+    return await axios.post(APIRoutes.materialLogs, MaterialQuantityCreateReq.parse(data));
+}
 
 /** Snapshot of a quantity at a given time */
 export class MaterialQuantityLog extends MaterialQuantity {
@@ -36,26 +47,23 @@ export class MaterialQuantityLog extends MaterialQuantity {
         this.userId = userId;
     }
 
-    static parse(data: z.infer<typeof MaterialQuantityLogJSONZod>, material: MaterialWithUserData){
-        return new MaterialQuantityLog(data.id, data.count, material, new Date(data.log_date), material.userID)
-    }
-
     /** Create a MaterialQuantityLog instance from a json object
      * @deprecated */
     static fromJSON(jsonLog: MaterialLogItemJSON, material: MaterialWithUserData): MaterialQuantityLog {
-        return new MaterialQuantityLog(jsonLog.id, jsonLog.count, material, new Date(jsonLog.log_date), jsonLog.userId);
+        return new MaterialQuantityLog(jsonLog.id, jsonLog.quantity, material, new Date(jsonLog.log_date), jsonLog.userId);
     }
 
     /** Create a log and save it to the database */
     static async makeLog(quantity: MaterialQuantity) {
-        const res = await axios.post(APIRoutes.materialLogs, {
-            count: quantity.quantity,
-            materialId: quantity.material.id
-        })
+        const res = await saveMaterialQuantityLogFromMatQuan(quantity)
 
         logger.info("Done sending!", "Material Log")
 
         // TODO: check for errors
+    }
+
+    static parse(data: z.infer<typeof MaterialQuantityLogZod>, material: MaterialWithUserData) {
+        return new MaterialQuantityLog(data.id, data.quantity, material, new Date(data.loggedAt), material.userID)
     }
 
     /** Convert anything log related to MaterialQuantityLog */

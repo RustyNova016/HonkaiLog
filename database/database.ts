@@ -5,9 +5,9 @@ import sequelize from "../tools/Database/SequelizeConnection";
 import {associateUser} from "./user";
 
 
-export const database = {
+const database = {
     Material,
-    Material_log: Material_logs,
+    Material_logs,
     User: sequelize.models.user,
 }
 

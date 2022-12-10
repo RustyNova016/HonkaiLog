@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "target": "es5",
+        "target": "es6",
         "lib": [
             "dom",
             "dom.iterable",
@@ -17,6 +17,8 @@
         "resolveJsonModule": true,
         "isolatedModules": true,
         "jsx": "preserve",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
         "incremental": true,
         "baseUrl": ".",
         "paths": {

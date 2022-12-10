@@ -1,26 +1,38 @@
 import {getServerUser} from "@/lib/NextAuth/GetSession";
-import database from "../../../database/database";
-import {UserMaterialDataZod} from "@/lib/Validations/material";
 import {MaterialWithUserData} from "@/utils/Objects/MaterialWithUserData";
+import {UserMaterialDataZod} from "@/lib/Zod/Validations/UserMaterial";
+import prisma from "@/lib/prismadb";
 
-export async function getUserMaterialData(idMaterial: string) {
+/** Request the database for a material with user info
+ *
+ * @param idMaterial
+ */
+export async function getUserMaterialData(idMaterial: number) {
     const user = await getServerUser();
-    const materialWithLogs = await database.Material.findOne({
+
+    const materialWithLogs = await prisma.material.findUniqueOrThrow({
         where: {
             id: idMaterial
         },
         include: {
-            model: database.Material_log,
-            required: false,
-            where: {
-                userId: user.id
+            materialQuantityLogs: {
+                where: {
+                    idUser: user.id
+                }
             }
         }
-    });
+    })
 
+    // Parse it with zod to be typesafe
     return UserMaterialDataZod.parse(materialWithLogs);
 }
 
-export async function getUserMaterial(idMaterial: string){
-    return MaterialWithUserData.parse(await getUserMaterialData(idMaterial), (await getServerUser()).id);
+/** Get the MaterialWithUserData object
+ *
+ * @param idMaterial
+ */
+export async function getMaterialWithUserData(idMaterial: number): Promise<MaterialWithUserData> {
+    const materialWithUserData = MaterialWithUserData.parse(await getUserMaterialData(idMaterial), (await getServerUser()).id);
+    console.info("Latest count in object: ", materialWithUserData.logCollection.getCurrentCount())
+    return materialWithUserData;
 }

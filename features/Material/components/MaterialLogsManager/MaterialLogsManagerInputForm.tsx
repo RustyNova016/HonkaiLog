@@ -1,3 +1,4 @@
+"use client"
 import {Button, Col, FormFloating, Row} from "react-bootstrap";
 import {useForm} from "react-hook-form";
 import {useState} from "react";

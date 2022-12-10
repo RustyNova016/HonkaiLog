@@ -1,0 +1,2 @@
+1:N, id, materialId, material, material_logs
+1:N, id, userId, user, material_logs

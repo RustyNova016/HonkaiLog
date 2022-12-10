@@ -1,23 +1,21 @@
 import {z} from "zod";
-import {getUserMaterial} from "./getUserMaterialData";
+import {getMaterialWithUserData} from "./getUserMaterialData";
 import {CenterContent} from "@/components/Layouts/CenterContent";
 import {FadingIn} from "@/components/Animators/FadingIn";
-import {PageTitle, SectionTitle} from "../../../component/pageComponents/Theme/Theme";
-import FramedDiv from "../../../component/Layout/FramedDiv";
+import {PageTitle} from "../../../component/pageComponents/Theme/Theme";
+import {MaterialGeneralSection} from "@/app/history/[materialId]/materialGeneralSection";
 
 export default async function Page({params}: any) {
     const parsedParams = z.object({materialId: z.string()}).parse(params)
-    const material = await getUserMaterial(parsedParams.materialId)
+    const material = await getMaterialWithUserData(Number(parsedParams.materialId));
 
     return <>
-        <FadingIn className={"size-inherit"}>
+        <FadingIn duration={500} className={"size-inherit"}>
             <CenterContent>
 
                 <PageTitle title={material.name + " history"}/>
 
-                <FramedDiv sides={true} style={{width: "75%"}}>
-                    <SectionTitle title={material.name + " logs"}/>
-                </FramedDiv>
+                <MaterialGeneralSection material={material}/>
 
             </CenterContent>
         </FadingIn>

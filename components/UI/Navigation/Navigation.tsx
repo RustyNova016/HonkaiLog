@@ -8,7 +8,7 @@ import {globalColors} from "../../../component/Styling/globalColors";
 
 export function Navigation() {
     return <>
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark" style={{height: "5vh"}}>
+        <nav className="navbar navbar-expand-lg navbar-dark bg-dark" style={{height: "5vh", minHeight: "50px"}}>
             <div className="container-fluid">
                 <div className={"flex flex-row"}>
                     <div className={styles.avatar} style={{backgroundColor: globalColors.navbar}}>

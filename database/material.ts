@@ -4,17 +4,19 @@ import sequelize from "../tools/Database/SequelizeConnection";
 import database from "./database";
 import {SequelizeTableCommonDBResults} from "../tools/Types";
 
+
 export interface MaterialDBResponse extends SequelizeTableCommonDBResults {
-    id: number;
+    id: string;
     name: string;
 }
 
 class Material extends DBModel<Material> {
     declare id: number;
+
     declare name: string;
 
     static associate(models: typeof database) {
-        Material.hasMany(models.Material_log, {
+        Material.hasMany(models.Material_logs, {
             foreignKey: 'materialId',
         });
     }

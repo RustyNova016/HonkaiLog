@@ -1,11 +1,8 @@
 import style from './CSS/theme.module.scss';
-import {Row} from "react-bootstrap";
 import classNames from "classnames";
 
 export function SectionTitle(props: { title: string }) {
-    return <div className={"row"}>
-        <h1 className={classNames(style.sectionTitle, "text-2xl")}>{props.title}</h1>
-    </div>
+    return <h1 className={classNames(style.sectionTitle, "text-4xl")}>{props.title}</h1>
 }
 
 export function PageTitle(props: { title: string }) {

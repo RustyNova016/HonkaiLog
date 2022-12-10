@@ -7,7 +7,7 @@ import {TimeRef} from "../TimeTools";
 import {Timeframe} from "../classes/Timeframe";
 import _ from "lodash";
 import {z} from "zod";
-import {MaterialQuantityLogJSONArrayZod} from "@/lib/Validations/material";
+import {MaterialQuantityLogArrayZod} from "@/lib/Zod/Validations/MaterialQuantityLog";
 
 /** List of all the Material_logs of a material. It can be used to calculate data about the usage of the materials */
 export class MaterialLogCollection {
@@ -22,7 +22,7 @@ export class MaterialLogCollection {
         this.insertLogs(logSource)
     }
 
-    static parse(data: z.infer<typeof MaterialQuantityLogJSONArrayZod>, material: MaterialWithUserData){
+    static parse(data: z.infer<typeof MaterialQuantityLogArrayZod>, material: MaterialWithUserData){
         const materialQuantityLogs = [];
 
         for (const materialQuantityLogJSON of data) {
@@ -144,7 +144,7 @@ export class MaterialLogCollection {
         return this.getLogsBetween(dateLowerBound, dateUpperBound).getAverageGain();
     }
 
-    /** Return the current count of material that the user has in game... Well, the count they last logged. */
+    /** Return the current count of material that the user last entered. */
     public getCurrentCount(): number {
         this.throwOnEmptyArray()
         return this.getLatestLog().quantity;
