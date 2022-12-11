@@ -3,9 +3,10 @@ import {getMaterialWithUserData} from "./getUserMaterialData";
 import {CenterContent} from "@/components/Layouts/CenterContent";
 import {FadingIn} from "@/components/Animators/FadingIn";
 import {PageTitle} from "../../../component/pageComponents/Theme/Theme";
-import {MaterialGeneralSection} from "@/app/history/[materialId]/materialGeneralSection";
-import {Suspense} from "react";
+import {lazy, Suspense} from "react";
 import {CenteredLoadingIcon} from "@/components/UI/Loading/LoadingIcon";
+import MaterialHistory from "@/app/history/[materialId]/materialHistory";
+import MaterialGeneralSection from "@/app/history/[materialId]/materialGeneralSection";
 
 export default async function Page({params}: any) {
     const parsedParams = z.object({materialId: z.string()}).parse(params)
@@ -14,13 +15,16 @@ export default async function Page({params}: any) {
     return <>
         <FadingIn duration={500} className={"size-inherit"}>
             <CenterContent>
-                <Suspense fallback={<CenteredLoadingIcon/>}>
-                    <PageTitle title={material.name + " history"}/>
-                </Suspense>
+                <PageTitle title={material.getName(false, true) + " history"}/>
 
                 <Suspense fallback={<CenteredLoadingIcon/>}>
                     <MaterialGeneralSection material={material}/>
                 </Suspense>
+
+                <Suspense fallback={<CenteredLoadingIcon/>}>
+                    <MaterialHistory material={material}/>
+                </Suspense>
+
             </CenterContent>
         </FadingIn>
     </>

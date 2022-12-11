@@ -1,3 +1,4 @@
+"use client";
 import {UlWithIcon} from "../../../../../component/Text/UlWithIcon";
 import {LiWithIcon} from "../../../../../component/Text/LiWithIconProps";
 import {LogsProp} from "./HistoryDataSummary";
