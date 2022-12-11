@@ -25,8 +25,8 @@ export function HistorySummary({materialJson, idUser}: { materialJson: UserMater
             </div>
 
             <div className={"flex flex-row justify-content-evenly"}>
-                <HistorySummaryNet material={material} logs={logs}/>
-                <HistorySummaryAverages material={material} logs={logs}/>
+                <HistorySummaryNet material={material} logs={logs} />
+                <HistorySummaryAverages material={material} logs={logs} period={{start: dayjs(), end: date}}/>
             </div>
         </FramedDiv>
     </>;

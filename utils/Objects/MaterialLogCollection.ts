@@ -8,7 +8,8 @@ import {Timeframe} from "../classes/Timeframe";
 import _ from "lodash";
 import {z} from "zod";
 import {MaterialQuantityLogArrayZod} from "@/lib/Zod/Validations/MaterialQuantityLog";
-import dayjs, {Dayjs} from "dayjs";
+import dayjs, {Dayjs, OpUnitType, QUnitType} from "dayjs";
+export type Period = { start: Dayjs, end: Dayjs };
 
 /** List of all the Material_logs of a material. It can be used to calculate data about the usage of the materials */
 export class MaterialLogCollection {
@@ -66,16 +67,23 @@ export class MaterialLogCollection {
     }
 
     /** Return the average delta of the period */
-    public calcAvgDelta(per: TimeRef = "days"): number {
-        return this.calcNetDelta() / this.getTimeElapsedToToday(per);
+    public calcAvgDelta(period?: Period, per: QUnitType | OpUnitType = "days"): number {
+        if (period === undefined) {return this.calcAvgGain(this.getCollectionPeriod(), per)}
+
+        const timeDuration = period.start.diff(period.end, per, true);
+        if (timeDuration === 0) return 0
+
+        return _.divide(this.calcNetDelta(), timeDuration);
     }
 
     /** Return the average gain of the period */
-    public calcAvgGain(per: TimeRef = "days"): number {
-        const timeElapsed = this.getTimeElapsed(per);
-        if (timeElapsed === 0) return 0
+    public calcAvgGain(period?: Period, per: QUnitType | OpUnitType = "days"): number {
+        if (period === undefined) {return this.calcAvgGain(this.getCollectionPeriod(), per)}
 
-        return _.divide(this.calcNetGain(), timeElapsed);
+        const timeDuration = period.start.diff(period.end, per, true);
+        if (timeDuration === 0) return 0
+
+        return _.divide(this.calcNetGain(), timeDuration);
     }
 
     /** Return the average gain of the period */
@@ -87,8 +95,13 @@ export class MaterialLogCollection {
     }
 
     /** Return the average loss of the period */
-    public calcAvgLoss(per: TimeRef = "days"): number {
-        return this.calcNetLoss() / this.getTimeElapsedToToday(per);
+    public calcAvgLoss(period?: Period, per: QUnitType | OpUnitType = "days"): number {
+        if (period === undefined) {return this.calcAvgGain(this.getCollectionPeriod(), per)}
+
+        const timeDuration = period.start.diff(period.end, per, true);
+        if (timeDuration === 0) return 0
+
+        return _.divide(this.calcNetLoss(), timeDuration);
     }
 
     /** Returns the gain or loss of the whole collection. */
@@ -164,6 +177,13 @@ export class MaterialLogCollection {
         const {dateLowerBound, dateUpperBound} = this.getTimeframe(dateFrom, dateTo);
 
         return this.getLogsBetween(dateLowerBound, dateUpperBound).getAverageGain();
+    }
+
+    public getCollectionPeriod() {
+        return {
+            start: this.getOldestLog().logDate,
+            end: this.getNewestLog().logDate
+        }
     }
 
     /** Return the current count of material that the user last entered. */

@@ -1,14 +1,18 @@
 import {MaterialWithUserData} from "@/utils/Objects/MaterialWithUserData";
 import _ from "lodash";
-import {MaterialLogCollection} from "@/utils/Objects/MaterialLogCollection";
+import {MaterialLogCollection, Period} from "@/utils/Objects/MaterialLogCollection";
 
-export function HistorySummaryAverages({
-                                           material,
-                                           logs
-                                       }: { material: MaterialWithUserData, logs: MaterialLogCollection }) {
-    const avgGain = _.round(logs.calcAvgGainUntilToday(), 2);
-    const avgLoss = _.round(logs.calcAvgLoss(), 2);
-    const avgDelta = _.round(logs.calcAvgDelta(), 2);
+interface HistorySummaryAveragesProps {
+    material: MaterialWithUserData;
+    logs: MaterialLogCollection;
+    period: Period;
+}
+
+export function HistorySummaryAverages(props: HistorySummaryAveragesProps) {
+    const {material, logs, period} = props
+    const avgGain = _.round(logs.calcAvgGain(period), 2);
+    const avgLoss = _.round(logs.calcAvgLoss(period), 2);
+    const avgDelta = _.round(logs.calcAvgDelta(period), 2);
 
     return <div>
         <h5>Averages:</h5>
