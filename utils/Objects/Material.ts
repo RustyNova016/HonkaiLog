@@ -36,9 +36,18 @@ export class Material {
         return new MaterialWithUserData(this.id, this.name, logSource)
     }
 
-    public getName(plural?: boolean, starcase?: boolean) {
+    /** Export the material to a plain object */
+    public export(): z.infer<typeof MaterialDataZod> {
+        return {
+            id: this.id,
+            name: this.name
+        }
+    }
+
+    /** Return the name of the material, alongside some optional formatting */
+    public getName(plural?: boolean, startcase?: boolean) {
         const name = plural ? this.name + "s" : this.name;
-        return starcase? _.startCase(name) : name
+        return startcase ? _.startCase(name) : name
     }
 
     /** Output true if the material have the same ID */

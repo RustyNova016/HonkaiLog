@@ -10,6 +10,7 @@ import {ITimeframe} from "../../context/TimeframeContext";
 import {MaterialLogCollection} from "./MaterialLogCollection";
 import {z} from "zod";
 import {MaterialQuantityCreateReq, MaterialQuantityLogZod} from "@/lib/Zod/Validations/MaterialQuantityLog";
+import dayjs from "dayjs";
 
 export type LogSource =
     MaterialLogCollection
@@ -62,6 +63,16 @@ export class MaterialQuantityLog extends MaterialQuantity {
         // TODO: check for errors
     }
 
+    public export(): z.infer<typeof MaterialQuantityLogZod> {
+        return {
+            id: this.id,
+            quantity: this.quantity,
+            loggedAt: this.logDate.toString(),
+            idMaterial: this.material.id,
+            idUser: this.userId
+        }
+    }
+
     static parse(data: z.infer<typeof MaterialQuantityLogZod>, material: MaterialWithUserData) {
         return new MaterialQuantityLog(data.id, data.quantity, material, new Date(data.loggedAt), material.userID)
     }
@@ -93,7 +104,7 @@ export class MaterialQuantityLog extends MaterialQuantity {
 
     /** Return the difference of the quantity of material between two logs sorted in chronological order*/
     public getChronologicalDifference(log: MaterialQuantityLog): number {
-        if (this.isOlderThan(log)) {
+        if (this.madeBefore(log)) {
             return log.quantity - this.quantity;
         } else {
             return this.quantity - log.quantity;
@@ -112,9 +123,13 @@ export class MaterialQuantityLog extends MaterialQuantity {
         return afterStart && beforeEnd;
     }
 
-    /** Return true if the log is older than the log compared against*/
-    public isOlderThan(log: MaterialQuantityLog): boolean {
-        return this.log_date.getTime() < log.log_date.getTime();
+    /** Return true if the log was made before the log compared against */
+    public madeBefore(log: MaterialQuantityLog): boolean {
+        return this.logDate.isBefore(log.logDate)
+    }
+
+    get logDate() {
+        return dayjs(this.log_date);
     }
 }
 

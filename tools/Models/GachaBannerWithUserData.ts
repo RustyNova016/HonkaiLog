@@ -21,7 +21,7 @@ export class GachaBannerWithUserData extends GachaBanner {
 
     /** How many pull the user can do with their funds */
     public calcNBPullsPossible(): number {
-        const userFunds = this.pullCost.material.logCollection.getLatestLog().quantity;
+        const userFunds = this.pullCost.material.logCollection.getNewestLog().quantity;
         const cost = this.pullCost.quantity;
         return _.floor(userFunds / cost, 0)
     }
