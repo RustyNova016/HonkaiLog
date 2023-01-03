@@ -9,6 +9,7 @@ import _ from "lodash";
 import {z} from "zod";
 import {MaterialQuantityLogArrayZod} from "@/lib/Zod/Validations/MaterialQuantityLog";
 import dayjs, {Dayjs, OpUnitType, QUnitType} from "dayjs";
+
 export type Period = { start: Dayjs, end: Dayjs };
 
 /** List of all the Material_logs of a material. It can be used to calculate data about the usage of the materials */
@@ -70,23 +71,25 @@ export class MaterialLogCollection {
     public calcAvgDelta(period?: Period, per: QUnitType | OpUnitType = "days"): number {
         if (period === undefined) {return this.calcAvgGain(this.getCollectionPeriod(), per)}
 
-        const timeDuration = period.start.diff(period.end, per, true);
+        const timeDuration = period.end.diff(period.start, per, true);
         if (timeDuration === 0) return 0
 
         return _.divide(this.calcNetDelta(), timeDuration);
     }
 
+
     /** Return the average gain of the period */
     public calcAvgGain(period?: Period, per: QUnitType | OpUnitType = "days"): number {
         if (period === undefined) {return this.calcAvgGain(this.getCollectionPeriod(), per)}
 
-        const timeDuration = period.start.diff(period.end, per, true);
+        const timeDuration = period.end.diff(period.start, per, true);
         if (timeDuration === 0) return 0
 
         return _.divide(this.calcNetGain(), timeDuration);
     }
 
-    /** Return the average gain of the period */
+    /** Return the average gain of the period
+     * @deprecated*/
     public calcAvgGainUntilToday(per: TimeRef = "days"): number {
         const timeElapsed = this.getTimeElapsedToToday(per)
         if (timeElapsed === 0) return 0
@@ -98,7 +101,7 @@ export class MaterialLogCollection {
     public calcAvgLoss(period?: Period, per: QUnitType | OpUnitType = "days"): number {
         if (period === undefined) {return this.calcAvgGain(this.getCollectionPeriod(), per)}
 
-        const timeDuration = period.start.diff(period.end, per, true);
+        const timeDuration = period.end.diff(period.start, per, true);
         if (timeDuration === 0) return 0
 
         return _.divide(this.calcNetLoss(), timeDuration);
@@ -145,11 +148,6 @@ export class MaterialLogCollection {
         return totalSpent;
     }
 
-    /** Return true if the collection is empty */
-    public empty(): boolean {
-        return this.logs.length === 0;
-    }
-
     /** Export the material to a plain object */
     public export(): z.infer<typeof MaterialQuantityLogArrayZod> {
         const logs = []
@@ -184,6 +182,11 @@ export class MaterialLogCollection {
             start: this.getOldestLog().logDate,
             end: this.getNewestLog().logDate
         }
+    }
+
+    public getCollectionPeriodDuration(per: QUnitType | OpUnitType = "days") {
+        const period = this.getCollectionPeriod();
+        return period.end.diff(period.start, per, true);
     }
 
     /** Return the current count of material that the user last entered. */
@@ -270,6 +273,11 @@ export class MaterialLogCollection {
         }
     }
 
+    /** Return true if the collection is isEmpty */
+    public isEmpty(): boolean {
+        return this.logs.length === 0;
+    }
+
     /** Create a log and save it to the database */
     public async makeLog(quantity: number) {
         await MaterialQuantityLog.makeLog(new MaterialQuantity(this.material, quantity))
@@ -290,8 +298,12 @@ export class MaterialLogCollection {
         const filteredLogs = this.filter((value) => {return value.logDate.isBefore(date)});
 
         if (keepFirstLogBeforeDate) {
-            const lastLog = this.removeLogsOlderThan(date).getOldestLog()
-            filteredLogs.push(lastLog);
+            const newLogs = this.removeLogsOlderThan(date);
+
+            if (!newLogs.isEmpty()) {
+                const lastLog = newLogs.getOldestLog()
+                filteredLogs.push(lastLog);
+            }
         }
 
         return filteredLogs
@@ -306,8 +318,12 @@ export class MaterialLogCollection {
         console.log(filteredLogs)
 
         if (keepLastLogBeforeDate) {
-            const lastLog = this.removeLogsNewerThan(date).getNewestLog()
-            filteredLogs.push(lastLog);
+            const oldLogs = this.removeLogsNewerThan(date);
+
+            if (!oldLogs.isEmpty()) {
+                const lastLog = oldLogs.getNewestLog()
+                filteredLogs.push(lastLog);
+            }
         }
 
         return filteredLogs
@@ -346,10 +362,10 @@ export class MaterialLogCollection {
         }
     }
 
-    /** Throw an error if logs is empty. Useful to stop calculations without data */
+    /** Throw an error if logs is isEmpty. Useful to stop calculations without data */
     private throwOnEmptyArray() {
-        if (this.empty()) {
-            // This bitch empty! YEET!
+        if (this.isEmpty()) {
+            // This bitch isEmpty! YEET!
             throw new Error("No logs are in the array.")
         }
     }

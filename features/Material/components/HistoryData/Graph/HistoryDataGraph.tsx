@@ -13,7 +13,7 @@ export interface HistoryDataGraphProps extends LogsProp {
 }
 
 export function HistoryDataGraph(props: HistoryDataGraphProps) {
-    if (props.logs.empty()) return <NoDataErrorComponent/>
+    if (props.logs.isEmpty()) return <NoDataErrorComponent/>
     const [dataSerie, setDataSerie] = useState<Serie[]>([MaterialHistoryGraphData.generateMaterialHistoryGraphData(props.logs, props.materialGraphType)]);
     const [loading, setLoading] = useState(false);
 

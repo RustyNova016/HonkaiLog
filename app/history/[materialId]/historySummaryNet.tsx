@@ -6,18 +6,18 @@ export function HistorySummaryNet({material, logs}: { material: MaterialWithUser
     const netLoss = logs.calcNetLoss();
     const netDelta = logs.calcNetDelta();
 
-    return <div>
-        <h5>Net:</h5>
-        <div>
-            <p>
+    return <div className={"flex flex-col justify-content-center align-items-center"} style={{minWidth: "50%"}}>
+        <h3 className={"text-lg-center mb-4"} style={{fontSize: "1.5em"}}><u>Net gains:</u></h3>
+        <div style={{width: "fit-content"}}>
+            <p style={{width: "fit-content"}}>
                 <i className={"bi bi-plus-square px-2"} style={{color: "var(--bs-success)"}}/>
                 You gained {netGain} {material.getName(netGain > 1)}
             </p>
-            <p>
+            <p style={{width: "fit-content"}}>
                 <i className={"bi bi-dash-square px-2"} style={{color: "var(--bs-danger)"}}/>
                 You spent {netLoss} {material.getName(netLoss > 1)}
             </p>
-            <p>
+            <p style={{width: "fit-content"}}>
                 {
                     netDelta < 0 ?
                         <>

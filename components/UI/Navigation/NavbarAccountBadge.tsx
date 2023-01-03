@@ -2,7 +2,7 @@
 import styles from "../../../component/Layout/CSS/Navigation.module.scss";
 import {signOut} from "next-auth/react";
 import {Avatar} from "primereact/avatar";
-import {globalColors} from "../../../component/Styling/globalColors";
+import {GLOBAL_COLORS} from "../../../component/Styling/GLOBAL_COLORS";
 import classNames from "classnames";
 
 export interface NavbarAccountBadgeProps {
@@ -15,7 +15,7 @@ export function NavbarAccountBadge(props: NavbarAccountBadgeProps) {
         <div className={"mx-1"}>
             {props.image ? (
                 <span
-                    style={{backgroundColor: globalColors.navbar, backgroundImage: `url('${props.image}')`}}
+                    style={{backgroundColor: GLOBAL_COLORS.navbar, backgroundImage: `url('${props.image}')`}}
                     className={styles.avatar}
                 />
             ) : (

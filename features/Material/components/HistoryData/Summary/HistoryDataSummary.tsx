@@ -10,7 +10,7 @@ export interface LogsProp {
 }
 
 export function HistoryDataSummary({logs}: LogsProp) {
-    if (logs.empty()) return <NoDataErrorComponent/>
+    if (logs.isEmpty()) return <NoDataErrorComponent/>
 
     return <>
         <Row>

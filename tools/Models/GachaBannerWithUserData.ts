@@ -2,8 +2,10 @@ import {GachaBanner} from "./GachaBanner";
 import {MaterialQuantityWithUserData} from "./MaterialQuantityWithUserData";
 import _ from "lodash";
 import {MaterialQuantity} from "./MaterialQuantity";
-import {TimeRef} from "../../utils/TimeTools";
+import {TimeRef} from "@/utils/TimeTools";
 import {LogSource} from "@/utils/Objects/MaterialQuantityLog";
+
+
 
 /** A GachaBanner with access to the logs of the user for analytics */
 export class GachaBannerWithUserData extends GachaBanner {
@@ -21,9 +23,13 @@ export class GachaBannerWithUserData extends GachaBanner {
 
     /** How many pull the user can do with their funds */
     public calcNBPullsPossible(): number {
-        const userFunds = this.pullCost.material.logCollection.getNewestLog().quantity;
+        const userFunds = this.pullCost.material.getLogs().getNewestLog().quantity;
         const cost = this.pullCost.quantity;
         return _.floor(userFunds / cost, 0)
+    }
+
+    public calcTotalPulls(): number {
+        return this.calcNBPullsPossible() + this.pullCount
     }
 
     /** Return the number of pulls left to complete the banner */
@@ -33,7 +39,7 @@ export class GachaBannerWithUserData extends GachaBanner {
 
     /** Percentage of the banner capable to be done */
     public calcPercentageAchievable(): number {
-        return 100 * (this.calcNBPullsPossible() / this.calcNBPullsForBannerCompletion())
+        return _.round(100 * (this.calcNBPullsPossible() / this.calcNBPullsForBannerCompletion()), 2)
     }
 
     /** The remaining cost for completing the banner */

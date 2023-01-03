@@ -10,22 +10,25 @@ interface HistorySummaryAveragesProps {
 
 export function HistorySummaryAverages(props: HistorySummaryAveragesProps) {
     const {material, logs, period} = props
-    const avgGain = _.round(logs.calcAvgGain(period), 2);
-    const avgLoss = _.round(logs.calcAvgLoss(period), 2);
-    const avgDelta = _.round(logs.calcAvgDelta(period), 2);
+    const avgGain = _.round(logs.calcAvgGain(), 2);
+    const avgLoss = _.round(logs.calcAvgLoss(), 2);
+    const avgDelta = _.round(logs.calcAvgDelta(), 2);
 
-    return <div>
-        <h5>Averages:</h5>
+    return <div className={"flex flex-col justify-content-center align-items-center"} style={{minWidth: "50%"}}>
+        <h3></h3>
+        <h3 className={"text-lg-center mb-4"} style={{fontSize: "1.5em"}}>
+            <u>Average gains:</u>
+        </h3>
         <div>
-            <p>
+            <p style={{width: "fit-content"}}>
                 <i className={"bi bi-plus-square px-2"} style={{color: 'var(--bs-success)'}}/>
                 You gained an average of {avgGain} {material.getName(avgGain > 1)} per day
             </p>
-            <p>
+            <p style={{width: "fit-content"}}>
                 <i className={"bi bi-dash-square px-2"} style={{color: 'var(--bs-danger)'}}/>
                 You spent an average of {avgLoss} {material.name} per day
             </p>
-            <p>
+            <p style={{width: "fit-content"}}>
                 {
                     avgDelta < 0 ?
                         <>

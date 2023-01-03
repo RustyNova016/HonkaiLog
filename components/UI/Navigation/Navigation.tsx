@@ -4,14 +4,14 @@ import Link from "next/link";
 import {ROUTESOLD} from "../../../utils/globals/ROUTESOLD";
 import styles from "../../../component/Layout/CSS/Navigation.module.scss";
 import Image from "next/image";
-import {globalColors} from "../../../component/Styling/globalColors";
+import {GLOBAL_COLORS} from "../../../component/Styling/GLOBAL_COLORS";
 
 export function Navigation() {
     return <>
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark" style={{height: "5vh", minHeight: "50px"}}>
             <div className="container-fluid">
                 <div className={"flex flex-row"}>
-                    <div className={styles.avatar} style={{backgroundColor: globalColors.navbar}}>
+                    <div className={styles.avatar} style={{backgroundColor: GLOBAL_COLORS.navbar}}>
                         <Image src={"/images/icons/HonkaiCube.png"} alt={""} height={100} width={100}/>
                     </div>
                     <div className={"flex align-middle navbar-brand text-center mx-2"}>

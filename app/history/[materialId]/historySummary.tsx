@@ -7,13 +7,22 @@ import {useState} from "react";
 import {TimeframeSelection} from "@/app/history/[materialId]/timeframeSelection";
 import {HistorySummaryNet} from "@/app/history/[materialId]/historySummaryNet";
 import {HistorySummaryAverages} from "@/app/history/[materialId]/historySummaryAverages";
-import dayjs from "dayjs";
+import dayjs, {Dayjs} from "dayjs";
+import {Col, Row} from "@/lib/Bootstrap/Layout";
+
 
 export function HistorySummary({materialJson, idUser}: { materialJson: UserMaterialData, idUser: string }) {
     const material = MaterialWithUserData.parse(materialJson, idUser)
     const [nbrDaysBack, setNbrDaysBack] = useState(1);
 
-    const date = dayjs().add(-nbrDaysBack, "day")
+    let date: Dayjs;
+    if (nbrDaysBack === 99999) {
+        date = dayjs(0)
+    } else {
+        date = dayjs().add(-nbrDaysBack, "day")
+    }
+
+    console.log("Setting logs from ", date.toString())
     const logs = material.getLogs().removeLogsOlderThan(date, true)
 
     return <>
@@ -23,11 +32,16 @@ export function HistorySummary({materialJson, idUser}: { materialJson: UserMater
 
                 <TimeframeSelection nbrDaysBack={nbrDaysBack} setNbrDaysBack={setNbrDaysBack}/>
             </div>
+            <span></span>
 
-            <div className={"flex flex-row justify-content-evenly"}>
-                <HistorySummaryNet material={material} logs={logs} />
-                <HistorySummaryAverages material={material} logs={logs} period={{start: dayjs(), end: date}}/>
-            </div>
+            <Row>
+                <Col>
+                    <HistorySummaryNet material={material} logs={logs}/>
+                </Col>
+                <Col>
+                    <HistorySummaryAverages material={material} logs={logs} period={{start: dayjs(), end: date}}/>
+                </Col>
+            </Row>
         </FramedDiv>
     </>;
 }
