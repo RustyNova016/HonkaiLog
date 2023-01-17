@@ -5,11 +5,11 @@ import {MaterialLogsManagerInputForm} from "./MaterialLogsManagerInputForm";
 import {useMaterialWithLogsFromRouter} from "../../hooks/useMaterialWithLogsFromRouter";
 import {LoadingComponent} from "../../../../component/UI Components/Loading Icons/LoadingComponent";
 
-/** Component that allow the user to manage and log the material count */
+/** Component that allow the user to manage and log the logs count */
 export function MaterialLogsManager() {
-    // Get the material
+    // Get the logs
     const material = useMaterialWithLogsFromRouter();
-    if (material === undefined) return <LoadingComponent subtext={"Preparing material data..."}/>
+    if (material === undefined) return <LoadingComponent subtext={"Preparing logs data..."}/>
 
     return <>
         <FramedDiv sides={true}>

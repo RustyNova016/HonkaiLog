@@ -1413,6 +1413,11 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
+"@types/canvasjs@^1.9.7":
+  version "1.9.7"
+  resolved "https://registry.yarnpkg.com/@types/canvasjs/-/canvasjs-1.9.7.tgz#bbb3042cea23c577a4d5f72e97f00619ac5b7d22"
+  integrity sha512-/CfA3VtyTYVXDHvMy8F5hsvRUTiBX7TGe+nAHNONoJlNHbqakeIzxxt1MSNH619s8Oiu4CcFBMmJVg50El/0lw==
+
 "@types/cross-spawn@6.0.2":
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/@types/cross-spawn/-/cross-spawn-6.0.2.tgz#168309de311cd30a2b8ae720de6475c2fbf33ac7"
@@ -2174,6 +2179,11 @@ caniuse-lite@^1.0.30001400, caniuse-lite@^1.0.30001426:
   version "1.0.30001436"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001436.tgz#22d7cbdbbbb60cdc4ca1030ccd6dea9f5de4848b"
   integrity sha512-ZmWkKsnC2ifEPoWUvSAIGyOYwT+keAaaWPHiQ9DfMqS1t6tfuyFYoWR78TeZtznkEQ64+vGXH9cZrElwR2Mrxg==
+
+canvasjs@^1.8.3:
+  version "1.8.3"
+  resolved "https://registry.yarnpkg.com/canvasjs/-/canvasjs-1.8.3.tgz#181a526bbce09c1909431d9471f808494fe970cf"
+  integrity sha512-60eUT0VjqRgYqdIQcOkXg0Zptfbl4HefA/O51YEf1m/P0uXvE3icI/1KPrXpY9aVxn8gG/BB8DzVoTGCcyBnYg==
 
 chalk@4.1.2, chalk@^4.0.0, chalk@^4.1.0:
   version "4.1.2"
@@ -4538,6 +4548,11 @@ jose@^4.1.4, jose@^4.9.3:
   resolved "https://registry.yarnpkg.com/jose/-/jose-4.11.1.tgz#8f7443549befe5bddcf4bae664a9cbc1a62da4fa"
   integrity sha512-YRv4Tk/Wlug8qicwqFNFVEZSdbROCHRAC6qu/i0dyNKr5JQdoa2pIGoS04lLO/jXQX7Z9omoNewYIVIxqZBd9Q==
 
+jquery@^3.6.3:
+  version "3.6.3"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.6.3.tgz#23ed2ffed8a19e048814f13391a19afcdba160e6"
+  integrity sha512-bZ5Sy3YzKo9Fyc8wH2iIQK4JImJ6R0GWI9kL1/k7Z91ZBNgkRXE6U0JfHIizZbort8ZunhSI3jw9I6253ahKfg==
+
 js-beautify@^1.14.5:
   version "1.14.7"
   resolved "https://registry.yarnpkg.com/js-beautify/-/js-beautify-1.14.7.tgz#9206296de33f86dc106d3e50a35b7cf8729703b2"
@@ -5027,6 +5042,11 @@ next@^13.0.7-canary.1:
     "@next/swc-win32-arm64-msvc" "13.0.7-canary.1"
     "@next/swc-win32-ia32-msvc" "13.0.7-canary.1"
     "@next/swc-win32-x64-msvc" "13.0.7-canary.1"
+
+nextjs-redirect@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/nextjs-redirect/-/nextjs-redirect-6.0.1.tgz#29416d11f130511e12dbe93ca0c4fa0778bfbae6"
+  integrity sha512-SScRdqhGwbD9HbATM+6KMoRyW5QdsPtBBknPPUBxeItnv3wOrhII4pW+0TrvglWNxeRUwI2GsnrDHCV/6juBtQ==
 
 node-fetch@2.6.7:
   version "2.6.7"

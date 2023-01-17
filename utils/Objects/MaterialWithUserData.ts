@@ -5,7 +5,7 @@ import {MaterialQuantityLogArrayZod} from "@/lib/Zod/Validations/MaterialQuantit
 import {UserMaterialData} from "@/lib/Zod/Validations/UserMaterial";
 
 export class MaterialWithUserData extends Material {
-    /** The collection holding all the logs made by the user for the material */
+    /** The collection holding all the logs made by the user for the logs */
     public logCollection: MaterialLogCollection
 
     /** Id of the user the data is from */
@@ -21,7 +21,7 @@ export class MaterialWithUserData extends Material {
         return new MaterialWithUserData(data.id, data.name, data.materialQuantityLogs, userId)
     }
 
-    /** Export the material to a plain object */
+    /** Export the logs to a plain object */
     public export(): UserMaterialData {
         return {
             id: this.id,

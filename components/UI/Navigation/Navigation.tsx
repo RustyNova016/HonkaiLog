@@ -21,8 +21,13 @@ export function Navigation() {
                         </Link>
                     </div>
 
-                </div>
+                    <div className={"nav-item navbar-nav me-auto mb-2 mb-lg-0 text-l"} style={{alignItems: "center"}}>
+                        <Link className={"nav-link"} href={"/history"}><span>Material History</span></Link>
+                        <Link className={"nav-link"} href={"/"}><span>Gacha</span></Link>
+                        <Link className={"nav-link"} href={"/"}><span>Battle Pass</span></Link>
+                    </div>
 
+                </div>
                 <Suspense fallback={<p>Loading User...</p>}>
                     <div className={"inline-flex items-center"}>
                         <NavigationUserInfo/>

@@ -18,7 +18,7 @@ export default async function Page() {
     return <>
         <CenterContent>
             <>
-                <div style={{display: "flex", flexWrap: "wrap", flexDirection: "row", justifyContent: "space-between", width: "80%"}}>
+                <div style={{display: "flex", flexWrap: "wrap", flexDirection: "row", justifyContent: "space-around", width: "75%"}}>
                     {
                     materials.map((value, index) => {
                         return <FramedDiv sides={true} style={{height: "25%", width: "25%"}}>

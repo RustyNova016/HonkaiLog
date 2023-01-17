@@ -4,9 +4,9 @@ import {useMaterialWithLogsFromRouter} from "../../../features/Material/hooks/us
 import {LoadingComponent} from "../../UI Components/Loading Icons/LoadingComponent";
 
 export function MaterialLogPointToolTip(props: PointTooltipProps) {
-    // Get the material
+    // Get the logs
     const material = useMaterialWithLogsFromRouter();
-    if (material === undefined) return <LoadingComponent subtext={"Preparing material data..."}/>
+    if (material === undefined) return <LoadingComponent subtext={"Preparing logs data..."}/>
 
     const date = new Date(props.point.data.x);
 

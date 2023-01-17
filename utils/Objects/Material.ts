@@ -5,12 +5,12 @@ import {z} from "zod";
 import {MaterialDataZod} from "@/lib/Zod/Validations/material";
 import _ from "lodash";
 
-/** Class of a material object. E.G. Gold, crystals, exp material, etc... */
+/** Class of a logs object. E.G. Gold, crystals, exp logs, etc... */
 export class Material {
-    /** ID of the material in the database */
+    /** ID of the logs in the database */
     public id: number;
 
-    /** Name of the material */
+    /** Name of the logs */
     public name: string;
 
     constructor(id: number, name: string) {
@@ -29,14 +29,14 @@ export class Material {
         return new Material(data.id, data.name);
     }
 
-    /** Create a new instance of the material with userdata
+    /** Create a new instance of the logs with userdata
      * @deprecated
      */
     public addUserData(logSource: LogSource): MaterialWithUserData {
         return new MaterialWithUserData(this.id, this.name, logSource)
     }
 
-    /** Export the material to a plain object */
+    /** Export the logs to a plain object */
     public export(): z.infer<typeof MaterialDataZod> {
         return {
             id: this.id,
@@ -44,13 +44,13 @@ export class Material {
         }
     }
 
-    /** Return the name of the material, alongside some optional formatting */
+    /** Return the name of the logs, alongside some optional formatting */
     public getName(plural?: boolean, startcase?: boolean) {
         const name = plural ? this.name + "s" : this.name;
         return startcase ? _.startCase(name) : name
     }
 
-    /** Output true if the material have the same ID */
+    /** Output true if the logs have the same ID */
     public isSameMaterial(mat: Material): boolean {
         // TODO: Deep comparison
         return this.id === mat.id;

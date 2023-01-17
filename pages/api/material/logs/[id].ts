@@ -13,7 +13,7 @@ export interface MaterialLogsAPIFetchResponse extends MaterialDBResponse {
     Material_logs: MaterialLogItemJSON[];
 }
 
-/** Return the logs for material with the given id */
+/** Return the logs for logs with the given id */
 export default async function MaterialCountAPIHandler(req: NextApiRequest, res: NextApiResponse) {
     const materialWithLogs = await database.Material.findOne({
         where: {

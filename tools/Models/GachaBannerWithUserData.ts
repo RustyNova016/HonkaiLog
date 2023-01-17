@@ -47,7 +47,7 @@ export class GachaBannerWithUserData extends GachaBanner {
         return new MaterialQuantity(this.pullCost.material, this.pullCost.quantity * this.calcNBPullsRemainingForBannerCompletion())
     }
 
-    /** Return the time needed to get enough material according to the current average gain */
+    /** Return the time needed to get enough logs according to the current average gain */
     public calcTimeUntilEnoughFunds(timeValue: TimeRef = "days"): number {
         const remainingCostForCompletion = this.calcRemainingCostForCompletion()
         const remainingCostForCompletionWithUserData = MaterialQuantityWithUserData.convertMaterialQuantity(remainingCostForCompletion, this.pullCost);

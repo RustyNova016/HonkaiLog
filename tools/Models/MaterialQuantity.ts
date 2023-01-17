@@ -2,10 +2,10 @@ import {Material} from "@/utils/Objects/Material";
 
 /** A class that represent a quantity of materials. Like a stack of items */
 export class MaterialQuantity {
-    /** The material concerned */
+    /** The logs concerned */
     readonly material: Material;
 
-    /** The quantity of the material */
+    /** The quantity of the logs */
     readonly quantity: number;
 
     constructor(material: Material, quantity: number) {

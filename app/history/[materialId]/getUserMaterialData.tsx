@@ -3,7 +3,7 @@ import {MaterialWithUserData} from "@/utils/Objects/MaterialWithUserData";
 import {UserMaterialDataZod} from "@/lib/Zod/Validations/UserMaterial";
 import prisma from "@/lib/prismadb";
 
-/** Request the database for a material with user info
+/** Request the database for a logs with user info
  *
  * @param idMaterial
  */
@@ -33,6 +33,6 @@ export async function getUserMaterialData(idMaterial: number) {
  */
 export async function getMaterialWithUserData(idMaterial: number): Promise<MaterialWithUserData> {
     const materialWithUserData = MaterialWithUserData.parse(await getUserMaterialData(idMaterial), (await getServerUser()).id);
-    console.info("Latest count in object: ", materialWithUserData.logCollection.getCurrentCount())
+    //console.info("Latest count in object: ", materialWithUserData.logCollection.getCurrentCount())
     return materialWithUserData;
 }

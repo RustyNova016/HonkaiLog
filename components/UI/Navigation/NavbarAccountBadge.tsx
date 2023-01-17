@@ -23,7 +23,7 @@ export function NavbarAccountBadge(props: NavbarAccountBadgeProps) {
             )}
         </div>
         <span className={classNames(styles.signedInText, "mx-1")}>
-                <small>Signed in as</small>
+                <small></small>
                 <br/>
                 <strong className={"mx-1"}>{props.name}</strong>
                 </span>

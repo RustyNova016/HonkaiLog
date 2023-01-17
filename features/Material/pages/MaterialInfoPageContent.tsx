@@ -10,9 +10,9 @@ import {LoadingComponent} from "../../../component/UI Components/Loading Icons/L
 
 
 export function MaterialInfoPageContent() {
-    // Get the material
+    // Get the logs
     const material = useMaterialWithLogsFromRouter();
-    if (material === undefined) return <LoadingComponent subtext={"Preparing material data..."}/>
+    if (material === undefined) return <LoadingComponent subtext={"Preparing logs data..."}/>
 
     return <Container>
         <PageTitle title={material.name + " history"}></PageTitle>

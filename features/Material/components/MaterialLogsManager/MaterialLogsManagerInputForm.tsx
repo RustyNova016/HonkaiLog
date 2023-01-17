@@ -18,15 +18,15 @@ export function MaterialLogsManagerInputForm(props: MaterialLogsManagerInputForm
     const [loading, setLoading] = useState(false);
     const {mutate} = useSWRConfig()
 
-    // Get the material
+    // Get the logs
     const material = useMaterialWithLogsFromRouter();
-    if (material === undefined) return <LoadingComponent subtext={"Preparing material data..."}/>
+    if (material === undefined) return <LoadingComponent subtext={"Preparing logs data..."}/>
 
     // Handle form
     const {register, handleSubmit, watch, formState: {errors}} = useForm<IMaterialLogInputForm>();
 
     const onSubmit = async (data: IMaterialLogInputForm) => {
-        logger.info("User submitting log for material " + material.name + " with value " + data.count, "MaterialLogInput")
+        logger.info("User submitting log for logs " + material.name + " with value " + data.count, "MaterialLogInput")
 
         setLoading(true)
         await material.logCollection.makeLog(data.count)
