@@ -26,7 +26,7 @@ export class MaterialCollection {
         }
 
         // If it isn't in the collection, create the object
-        logging.info("Creating material id: " + id, "MaterialCollection")
+        logging.info("Creating logs id: " + id, "MaterialCollection")
         const material = await Material.getMaterialFromId(id);
 
 

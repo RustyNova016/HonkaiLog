@@ -7,7 +7,7 @@ import {MaterialCollection} from "../tools/Models/MaterialCollection";
 import {MaterialQuantity} from "../tools/Models/MaterialQuantity";
 import {APIRoutes} from "../data/API routes";
 
-APIRoutes.material = "http://localhost:3000/api/material/"
+APIRoutes.logs = "http://localhost:3000/api/material/"
 APIRoutes.materialLogs = "http://localhost:3000/api/material/logs/"
 
 async function getDormCard() {

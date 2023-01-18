@@ -5,9 +5,9 @@ import {useMaterialWithLogsFromRouter} from "../../../features/Material/hooks/us
 import {LoadingComponent} from "../../UI Components/Loading Icons/LoadingComponent";
 
 export function TimeFrameSelectButton(props: { dayValue: number | null, label: string, action: Dispatch<SetStateAction<Date>> }) {
-    // Get the material
+    // Get the logs
     const material = useMaterialWithLogsFromRouter();
-    if (material === undefined) return <LoadingComponent subtext={"Preparing material data..."}/>
+    if (material === undefined) return <LoadingComponent subtext={"Preparing logs data..."}/>
 
     const onClick = function (event: any) {
         if (props.dayValue !== null) {

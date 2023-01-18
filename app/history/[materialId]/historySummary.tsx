@@ -9,7 +9,8 @@ import {HistorySummaryNet} from "@/app/history/[materialId]/historySummaryNet";
 import {HistorySummaryAverages} from "@/app/history/[materialId]/historySummaryAverages";
 import dayjs, {Dayjs} from "dayjs";
 import {Col, Row} from "@/lib/Bootstrap/Layout";
-
+import {MaterialGrapher} from "@/utils/Objects/MaterialGrapher";
+import {MaterialSummaryGraph} from "@/app/history/[materialId]/materialSummaryGraph";
 
 export function HistorySummary({materialJson, idUser}: { materialJson: UserMaterialData, idUser: string }) {
     const material = MaterialWithUserData.parse(materialJson, idUser)
@@ -24,6 +25,7 @@ export function HistorySummary({materialJson, idUser}: { materialJson: UserMater
 
     console.log("Setting logs from ", date.toString())
     const logs = material.getLogs().removeLogsOlderThan(date, true)
+    const grapher = new MaterialGrapher(logs)
 
     return <>
         <FramedDiv sides={true} style={{width: "75%"}}>
@@ -32,7 +34,6 @@ export function HistorySummary({materialJson, idUser}: { materialJson: UserMater
 
                 <TimeframeSelection nbrDaysBack={nbrDaysBack} setNbrDaysBack={setNbrDaysBack}/>
             </div>
-            <span></span>
 
             <Row>
                 <Col>
@@ -42,6 +43,8 @@ export function HistorySummary({materialJson, idUser}: { materialJson: UserMater
                     <HistorySummaryAverages material={material} logs={logs} period={{start: dayjs(), end: date}}/>
                 </Col>
             </Row>
+
+            <MaterialSummaryGraph logs={logs}/>
         </FramedDiv>
     </>;
 }

@@ -12,12 +12,12 @@ import dayjs, {Dayjs, OpUnitType, QUnitType} from "dayjs";
 
 export type Period = { start: Dayjs, end: Dayjs };
 
-/** List of all the Material_logs of a material. It can be used to calculate data about the usage of the materials */
+/** List of all the Material_logs of a logs. It can be used to calculate data about the usage of the materials */
 export class MaterialLogCollection {
     /** List of the logs contained in the collection */
     readonly logs: MaterialQuantityLog[] = [];
 
-    /** Which material this collection belong to */
+    /** Which logs this collection belong to */
     readonly material: MaterialWithUserData;
 
     constructor(material: MaterialWithUserData, logs: MaterialQuantityLog[]) {
@@ -148,7 +148,7 @@ export class MaterialLogCollection {
         return totalSpent;
     }
 
-    /** Export the material to a plain object */
+    /** Export the logs to a plain object */
     public export(): z.infer<typeof MaterialQuantityLogArrayZod> {
         const logs = []
 
@@ -189,7 +189,7 @@ export class MaterialLogCollection {
         return period.end.diff(period.start, per, true);
     }
 
-    /** Return the current count of material that the user last entered. */
+    /** Return the current count of logs that the user last entered. */
     public getCurrentCount(): number {
         this.throwOnEmptyArray()
         return this.getNewestLog().quantity;
@@ -286,7 +286,7 @@ export class MaterialLogCollection {
     /** Add one or multiple logs to the log array */
     public push(...items: MaterialQuantityLog[]) {
         // TODO: Check for duplicates/Optimizations
-        // TODO: Check if the material of the log is the same as this.material
+        // TODO: Check if the logs of the log is the same as this.logs
         this.logs.push(...items)
         return this.sortChronologically()
     }
@@ -312,7 +312,7 @@ export class MaterialLogCollection {
     /** Return all the logs that were made after a date
      *  Optionally add the last log made before the date
      */
-    public removeLogsOlderThan(date: Dayjs, keepLastLogBeforeDate?: boolean) {
+    public removeLogsOlderThan(date: Dayjs, keepLastLogBeforeDate?: boolean): MaterialLogCollection {
         console.log(date.toString())
         const filteredLogs = this.filter((value) => {return dayjs(value.log_date).isAfter(date)});
         console.log(filteredLogs)
@@ -327,6 +327,12 @@ export class MaterialLogCollection {
         }
 
         return filteredLogs
+    }
+
+    public removeLogsNotInPeriod(period: Period): MaterialLogCollection {
+        return this
+            .removeLogsOlderThan(period.start)
+            .removeLogsNewerThan(period.end)
     }
 
     /** Sort this.log from oldest to newest log */
@@ -351,7 +357,7 @@ export class MaterialLogCollection {
     /** Add a log to the log array */
     private addMaterialLog(log: MaterialQuantityLog) {
         // TODO: Check for duplicates/Optimizations
-        // TODO: Check if the material is the same
+        // TODO: Check if the logs is the same
         this.logs.push(log)
     }
 
@@ -366,7 +372,7 @@ export class MaterialLogCollection {
     private throwOnEmptyArray() {
         if (this.isEmpty()) {
             // This bitch isEmpty! YEET!
-            throw new Error("No logs are in the array.")
+            throw new Error("No logs are in the collection.")
         }
     }
 }

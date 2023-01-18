@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const parsedBody = MaterialQuantityCreateReq.parse(req.body);
         const userId = getServerUser(req, res).then(value => value.id);
 
-        // Insert the material
+        // Insert the logs
         const resDB = await prisma.materialQuantityLog.create({
             data: {
                 quantity: parsedBody.quantity,

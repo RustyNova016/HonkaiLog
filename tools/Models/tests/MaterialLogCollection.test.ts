@@ -11,7 +11,7 @@ describe('MaterialLogCollection tests', function () {
                 expect(testMaterial.logs.getTimeElapsed("days")).toEqual(3)
             });
 
-            it('should be able to give the average material count', function () {
+            it('should be able to give the average logs count', function () {
                 expect(testMaterial.logs.calcAvgGain()).toEqual(100)
             });
         });

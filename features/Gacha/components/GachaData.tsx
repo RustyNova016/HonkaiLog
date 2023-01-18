@@ -31,9 +31,9 @@ function GachaBannerInfo(props: { gachaBanner: GachaBannerWithUserData }) {
 }
 
 export function GachaData() {
-    // Get the material
+    // Get the logs
     const material = useMaterialWithLogsFromRouter();
-    if (material === undefined) return <LoadingComponent subtext={"Preparing material data..."}/>
+    if (material === undefined) return <LoadingComponent subtext={"Preparing logs data..."}/>
 
     const [lowerDate, setLowerDate] = useState<Date>(removeDaysFromToday(1));
 

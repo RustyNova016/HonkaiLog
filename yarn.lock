@@ -1413,6 +1413,11 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
+"@types/canvasjs@^1.9.7":
+  version "1.9.7"
+  resolved "https://registry.yarnpkg.com/@types/canvasjs/-/canvasjs-1.9.7.tgz#bbb3042cea23c577a4d5f72e97f00619ac5b7d22"
+  integrity sha512-/CfA3VtyTYVXDHvMy8F5hsvRUTiBX7TGe+nAHNONoJlNHbqakeIzxxt1MSNH619s8Oiu4CcFBMmJVg50El/0lw==
+
 "@types/cross-spawn@6.0.2":
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/@types/cross-spawn/-/cross-spawn-6.0.2.tgz#168309de311cd30a2b8ae720de6475c2fbf33ac7"
@@ -5027,6 +5032,11 @@ next@^13.0.7-canary.1:
     "@next/swc-win32-arm64-msvc" "13.0.7-canary.1"
     "@next/swc-win32-ia32-msvc" "13.0.7-canary.1"
     "@next/swc-win32-x64-msvc" "13.0.7-canary.1"
+
+nextjs-redirect@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/nextjs-redirect/-/nextjs-redirect-6.0.1.tgz#29416d11f130511e12dbe93ca0c4fa0778bfbae6"
+  integrity sha512-SScRdqhGwbD9HbATM+6KMoRyW5QdsPtBBknPPUBxeItnv3wOrhII4pW+0TrvglWNxeRUwI2GsnrDHCV/6juBtQ==
 
 node-fetch@2.6.7:
   version "2.6.7"

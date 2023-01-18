@@ -13,9 +13,9 @@ import {LoadingComponent} from "../../../../component/UI Components/Loading Icon
 
 
 export function HistoryDataContent() {
-    // Get the material
+    // Get the logs
     const material = useMaterialWithLogsFromRouter();
-    if (material === undefined) return <LoadingComponent subtext={"Preparing material data..."}/>
+    if (material === undefined) return <LoadingComponent subtext={"Preparing logs data..."}/>
 
     // Get the timeframe
     const {timeframe} = useContext(TimeframeContext);

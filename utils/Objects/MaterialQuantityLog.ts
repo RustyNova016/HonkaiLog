@@ -102,7 +102,7 @@ export class MaterialQuantityLog extends MaterialQuantity {
         return logSource;
     }
 
-    /** Return the difference of the quantity of material between two logs sorted in chronological order*/
+    /** Return the difference of the quantity of logs between two logs sorted in chronological order*/
     public getChronologicalDifference(log: MaterialQuantityLog): number {
         if (this.madeBefore(log)) {
             return log.quantity - this.quantity;
@@ -111,7 +111,7 @@ export class MaterialQuantityLog extends MaterialQuantity {
         }
     }
 
-    /** Return the difference of the quantity of material between two logs */
+    /** Return the difference of the quantity of logs between two logs */
     public getQuantityDifference(log: MaterialQuantityLog): number {
         return this.quantity - log.quantity;
     }

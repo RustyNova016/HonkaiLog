@@ -5,9 +5,9 @@ import {Fade} from "react-awesome-reveal";
 import {MaterialInfoPageContent} from "../../../features/Material/pages/MaterialInfoPageContent";
 import {ParsedUrlQuery} from "querystring";
 
-/** A page to display information about a material and create material logs*/
+/** A page to display information about a logs and create logs logs*/
 export default function MaterialInfo() {
-    // Get the material ID
+    // Get the logs ID
     const router = useRouter()
     const query: ParsedUrlQuery = router.query;
     console.log("Query from page:", query)
