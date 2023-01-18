@@ -9,13 +9,21 @@ https://canvasjs.com/license/
 
 */
 
+import {ChartOptions} from "canvasjs";
+
 const React = require('react');
 let CanvasJS = require('./canvasjs.min');
 CanvasJS = CanvasJS.Chart ? CanvasJS : window.CanvasJS;
 
+
+export interface CanvasJSChartProps {
+	options: ChartOptions;
+	containerProps?: { height: any; };
+}
+
 export class CanvasJSChart extends React.Component {
 	static _cjsContainerId = 0
-	constructor(props) {
+	constructor(props: CanvasJSChartProps) {
 		super(props);
 		this.options = props.options ? props.options : {};
 		this.containerProps = props.containerProps ? { ...props.containerProps } : { width: "100%", position: "relative" };
@@ -30,23 +38,26 @@ export class CanvasJSChart extends React.Component {
 		if (this.props.onRef)
 			this.props.onRef(this.chart);
 	}
-	shouldComponentUpdate(nextProps, nextState) {
+	shouldComponentUpdate(nextProps: { options: ChartOptions; }, nextState: any) {
 		//Check if Chart-options has changed and determine if component has to be updated
 		return !(nextProps.options === this.options);
 	}
+
 	componentDidUpdate() {
 		//Update Chart Options & Render
 		this.chart.options = this.props.options;
 		this.chart.render();
 	}
+
+	/** Destroy chart and remove reference */
 	componentWillUnmount() {
-		//Destroy chart and remove reference
 		if (this.chart)
 			this.chart.destroy();
 
 		if (this.props.onRef)
 			this.props.onRef(undefined);
 	}
+
 	render() {
 		//return React.createElement('div', { id: this.chartContainerId, style: this.containerProps });
 		return <div id={this.chartContainerId} style={this.containerProps} />

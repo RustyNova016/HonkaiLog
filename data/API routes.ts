@@ -1,4 +1,4 @@
 export const APIRoutes = {
-    material: "/api/logs/",
-    materialLogs: "/api/logs/logs/",
+    material: "/api/material/",
+    materialLogs: "/api/material/logs/",
 }
