@@ -44,7 +44,7 @@ export function HistorySummary({materialJson, idUser}: { materialJson: UserMater
                 </Col>
             </Row>
 
-            <MaterialSummaryGraph/>
+            <MaterialSummaryGraph logs={logs}/>
         </FramedDiv>
     </>;
 }
