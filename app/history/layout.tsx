@@ -1,7 +1,6 @@
 import {PropsWithChildren} from "react";
 import {Navigation} from "@/components/UI/Navigation/Navigation";
 import {FadingIn} from "@/components/Animators/FadingIn";
-import {ScrollableArea} from "@/components/Layouts/CenterContent";
 
 export default function (props: PropsWithChildren) {
     return <>
@@ -12,7 +11,7 @@ export default function (props: PropsWithChildren) {
 
 
             <FadingIn delay={500} style={{flex: "1 1 auto", overflow: "auto"}}>
-                    {props.children}
+                {props.children}
             </FadingIn>
         </div>
 

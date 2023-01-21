@@ -6,7 +6,7 @@ import {getAPIsideUser} from "../../../../database/user";
 import {HttpStatusCode} from "../../../../tools/API/HttpStatusCodes";
 import {getIDFromQuery} from "../../../../tools/API/getIDFromQuery";
 import {z} from "zod";
-import {MaterialLogFetchJSONZod} from "../../../../utils/Zod/Materials";
+import {MaterialLogFetchJSONZod} from "@/utils/Zod/Materials";
 
 /** Response from the API for any fetching operation */
 export interface MaterialLogsAPIFetchResponse extends MaterialDBResponse {

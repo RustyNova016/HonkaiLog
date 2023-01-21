@@ -1,6 +1,6 @@
 import {MaterialWithUserData} from "@/utils/Objects/MaterialWithUserData";
 import {MaterialQuantity} from "./MaterialQuantity";
-import {TimeRef} from "../../utils/TimeTools";
+import {TimeRef} from "@/utils/TimeTools";
 import {LogSource} from "@/utils/Objects/MaterialQuantityLog";
 
 /** A MaterialQuantity class with its logs having logs */

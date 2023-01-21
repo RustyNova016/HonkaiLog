@@ -1,7 +1,4 @@
 import {MaterialQuantity} from "./MaterialQuantity";
-import {LogSource} from "@/utils/Objects/MaterialQuantityLog";
-import {GachaBannerWithUserData} from "./GachaBannerWithUserData";
-import {MaterialQuantityWithUserData} from "./MaterialQuantityWithUserData";
 
 /** An object corresponding to a gacha banner. */
 export class GachaBanner {
