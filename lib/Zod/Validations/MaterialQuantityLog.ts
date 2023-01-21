@@ -4,7 +4,7 @@ import {UserZodShape} from "@/lib/Zod/Validations/user";
 
 
 export const MaterialQuantityLogShape = {
-    id: z.number(),
+    id: z.number().optional(),
     quantity: z.number().min(0),
     loggedAt: z.date().or(z.string().datetime()),
     idMaterial: MaterialZodShape.id,

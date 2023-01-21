@@ -13,7 +13,7 @@ export function TimeFrameSelectButton(props: { dayValue: number | null, label: s
         if (props.dayValue !== null) {
             return props.action(removeDaysFromToday(props.dayValue))
         } else {
-            return props.action(new Date(material.logCollection.getOldestLog().log_date))
+            return props.action(new Date(material.logCollection.getOldestLogOrThrow().log_date))
         }
     };
 

@@ -1,5 +1,6 @@
 import {MaterialWithUserData} from "@/utils/Objects/MaterialWithUserData";
 import {MaterialLogCollection, Period} from "@/utils/Objects/MaterialLogCollection";
+import {MaterialHistoryAnalyser} from "@/utils/Objects/MaterialHistoryAnalyser";
 
 export interface GraphPoint {
     x: Date,
@@ -7,10 +8,11 @@ export interface GraphPoint {
 }
 
 export class MaterialGrapher {
-    constructor(material: MaterialLogCollection) {
-        this.logs = material;
+    constructor(logs: MaterialLogCollection) {
+        if (logs.isEmpty()) {throw new Error("Log Collection cannot be empty")}
+        this.logs = logs;
     }
-    logs: MaterialLogCollection
+    private logs: MaterialLogCollection
 
     /** Generate the graph of the quantity of logs over time
      *

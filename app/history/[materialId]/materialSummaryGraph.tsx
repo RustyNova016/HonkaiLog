@@ -1,8 +1,22 @@
 import {CanvasJSWithSSR} from "@/lib/CanvasJS/CanvasJSWithSSR";
 import {MaterialLogCollection} from "@/utils/Objects/MaterialLogCollection";
 import {MaterialGrapher} from "@/utils/Objects/MaterialGrapher";
+import {Dayjs} from "dayjs";
 
-export function MaterialSummaryGraph({logs}: { logs: MaterialLogCollection }) {
+export interface MaterialSummaryGraphProps {
+    logs: MaterialLogCollection,
+    startDate: Dayjs
+}
+
+export function MaterialSummaryGraph({logs, startDate}: MaterialSummaryGraphProps) {
+    if(logs.getLogBeforeDate(startDate) !== undefined && logs.getLogAfterDate(startDate) !== undefined) {
+        const splitLog = logs.getAnalyser().createSplitLog(startDate);
+        if (splitLog !== undefined){
+            logs.push(splitLog)
+        }
+    }
+
+    logs = logs.removeLogsOlderThan(startDate)
 
     const dataPoints = new MaterialGrapher(logs).generateQuantityGraph();
     const options = {
@@ -22,21 +36,11 @@ export function MaterialSummaryGraph({logs}: { logs: MaterialLogCollection }) {
             type: "line",
             toolTipContent: "{x}: {y}",
             dataPoints: dataPoints
-        }],
-        navigator: {
-            data: [{
-                dataPoints: dataPoints
-            }],
-            slider: {
-                minimum: logs.getOldestLog().log_date,
-                maximum: logs.getNewestLog().log_date
-            }
-        }
+        }]
     }
 
     return (
         <div>
-            <h1>React Line Chart</h1>
             <CanvasJSWithSSR options={options}/>
         </div>
     );

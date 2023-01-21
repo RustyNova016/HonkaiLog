@@ -1,4 +1,5 @@
 import {Material} from "@/utils/Objects/Material";
+import {z} from "zod";
 
 /** A class that represent a quantity of materials. Like a stack of items */
 export class MaterialQuantity {
@@ -10,7 +11,7 @@ export class MaterialQuantity {
 
     constructor(material: Material, quantity: number) {
         this.material = material;
-        this.quantity = quantity;
+        this.quantity = z.number().parse(quantity);
     }
 }
 

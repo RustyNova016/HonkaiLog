@@ -33,7 +33,7 @@ export async function saveMaterialQuantityLog(data: z.infer<typeof MaterialQuant
 /** Snapshot of a quantity at a given time */
 export class MaterialQuantityLog extends MaterialQuantity {
     /** ID of the log in the database */
-    id: number;
+    id: number | undefined;
 
     /** Date of the log */
     log_date: Date;
@@ -41,7 +41,12 @@ export class MaterialQuantityLog extends MaterialQuantity {
     /** ID of the user having made the log */
     userId: UserDBResponse["id"];
 
-    constructor(id: number, quantity: number, material: MaterialWithUserData, log_date: Date, userId: string) {
+    /** If the user actually made this log */
+    get verified(): boolean {
+        return this.id === undefined
+    }
+
+    constructor(id: number | undefined, quantity: number, material: MaterialWithUserData, log_date: Date, userId: string) {
         super(material, quantity);
         this.id = id;
         this.log_date = log_date;
@@ -130,6 +135,14 @@ export class MaterialQuantityLog extends MaterialQuantity {
 
     get logDate() {
         return dayjs(this.log_date);
+    }
+
+    public isSame(log: MaterialQuantityLog){
+        return this.id === log.id &&
+            this.quantity === log.id &&
+            this.log_date === log.log_date &&
+            this.userId === log.userId &&
+            this.material.id === log.material.id
     }
 }
 

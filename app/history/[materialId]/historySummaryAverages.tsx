@@ -10,9 +10,9 @@ interface HistorySummaryAveragesProps {
 
 export function HistorySummaryAverages(props: HistorySummaryAveragesProps) {
     const {material, logs, period} = props
-    const avgGain = _.round(logs.calcAvgGain(), 2);
-    const avgLoss = _.round(logs.calcAvgLoss(), 2);
-    const avgDelta = _.round(logs.calcAvgDelta(), 2);
+    const avgGain = _.round(logs.calcAvgGain(period), 2);
+    const avgLoss = _.round(logs.calcAvgLoss(period), 2);
+    const avgDelta = _.round(logs.calcAvgDelta(period), 2);
 
     return <div className={"flex flex-col justify-content-center align-items-center"} style={{minWidth: "50%"}}>
         <h3></h3>
