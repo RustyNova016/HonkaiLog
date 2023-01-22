@@ -2,7 +2,7 @@ import {MaterialLogCollection} from "./MaterialLogCollection";
 import {Material} from "@/utils/Objects/Material";
 import {z} from "zod";
 import {MaterialQuantityLogArrayZod} from "@/lib/Zod/Validations/MaterialQuantityLog";
-import {UserMaterialData} from "@/lib/Zod/Validations/UserMaterial";
+import {UserMaterialData, UserMaterialJSONZod} from "@/lib/Zod/Validations/UserMaterial";
 
 export class MaterialWithUserData extends Material {
     /** The collection holding all the logs made by the user for the logs */
@@ -19,6 +19,15 @@ export class MaterialWithUserData extends Material {
 
     static override parse(data: UserMaterialData, userId: string) {
         return new MaterialWithUserData(data.id, data.name, data.materialQuantityLogs, userId)
+    }
+
+    public toJSON(): z.infer<typeof UserMaterialJSONZod> {
+        return {
+            id: this.id,
+            name: this.name,
+            materialQuantityLogs: this.logCollection.export(),
+            userID: this.userID
+        }
     }
 
     /** Export the logs to a plain object */
