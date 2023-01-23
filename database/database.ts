@@ -2,7 +2,7 @@
 import Material from "./material";
 import Material_logs from "./material_logs";
 import sequelize from "../tools/Database/SequelizeConnection";
-import {associateUser} from "./user";
+import {associateUser} from "./associateUser";
 
 
 const database = {

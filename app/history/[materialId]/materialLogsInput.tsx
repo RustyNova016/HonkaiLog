@@ -1,7 +1,7 @@
 "use client"
 import {useForm} from "react-hook-form";
-import {saveMaterialQuantityLog} from "@/utils/Objects/MaterialQuantityLog";
 import {useRouter} from "next/navigation";
+import {saveMaterialQuantityLog} from "@/utils/Objects/Funcs/SaveMaterialQuantityLog";
 
 export interface MaterialQuantityInputFormI {
     quantity: string

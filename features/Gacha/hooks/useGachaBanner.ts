@@ -1,5 +1,5 @@
-import {GachaBanner} from "../../../tools/Models/GachaBanner";
-import {MaterialQuantity} from "../../../tools/Models/MaterialQuantity";
+import {GachaBanner} from "@/utils/Objects/Gacha/GachaBanner";
+import {MaterialQuantity} from "@/utils/Objects/Material/MaterialQuantity";
 import {useMaterial} from "../../Material/hooks/useMaterial";
 
 /** Retrieve a GachaBanner object from the API */

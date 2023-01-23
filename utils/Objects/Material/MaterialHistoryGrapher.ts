@@ -1,13 +1,13 @@
-import {MaterialWithUserData} from "@/utils/Objects/MaterialWithUserData";
-import {MaterialLogCollection, Period} from "@/utils/Objects/MaterialLogCollection";
-import {MaterialHistoryAnalyser} from "@/utils/Objects/MaterialHistoryAnalyser";
+import {MaterialHistory} from "@/utils/Objects/Material/MaterialHistory";
+import {MaterialLogCollection, Period} from "@/utils/Objects/Material/MaterialLogCollection";
+import {MaterialHistoryCalculator} from "@/utils/Objects/Material/MaterialHistoryCalculator";
 
 export interface GraphPoint {
     x: Date,
     y: number
 }
 
-export class MaterialGrapher {
+export class MaterialHistoryGrapher {
     constructor(logs: MaterialLogCollection) {
         if (logs.isEmpty()) {throw new Error("Log Collection cannot be empty")}
         this.logs = logs;

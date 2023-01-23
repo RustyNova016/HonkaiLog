@@ -2,13 +2,7 @@ import {DBModel} from "../tools/Database/DBModel";
 import {DataTypes} from "sequelize";
 import sequelize from "../tools/Database/SequelizeConnection";
 import database from "./database";
-import {SequelizeTableCommonDBResults} from "../tools/Types";
 
-
-export interface MaterialDBResponse extends SequelizeTableCommonDBResults {
-    id: string;
-    name: string;
-}
 
 class Material extends DBModel<Material> {
     declare id: number;

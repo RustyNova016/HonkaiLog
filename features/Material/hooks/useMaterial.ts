@@ -1,4 +1,4 @@
-import {Material} from "@/utils/Objects/Material";
+import {Material} from "@/utils/Objects/Material/Material";
 import {useMaterialAPI} from "./useMaterialAPI";
 
 /** Retrieve a Material object from the API */

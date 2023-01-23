@@ -4,8 +4,8 @@ import sequelize from "../tools/Database/SequelizeConnection";
 import database from "./database";
 import {SequelizeTableCommonDBResults} from "../tools/Types";
 import {UserDBResponse} from "./user";
-import {MaterialDBResponse} from "./material";
 import { Table, Column, Model, HasMany } from 'sequelize-typescript';
+import {MaterialDBResponse} from "./materialDBResponse";
 
 /*@Table
 class Material_logs extends Model {

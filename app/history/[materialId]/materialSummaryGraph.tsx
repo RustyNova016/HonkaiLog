@@ -1,30 +1,33 @@
 import {CanvasJSWithSSR} from "@/lib/CanvasJS/CanvasJSWithSSR";
-import {MaterialLogCollection} from "@/utils/Objects/MaterialLogCollection";
-import {MaterialGrapher} from "@/utils/Objects/MaterialGrapher";
+import {MaterialLogCollection} from "@/utils/Objects/Material/MaterialLogCollection";
+import {MaterialHistoryGrapher} from "@/utils/Objects/Material/MaterialHistoryGrapher";
 import {Dayjs} from "dayjs";
+import {MaterialHistory} from "@/utils/Objects/Material/MaterialHistory";
+import {MaterialHistoryCalculator} from "@/utils/Objects/Material/MaterialHistoryCalculator";
 
 export interface MaterialSummaryGraphProps {
-    logs: MaterialLogCollection,
+    materialHistory: MaterialHistory
     startDate: Dayjs
 }
 
-export function MaterialSummaryGraph({logs, startDate}: MaterialSummaryGraphProps) {
+export function MaterialSummaryGraph({materialHistory, startDate}: MaterialSummaryGraphProps) {
+    const logs = materialHistory.getLogs()
     if(logs.getLogBeforeDate(startDate) !== undefined && logs.getLogAfterDate(startDate) !== undefined) {
-        const splitLog = logs.getAnalyser().createSplitLog(startDate);
+        const splitLog = new MaterialHistoryCalculator(materialHistory).createSplitLog(startDate);
         if (splitLog !== undefined){
             logs.push(splitLog)
         }
     }
 
-    logs = logs.removeLogsOlderThan(startDate)
+    const filteredLogs = logs.getLogsNewerThan(startDate)
 
-    const dataPoints = new MaterialGrapher(logs).generateQuantityGraph();
+    const dataPoints = new MaterialHistoryGrapher(filteredLogs).generateQuantityGraph();
     const options = {
         animationEnabled: true,
         exportEnabled: true,
         theme: "dark2",
         axisY: {
-            title: logs.material.getName() + " quantity",
+            title: filteredLogs.material.getName() + " quantity",
             includeZero: false
         },
         axisX: {

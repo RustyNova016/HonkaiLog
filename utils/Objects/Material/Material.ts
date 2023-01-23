@@ -1,9 +1,9 @@
-import {MaterialAPIFetchResponse} from "../../pages/api/material/[id]";
-import {MaterialWithUserData} from "./MaterialWithUserData";
-import {LogSource} from "./MaterialQuantityLog";
+import {MaterialAPIFetchResponse} from "../../../pages/api/material/[id]";
+import {MaterialHistory} from "./MaterialHistory";
 import {z} from "zod";
-import {MaterialDataZod} from "@/lib/Zod/Validations/material";
+import {MaterialJSONZod} from "@/lib/Zod/Validations/MaterialJSONZod";
 import _ from "lodash";
+import {LogSource} from "@/utils/Types/LogSource";
 
 /** Class of a logs object. E.G. Gold, crystals, exp logs, etc... */
 export class Material {
@@ -25,19 +25,19 @@ export class Material {
     }
 
     /** Create a Material instance from a validation pattern */
-    static parse(data: z.infer<typeof MaterialDataZod>, userId?: string) {
+    static parse(data: z.infer<typeof MaterialJSONZod>, userId?: string) {
         return new Material(data.id, data.name);
     }
 
     /** Create a new instance of the logs with userdata
      * @deprecated
      */
-    public addUserData(logSource: LogSource): MaterialWithUserData {
-        return new MaterialWithUserData(this.id, this.name, logSource)
+    public addUserData(logSource: LogSource): MaterialHistory {
+        return new MaterialHistory(this.id, this.name, logSource)
     }
 
     /** Export the logs to a plain object */
-    public export(): z.infer<typeof MaterialDataZod> {
+    public export(): z.infer<typeof MaterialJSONZod> {
         return {
             id: this.id,
             name: this.name

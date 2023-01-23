@@ -12,22 +12,20 @@ import {redirect} from "next/navigation";
 
 export default async function Page({params}: any) {
     const parsedParams = z.object({materialId: z.string()}).parse(params)
-    const material = await getMaterialWithUserData(Number(parsedParams.materialId));
+    const materialHistory = await getMaterialWithUserData(Number(parsedParams.materialId));
 
-    if (material.getLogs().isEmpty()) {redirect("/history/" + material.id + "/new")}
+    if (materialHistory.getLogs().isEmpty()) {redirect("/history/" + materialHistory.id + "/new")}
 
     return <>
         <FadingIn duration={500} className={"size-inherit"} style={{overflow: "auto"}}>
             <CenterContent>
-                <PageTitle title={material.getName(false, true) + " history"}/>
+                <PageTitle title={materialHistory.material.getName(false, true) + " history"}/>
 
                 <Suspense fallback={<CenteredLoadingIcon/>}>
-                    <MaterialLogsManager material={material}/>
+                    <MaterialLogsManager material={materialHistory}/>
                 </Suspense>
 
-                <HistorySummary materialJson={material.export()} idUser={material.userID}/>
-
-                <GachaSummary material={material}/>
+                <HistorySummary materialJson={materialHistory.toJSON()} idUser={materialHistory.userID}/>
             </CenterContent>
         </FadingIn>
     </>

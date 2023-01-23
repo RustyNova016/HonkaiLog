@@ -1,6 +1,6 @@
 import {z} from "zod";
-import {MaterialZodShape} from "@/lib/Zod/Validations/material";
-import {UserZodShape} from "@/lib/Zod/Validations/user";
+import {MaterialZodShape} from "@/lib/Zod/Validations/MaterialJSONZod";
+import {UserZodShape} from "@/lib/Zod/Validations/UserDataZod";
 
 
 export const MaterialQuantityLogShape = {

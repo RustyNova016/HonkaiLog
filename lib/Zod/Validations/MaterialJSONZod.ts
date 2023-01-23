@@ -5,4 +5,4 @@ export const MaterialZodShape = {
     name: z.string()
 };
 
-export const MaterialDataZod = z.object(MaterialZodShape)
+export const MaterialJSONZod = z.object(MaterialZodShape)

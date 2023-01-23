@@ -1,7 +1,7 @@
 import {Datum, Serie} from "@nivo/line";
 import {toTimestamp} from "./Miscs";
 import {MaterialGraphTypes} from "../data/MaterialGraphTypes";
-import {MaterialLogCollection} from "@/utils/Objects/MaterialLogCollection";
+import {MaterialLogCollection} from "@/utils/Objects/Material/MaterialLogCollection";
 import _ from "lodash";
 
 export interface HistoryLogDatum extends Datum {

@@ -1,4 +1,5 @@
-import {MaterialQuantity} from "./MaterialQuantity";
+import {MaterialQuantity, MaterialQuantityInterface} from "@/utils/Objects/Material/MaterialQuantity";
+import {GachaBannerJSON} from "@/lib/Zod/Validations/GachaBannerJSONZod";
 
 /** An object corresponding to a gacha banner. */
 export class GachaBanner {
@@ -21,16 +22,32 @@ export class GachaBanner {
         this.nbGuarantyForCompletion = NbGuarantyForCompletion;
     }
 
-    /** The cost for completing the banner */
-    public calcCostForCompletion(): MaterialQuantity {
-        return new MaterialQuantity(
-            this.pullCost.material,
-            this.pullCost.quantity * this.calcNBPullsForBannerCompletion()
+    public static parse(data: GachaBannerJSON): GachaBanner {
+        return new GachaBanner(
+            data.name,
+            data.nbPullsForGuaranty,
+            data.nbGuarantiesForBannerCompletion,
+            MaterialQuantity.parse(data.pullCost)
         )
     }
 
+    /** The cost for completing the banner */
+    public calcCostForCompletion(): MaterialQuantity {
+        return new MaterialQuantity(this.pullCost.material, this.pullCost.quantity * this.calcNBPullsForBannerCompletion())
+    }
+
     /** The number of pull for full banner completion */
-    calcNBPullsForBannerCompletion(): number {
+    public calcNBPullsForBannerCompletion(): number {
         return this.nbPullsForGuaranty * this.nbGuarantyForCompletion;
     }
+
+    public export(): GachaBannerJSON {
+        return {
+            name: this.name,
+            nbPullsForGuaranty: this.nbPullsForGuaranty,
+            nbGuarantiesForBannerCompletion: this.nbGuarantyForCompletion,
+            pullCost: this.pullCost.toJSON()
+        }
+    }
 }
+

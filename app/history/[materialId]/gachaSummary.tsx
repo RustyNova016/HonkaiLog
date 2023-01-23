@@ -1,4 +1,4 @@
-import {MaterialWithUserData} from "@/utils/Objects/MaterialWithUserData";
+import {MaterialHistory} from "@/utils/Objects/Material/MaterialHistory";
 import {MaterialQuantityWithUserData} from "../../../tools/Models/MaterialQuantityWithUserData";
 import {GachaBannerWithUserData} from "../../../tools/Models/GachaBannerWithUserData";
 import FramedDiv from "../../../component/Layout/FramedDiv";
@@ -15,7 +15,7 @@ function GachaBannerSummary(props: { gachaBanner: GachaBannerWithUserData }) {
     </div>;
 }
 
-export function GachaSummary(props: { material: MaterialWithUserData }) {
+export function GachaSummary(props: { material: MaterialHistory }) {
     const materialQuantityWithUserData = new MaterialQuantityWithUserData(props.material, 280);
     const gachaBanner = new GachaBannerWithUserData("Test Character Banner", 100, 1, materialQuantityWithUserData, 0)
     const gachaGearBanner = new GachaBannerWithUserData("Test Gear Banner", 50, 4, materialQuantityWithUserData, 0)

@@ -1,5 +1,5 @@
 import {NoDataErrorComponent} from "../../../../../component/App Components/Errors/NoDataErrorComponent";
-import {MaterialLogCollection} from "@/utils/Objects/MaterialLogCollection";
+import {MaterialLogCollection} from "@/utils/Objects/Material/MaterialLogCollection";
 import {Col, Row} from "react-bootstrap";
 import {NetValuesInfo} from "./NetValuesInfo";
 import {AverageValuesInfo} from "./AverageValuesInfo";

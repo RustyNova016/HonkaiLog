@@ -4,4 +4,4 @@ export const UserZodShape = {
     id: z.string()
 };
 
-export const UserZod = z.object(UserZodShape)
+export const UserDataZod = z.object(UserZodShape)

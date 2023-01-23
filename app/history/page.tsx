@@ -2,14 +2,14 @@ import Link from "next/link";
 import {CenterContent} from "@/components/Layouts/CenterContent";
 import FramedDiv from "../../component/Layout/FramedDiv";
 import prisma from "@/lib/prismadb";
-import {MaterialDataZod} from "@/lib/Zod/Validations/material";
+import {MaterialJSONZod} from "@/lib/Zod/Validations/MaterialJSONZod";
 import {z} from "zod";
 import _ from "lodash";
 
 export async function getMaterials() {
     const materials = await prisma.material.findMany()
 
-    return z.array(MaterialDataZod).parse(materials);
+    return z.array(MaterialJSONZod).parse(materials);
 }
 
 export default async function Page() {

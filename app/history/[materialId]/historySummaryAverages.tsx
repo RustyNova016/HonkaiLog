@@ -1,9 +1,9 @@
-import {MaterialWithUserData} from "@/utils/Objects/MaterialWithUserData";
+import {MaterialHistory} from "@/utils/Objects/Material/MaterialHistory";
 import _ from "lodash";
-import {MaterialLogCollection, Period} from "@/utils/Objects/MaterialLogCollection";
+import {MaterialLogCollection, Period} from "@/utils/Objects/Material/MaterialLogCollection";
 
 interface HistorySummaryAveragesProps {
-    material: MaterialWithUserData;
+    material: MaterialHistory;
     logs: MaterialLogCollection;
     period: Period;
 }

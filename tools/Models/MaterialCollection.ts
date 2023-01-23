@@ -1,4 +1,4 @@
-import {Material} from "@/utils/Objects/Material";
+import {Material} from "@/utils/Objects/Material/Material";
 import logging from "../Logger";
 
 export class MaterialCollection {

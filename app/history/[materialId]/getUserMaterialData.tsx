@@ -1,5 +1,5 @@
 import {getServerUser} from "@/lib/NextAuth/GetSession";
-import {MaterialWithUserData} from "@/utils/Objects/MaterialWithUserData";
+import {MaterialHistory} from "@/utils/Objects/Material/MaterialHistory";
 import {UserMaterialDataZod} from "@/lib/Zod/Validations/UserMaterial";
 import prisma from "@/lib/prismadb";
 
@@ -27,12 +27,12 @@ export async function getUserMaterialData(idMaterial: number) {
     return UserMaterialDataZod.parse(materialWithLogs);
 }
 
-/** Get the MaterialWithUserData object
+/** Get the MaterialHistory object
  *
  * @param idMaterial
  */
-export async function getMaterialWithUserData(idMaterial: number): Promise<MaterialWithUserData> {
-    const materialWithUserData = MaterialWithUserData.parse(await getUserMaterialData(idMaterial), (await getServerUser()).id);
+export async function getMaterialWithUserData(idMaterial: number): Promise<MaterialHistory> {
+    const materialWithUserData = MaterialHistory.parse(await getUserMaterialData(idMaterial), (await getServerUser()).id);
     //console.info("Latest count in object: ", materialWithUserData.logCollection.getCurrentCount())
     return materialWithUserData;
 }

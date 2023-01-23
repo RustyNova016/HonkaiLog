@@ -1,12 +1,12 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import database from "../../../../database/database";
-import {MaterialDBResponse} from "../../../../database/material";
 import {MaterialLogItemJSON} from "../../../../database/material_logs";
-import {getAPIsideUser} from "../../../../database/user";
 import {HttpStatusCode} from "../../../../tools/API/HttpStatusCodes";
 import {getIDFromQuery} from "../../../../tools/API/getIDFromQuery";
 import {z} from "zod";
 import {MaterialLogFetchJSONZod} from "@/utils/Zod/Materials";
+import {MaterialDBResponse} from "../../../../database/materialDBResponse";
+import {getAPIsideUser} from "../../../../database/getAPIsideUser";
 
 /** Response from the API for any fetching operation */
 export interface MaterialLogsAPIFetchResponse extends MaterialDBResponse {

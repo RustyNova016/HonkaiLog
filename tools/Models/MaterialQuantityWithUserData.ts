@@ -1,21 +1,32 @@
-import {MaterialWithUserData} from "@/utils/Objects/MaterialWithUserData";
-import {MaterialQuantity} from "./MaterialQuantity";
+import {MaterialHistory} from "@/utils/Objects/Material/MaterialHistory";
+import {MaterialQuantity} from "@/utils/Objects/Material/MaterialQuantity";
 import {TimeRef} from "@/utils/TimeTools";
-import {LogSource} from "@/utils/Objects/MaterialQuantityLog";
+import {LogSource} from "@/utils/Types/LogSource";
 
-/** A MaterialQuantity class with its logs having logs */
-export class MaterialQuantityWithUserData extends MaterialQuantity {
-    readonly material: MaterialWithUserData;
 
-    constructor(material: MaterialWithUserData, quantity: number) {
-        super(material, quantity);
+/** A MaterialQuantity class with its logs having logs
+ * @deprecated*/
+export class MaterialQuantityWithUserData {
+    materialQuantity: MaterialQuantity;
+    readonly material: MaterialHistory;
+
+    constructor(materialQuantity: MaterialQuantity, material: MaterialHistory) {
+        this.materialQuantity = materialQuantity;
         this.material = material;
     }
 
-    static addLogsToMaterialQuantity(quantity: MaterialQuantity, material: MaterialWithUserData) {
+    static addLogsToMaterialQuantity(quantity: MaterialQuantity, material: MaterialHistory) {
         if (!quantity.material.isSameMaterial(material)) throw new Error("The logs aren't the same");
 
         return new MaterialQuantityWithUserData(material, quantity.quantity)
+    }
+
+    /** Convert from MaterialQuantity */
+    public static convertMaterialQuantity(materialQuantity: MaterialQuantity, logSource: LogSource) {
+        return new MaterialQuantityWithUserData(
+            materialQuantity.material.addUserData(logSource),
+            materialQuantity.quantity
+        )
     }
 
     /** Check if the user has enough in game logs to match the quantity. */
@@ -47,13 +58,5 @@ export class MaterialQuantityWithUserData extends MaterialQuantity {
     /** Give the difference between the quantity and the current funds of the user. */
     getQuantityDifferenceWithCurrent(): number {
         return this.quantity - this.material.logCollection.getCurrentCount();
-    }
-
-    /** Convert from MaterialQuantity */
-    public static convertMaterialQuantity(materialQuantity: MaterialQuantity, logSource: LogSource){
-        return new MaterialQuantityWithUserData(
-            materialQuantity.material.addUserData(logSource),
-            materialQuantity.quantity
-        )
     }
 }

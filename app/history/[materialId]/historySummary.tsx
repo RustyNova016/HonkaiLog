@@ -2,7 +2,7 @@
 import FramedDiv from "../../../component/Layout/FramedDiv";
 import {SectionTitle} from "@/components/UI/Theme/SectionTitle";
 import {UserMaterialData} from "@/lib/Zod/Validations/UserMaterial";
-import {MaterialWithUserData} from "@/utils/Objects/MaterialWithUserData";
+import {MaterialHistory} from "@/utils/Objects/Material/MaterialHistory";
 import {useState} from "react";
 import {TimeframeSelection} from "@/app/history/[materialId]/timeframeSelection";
 import {HistorySummaryNet} from "@/app/history/[materialId]/historySummaryNet";
@@ -12,7 +12,7 @@ import {Col, Row} from "@/lib/Bootstrap/Layout";
 import {MaterialSummaryGraph} from "@/app/history/[materialId]/materialSummaryGraph";
 
 export function HistorySummary({materialJson, idUser}: { materialJson: UserMaterialData, idUser: string }) {
-    const material = MaterialWithUserData.parse(materialJson, idUser)
+    const materialHistory = MaterialHistory.parse(materialJson, idUser)
     const [nbrDaysBack, setNbrDaysBack] = useState(1);
     let periodStart: Dayjs;
 
@@ -23,7 +23,7 @@ export function HistorySummary({materialJson, idUser}: { materialJson: UserMater
     }
 
     console.info("Setting logs from ", periodStart.toString(), "to today");
-    const logs = material.getLogs().removeLogsOlderThan(periodStart, true);
+    const logs = materialHistory.getLogs().getLogsNewerThan(periodStart, true);
     console.info("New log collection: ", logs);
 
     return <>
@@ -38,14 +38,14 @@ export function HistorySummary({materialJson, idUser}: { materialJson: UserMater
                 <>
                     <Row>
                         <Col>
-                            <HistorySummaryNet material={material} logs={logs}/>
+                            <HistorySummaryNet material={materialHistory} logs={logs}/>
                         </Col>
                         <Col>
-                            <HistorySummaryAverages material={material} logs={logs}
+                            <HistorySummaryAverages material={materialHistory} logs={logs}
                                                     period={{start: periodStart, end: dayjs()}}/>
                         </Col>
                     </Row>
-                    <MaterialSummaryGraph logs={logs} startDate={periodStart}/>
+                    <MaterialSummaryGraph materialHistory={materialHistory} startDate={periodStart}/>
                 </>
                 :
                 <>Create a new log or change the time period to get your data </>

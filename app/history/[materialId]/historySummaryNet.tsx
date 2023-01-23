@@ -1,7 +1,7 @@
-import {MaterialWithUserData} from "@/utils/Objects/MaterialWithUserData";
-import {MaterialLogCollection} from "@/utils/Objects/MaterialLogCollection";
+import {MaterialHistory} from "@/utils/Objects/Material/MaterialHistory";
+import {MaterialLogCollection} from "@/utils/Objects/Material/MaterialLogCollection";
 
-export function HistorySummaryNet({material, logs}: { material: MaterialWithUserData, logs: MaterialLogCollection }) {
+export function HistorySummaryNet({material, logs}: { material: MaterialHistory, logs: MaterialLogCollection }) {
     const netGain = logs.calcNetGain();
     const netLoss = logs.calcNetLoss();
     const netDelta = logs.calcNetDelta();
