@@ -7,7 +7,6 @@ import {Suspense} from "react";
 import {CenteredLoadingIcon} from "@/components/UI/Loading/LoadingIcon";
 import MaterialLogsManager from "@/app/history/[materialId]/materialLogsManager";
 import {HistorySummary} from "@/app/history/[materialId]/historySummary";
-import {GachaSummary} from "@/app/history/[materialId]/gachaSummary";
 import {redirect} from "next/navigation";
 
 export default async function Page({params}: any) {

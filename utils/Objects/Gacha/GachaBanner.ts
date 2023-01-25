@@ -1,4 +1,4 @@
-import {MaterialQuantity, MaterialQuantityInterface} from "@/utils/Objects/Material/MaterialQuantity";
+import {MaterialQuantity} from "@/utils/Objects/Material/MaterialQuantity";
 import {GachaBannerJSON} from "@/lib/Zod/Validations/GachaBannerJSONZod";
 
 /** An object corresponding to a gacha banner. */
