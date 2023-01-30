@@ -5,6 +5,13 @@ import {GachaBanner} from "@/utils/Objects/Gacha/GachaBanner";
 import FramedDiv from "../../component/Layout/FramedDiv";
 import {SectionTitle} from "@/components/UI/Theme/SectionTitle";
 import {Form} from "react-bootstrap";
+import {GachaBannerCalculator} from "@/utils/Objects/Gacha/GachaBannerCalculator";
+import {z} from "zod";
+import {MaterialQuantityJSONZod} from "@/lib/Zod/Validations/MaterialQuantityJSONZod";
+import {UserMaterialJSONZod} from "@/lib/Zod/Validations/UserMaterial";
+import {MaterialHistory} from "@/utils/Objects/Material/MaterialHistory";
+import {IncompleteBannerBody} from "@/app/gacha/incompleteBannerBody";
+import dayjs from "dayjs";
 
 interface FOCABannerHeaderProps {
     gachaBanner: GachaBanner;
@@ -45,7 +52,14 @@ function FOCABannerHeader(props: FOCABannerHeaderProps) {
     </div>;
 }
 
-export function FOCABanner(props: { pullCost: MaterialQuantity }) {
+interface FOCABannerParams {
+    pullCost: z.infer<typeof MaterialQuantityJSONZod>;
+    currentInventory: z.infer<typeof MaterialQuantityJSONZod>
+    idUser: string //Todo: Find a more elegant way
+    materialUsageData: z.infer<typeof UserMaterialJSONZod>
+}
+
+export function FOCABanner(props: FOCABannerParams) {
     const [nbPulls, setNbPulls] = useState(0);
     const [nbItemGotten, setNbItemGotten] = useState(0);
 
@@ -53,7 +67,25 @@ export function FOCABanner(props: { pullCost: MaterialQuantity }) {
         "FOCA Supply",
         50,
         4,
-        props.pullCost
+        MaterialQuantity.parse(props.pullCost)
+    )
+
+    const bannerCalculator = new GachaBannerCalculator(
+        gachaBanner,
+        MaterialQuantity.parse(props.currentInventory),
+        MaterialHistory.parse(props.materialUsageData, props.idUser),
+        nbPulls
+            //TODO: Add nb guarranties
+    )
+
+    const nextBannerCalculator = new GachaBannerCalculator(
+        gachaBanner,
+        MaterialQuantity.parse({
+            material: props.currentInventory.material,
+            quantity: props.currentInventory.quantity - bannerCalculator.getRemainingCostForCompletion().quantity
+        }),
+        MaterialHistory.parse(props.materialUsageData, props.idUser),
+        0
     )
 
     return <>
@@ -61,6 +93,26 @@ export function FOCABanner(props: { pullCost: MaterialQuantity }) {
             <FOCABannerHeader gachaBanner={gachaBanner} value={nbPulls}
                               onChange={event => setNbPulls(parseInt(event.target.value))} value1={nbItemGotten}
                               onChange1={event => setNbItemGotten(parseInt(event.target.value))}/>
+
+            {
+                !bannerCalculator.canCompleteGacha() ?
+                    <IncompleteBannerBody bannerCalculator={bannerCalculator} gachaBanner={gachaBanner}/>
+                    :
+                    <p>
+                        - You can complete the banner
+                    </p>
+            }
+
+            <h3>Next banner</h3>
+
+            <p>
+                - You will be able to complete the next banner
+                in {nextBannerCalculator.getNumberOfDaysForCompletionFunds()} days, aka the {
+                dayjs()
+                    .add(nextBannerCalculator.getNumberOfDaysForCompletionFunds(), "day")
+                    .format('DD/MM/YYYY')
+            }
+            </p>
         </FramedDiv>
     </>
 }

@@ -30,7 +30,7 @@ export default async function Page() {
                 <GachaBannerSummary bannerJSON={expaBannerRaw.export()} currentInventory={currentInventory.toJSON()}
                                     materialUsageData={materialHistory.toJSON()} idUser={materialHistory.userID}/>
 
-                <FOCABanner pullCost={pullCost}/>
+                <FOCABanner pullCost={pullCost.toJSON()} currentInventory={currentInventory.toJSON()} idUser={materialHistory.userID} materialUsageData={materialHistory.toJSON()}/>
             </CenterContent>
         </FadingIn>
     </>
