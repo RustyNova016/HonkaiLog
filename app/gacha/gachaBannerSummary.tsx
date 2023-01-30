@@ -33,10 +33,7 @@ export function GachaBannerSummary(props: GachaBannerSummaryProps) {
 
     const nextBannerCalculator = new GachaBannerCalculator(
         gachaBanner,
-        MaterialQuantity.parse({
-            material: props.currentInventory.material,
-            quantity: props.currentInventory.quantity - bannerCalculator.getRemainingCostForCompletion().quantity
-        }),
+        bannerCalculator.getRemainingInventory(),
         MaterialHistory.parse(props.materialUsageData, props.idUser),
         0
     )
@@ -63,6 +60,7 @@ export function GachaBannerSummary(props: GachaBannerSummaryProps) {
                 - You will be able to complete the next banner
                 in {nextBannerCalculator.getNumberOfDaysForCompletionFunds()} days, aka the {
                 dayjs()
+                    .add(bannerCalculator.getNumberOfDaysForCompletionFunds(), "day")
                     .add(nextBannerCalculator.getNumberOfDaysForCompletionFunds(), "day")
                     .format('DD/MM/YYYY')
             }

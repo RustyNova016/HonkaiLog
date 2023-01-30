@@ -8,16 +8,18 @@ import {MaterialHistoryCalculator} from "@/utils/Objects/Material/MaterialHistor
 
 
 export class GachaBannerCalculator {
-    currentInventory: MaterialQuantityInterface
-    currentPullCount: number
-    gachaBanner: GachaBanner
-    materialHistory: MaterialHistory
+    currentCompletion: number;
+    currentInventory: MaterialQuantityInterface;
+    currentPullCount: number;
+    gachaBanner: GachaBanner;
+    materialHistory: MaterialHistory;
 
-    constructor(gachaBanner: GachaBanner, currentInventory: MaterialQuantityInterface, materialHistory: MaterialHistory, currentPullCount: number = 0) {
+    constructor(gachaBanner: GachaBanner, currentInventory: MaterialQuantityInterface, materialHistory: MaterialHistory, currentPullCount: number = 0, currentCompletion: number = 0) {
         this.gachaBanner = gachaBanner;
         this.currentInventory = currentInventory;
         this.materialHistory = materialHistory;
-        this.currentPullCount = currentPullCount
+        this.currentPullCount = currentPullCount;
+        this.currentCompletion = currentCompletion;
     }
 
     get material(): Material {
@@ -30,11 +32,6 @@ export class GachaBannerCalculator {
 
     public canCompleteGacha(): boolean {
         return this.getNbrOfPullsPossible() > this.getNbrPullsLeft()
-    }
-
-    /** Get the total cost of the banner */
-    public getTotalCostOfCompletion(): MaterialQuantity {
-        return this.gachaBanner.calcCostForCompletion();
     }
 
     public getNbrOfPullsPossible(): number {
@@ -59,11 +56,27 @@ export class GachaBannerCalculator {
         const costForCompletion = this.getTotalCostOfCompletion();
         return new MaterialQuantity(
             costForCompletion.material,
-            costForCompletion.quantity - (this.currentPullCount * this.pullCost.quantity)
+            costForCompletion.quantity - (this.getTotalAmountOfPullsOnBanner()  * this.pullCost.quantity)
         )
     }
 
     public getTotalAmountOfPullsOnBanner() {
-        return this.getNbrOfPullsPossible() + this.currentPullCount;
+        const numberOfPullsMade = this.currentPullCount + (this.currentCompletion * this.gachaBanner.nbPullsForGuaranty);
+        return this.getNbrOfPullsPossible() + numberOfPullsMade;
+    }
+
+    /** Get the total cost of the banner */
+    public getTotalCostOfCompletion(): MaterialQuantity {
+        return this.gachaBanner.calcCostForCompletion();
+    }
+
+    public getRemainingInventory(): MaterialQuantity {
+        let quantity = this.pullCost.quantity - this.getRemainingCostForCompletion().quantity;
+        if (quantity < 0) {quantity = 0}
+
+        return new MaterialQuantity(
+            this.pullCost.material,
+            quantity
+        )
     }
 }

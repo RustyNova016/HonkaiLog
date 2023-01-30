@@ -74,18 +74,14 @@ export function FOCABanner(props: FOCABannerParams) {
         gachaBanner,
         MaterialQuantity.parse(props.currentInventory),
         MaterialHistory.parse(props.materialUsageData, props.idUser),
-        nbPulls
-            //TODO: Add nb guarranties
+        nbPulls,
+        nbItemGotten
     )
 
     const nextBannerCalculator = new GachaBannerCalculator(
         gachaBanner,
-        MaterialQuantity.parse({
-            material: props.currentInventory.material,
-            quantity: props.currentInventory.quantity - bannerCalculator.getRemainingCostForCompletion().quantity
-        }),
-        MaterialHistory.parse(props.materialUsageData, props.idUser),
-        0
+        bannerCalculator.getRemainingInventory(),
+        MaterialHistory.parse(props.materialUsageData, props.idUser)
     )
 
     return <>
@@ -107,8 +103,9 @@ export function FOCABanner(props: FOCABannerParams) {
 
             <p>
                 - You will be able to complete the next banner
-                in {nextBannerCalculator.getNumberOfDaysForCompletionFunds()} days, aka the {
+                in {bannerCalculator.getNumberOfDaysForCompletionFunds() + nextBannerCalculator.getNumberOfDaysForCompletionFunds()} days, aka the {
                 dayjs()
+                    .add(bannerCalculator.getNumberOfDaysForCompletionFunds(), "day")
                     .add(nextBannerCalculator.getNumberOfDaysForCompletionFunds(), "day")
                     .format('DD/MM/YYYY')
             }
