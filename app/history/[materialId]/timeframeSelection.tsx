@@ -4,7 +4,7 @@ export function TimeframeSelection({
                                        nbrDaysBack,
                                        setNbrDaysBack
                                    }: { nbrDaysBack: number, setNbrDaysBack: (number: number) => void }) {
-    return <div className={"flex flex-row align-content-center text-center"}>
+    return <div className={"flex flex-row align-items-center text-center"}>
         <span>Filter: Logs between</span>
         <Dropdown>
             <Dropdown.Toggle variant="success" id="dropdown-basic">

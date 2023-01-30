@@ -1,44 +1,34 @@
-import {MaterialHistory} from "@/utils/Objects/Material/MaterialHistory";
-import {MaterialQuantity} from "@/utils/Objects/Material/MaterialQuantity";
-import {MaterialLogCollection} from "@/utils/Objects/Material/MaterialLogCollection";
 import {MaterialHistoryCalculator} from "@/utils/Objects/Material/MaterialHistoryCalculator";
 import _ from "lodash";
 
 export class MaterialQuantityCalculator {
-    materialHistoryCalculator: MaterialHistoryCalculator;
-    materialQuantity: MaterialQuantity;
+    currentQuantity: number;
+    history: MaterialHistoryCalculator;
+    targetQuantity: number
 
+    constructor(materialHistoryCalculator: MaterialHistoryCalculator, currentQuantity: number, targetQuantity: number) {
+        this.history = materialHistoryCalculator;
+        this.currentQuantity = currentQuantity;
+        this.targetQuantity = targetQuantity;
+    }
 
-    constructor(materialHistory: MaterialHistory, materialQuantity: MaterialQuantity) {
-        this.materialHistoryCalculator = new MaterialHistoryCalculator(materialHistory);
-        this.materialQuantity = materialQuantity;
+    get materialHistory() {
+        return this.history.materialHistory;
     }
 
     public getDaysBeforeReachingQuantity(): number {
-        if(this.hasEnough()) {return 0}
+        if (this.hasEnough()) {return 0}
 
-        const materialPerDay = this.materialHistoryCalculator.calcAvgGain()
+        const materialPerDay = this.history.calcAvgGain()
 
         return _.ceil(this.getQuantityDifference() / materialPerDay, 0)
     }
 
     public getQuantityDifference() {
-        return this.wantedQuantity - this.currentCount;
+        return this.targetQuantity - this.currentQuantity;
     }
 
     private hasEnough() {
-        return this.wantedQuantity === this.currentCount;
-    }
-
-    get currentCount() {
-        return this.materialHistory.logCollection.getCurrentCount();
-    }
-
-    get materialHistory() {
-        return this.materialHistoryCalculator.materialHistory;
-    }
-
-    get wantedQuantity() {
-        return this.materialQuantity.quantity;
+        return this.targetQuantity === this.currentQuantity;
     }
 }

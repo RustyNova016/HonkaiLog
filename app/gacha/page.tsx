@@ -7,6 +7,7 @@ import {PageTitle} from "../../component/pageComponents/Theme/Theme";
 import {GachaBannerSummary} from "@/app/gacha/gachaBannerSummary";
 import {MaterialQuantity} from "@/utils/Objects/Material/MaterialQuantity";
 import dayjs from "dayjs";
+import {FOCABanner} from "@/app/gacha/FOCABanner";
 
 export interface GachaBannerData {
     name: string,
@@ -17,14 +18,9 @@ export default async function Page() {
     const period = {start: dayjs().add(-40, "day"), end: dayjs()};
 
     const materialHistory = (await getMaterialWithUserData(1)).getHistoryForPeriod(period);
-    const materialQuantityWithUserData = new MaterialQuantity(materialHistory.material, 280);
-    const expaBannerRaw = new GachaBanner("Expa Banner", 100, 1, materialQuantityWithUserData)
+    const pullCost = new MaterialQuantity(materialHistory.material, 280);
+    const expaBannerRaw = new GachaBanner("Expa Banner", 100, 1, pullCost)
     const currentInventory = new MaterialQuantity(materialHistory.material, materialHistory.getLogs().getCurrentCount())
-
-    const materialHistorySel = (await getMaterialWithUserData(7)).getHistoryForPeriod(period);
-    const materialQuantityWithUserDataSel = new MaterialQuantity(materialHistorySel.material, 280);
-    const expaBannerRawSel = new GachaBanner("Selene Banner", 100, 1, materialQuantityWithUserData)
-    const currentInventorySel = new MaterialQuantity(materialHistorySel.material, materialHistorySel.getLogs().getCurrentCount())
 
     return <>
         <FadingIn duration={500} className={"size-inherit"} style={{overflow: "auto"}}>
@@ -33,9 +29,8 @@ export default async function Page() {
 
                 <GachaBannerSummary bannerJSON={expaBannerRaw.export()} currentInventory={currentInventory.toJSON()}
                                     materialUsageData={materialHistory.toJSON()} idUser={materialHistory.userID}/>
-                <GachaBannerSummary bannerJSON={expaBannerRawSel.export()}
-                                    currentInventory={currentInventorySel.toJSON()}
-                                    materialUsageData={materialHistorySel.toJSON()} idUser={materialHistorySel.userID}/>
+
+                <FOCABanner pullCost={pullCost}/>
             </CenterContent>
         </FadingIn>
     </>

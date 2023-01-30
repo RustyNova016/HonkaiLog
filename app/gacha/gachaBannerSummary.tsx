@@ -9,7 +9,9 @@ import {MaterialHistory} from "@/utils/Objects/Material/MaterialHistory";
 import {UserMaterialJSONZod} from "@/lib/Zod/Validations/UserMaterial";
 import {MaterialQuantityJSONZod} from "@/lib/Zod/Validations/MaterialQuantityJSONZod";
 import {MaterialQuantity} from "@/utils/Objects/Material/MaterialQuantity";
-import {Form} from "react-bootstrap";
+import {GachaBannerSummaryHeader} from "@/app/gacha/gachaBannerSummaryHeader";
+import {IncompleteBannerBody} from "@/app/gacha/incompleteBannerBody";
+import dayjs from "dayjs";
 
 export interface GachaBannerSummaryProps {
     bannerJSON: GachaBannerJSON
@@ -29,42 +31,42 @@ export function GachaBannerSummary(props: GachaBannerSummaryProps) {
         gachaBanner.nbPullsForGuaranty - nbPulls
     )
 
+    const nextBannerCalculator = new GachaBannerCalculator(
+        gachaBanner,
+        MaterialQuantity.parse({
+            material: props.currentInventory.material,
+            quantity: props.currentInventory.quantity - bannerCalculator.getRemainingCostForCompletion().quantity
+        }),
+        MaterialHistory.parse(props.materialUsageData, props.idUser),
+        0
+    )
+
+    console.log("next banner inventory", nextBannerCalculator.currentInventory)
+
     return <>
         <FramedDiv sides={true} style={{width: "75%"}}>
-
-            <div className={"flex flex-col justify-content-between align-content-center my-3"}
-                 style={{paddingLeft: 20}}>
-                <h3 className={"mb-2"} style={{fontSize: "1.5em"}}><u>{gachaBanner.name}</u></h3>
-
-            </div>
-            <>
-                <Form>
-                    <Form.Group className="mb-3">
-                        <Form.Label label="Guarranty" className="mb-3"></Form.Label>
-                        <Form.Control type="number"
-                                      placeholder="name@example.com"
-                                      value={nbPulls}
+            <GachaBannerSummaryHeader gachaBanner={gachaBanner} value={nbPulls}
                                       onChange={event => setNbPulls(parseInt(event.target.value))}/>
-                    </Form.Group>
-                </Form>
-            </>
 
             {
                 !bannerCalculator.canCompleteGacha() ?
-                    <p>
-                        - You have enough for {bannerCalculator.getNbrOfPullsPossible()} pulls <br/>
-                        - You can complete {bannerCalculator.getPercentageAchievable()} % of the banner, which is a
-                        total
-                        of {bannerCalculator.getTotalAmountOfPullsOnBanner()} pulls
-                        / {gachaBanner.calcNBPullsForBannerCompletion()}<br/>
-
-                        - With your current gains, you'll be able to collect enough founds to finish the banner in {bannerCalculator.getNumberOfDaysForCompletionFunds()} days
-                    </p>
+                    <IncompleteBannerBody bannerCalculator={bannerCalculator} gachaBanner={gachaBanner}/>
                     :
-                    <>
-                        You can complete the banner
-                    </>
+                    <p>
+                        - You can complete the banner
+                    </p>
             }
+
+            <h3>Next banner</h3>
+
+            <p>
+                - You will be able to complete the next banner
+                in {nextBannerCalculator.getNumberOfDaysForCompletionFunds()} days, aka the {
+                dayjs()
+                    .add(nextBannerCalculator.getNumberOfDaysForCompletionFunds(), "day")
+                    .format('DD/MM/YYYY')
+            }
+            </p>
         </FramedDiv>
     </>;
 }
