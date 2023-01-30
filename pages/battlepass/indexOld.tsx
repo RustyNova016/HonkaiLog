@@ -3,7 +3,6 @@ import {Fade} from "react-awesome-reveal";
 import pageStyles from "../../styles/page.module.scss";
 import {Col, Container, Form, Row} from "react-bootstrap";
 import {useState} from "react";
-import {Parser} from "acorn";
 
 export default function Battlepass() {
     const [BPXP, setBPXP] = useState(0);

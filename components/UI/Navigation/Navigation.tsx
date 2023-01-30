@@ -24,7 +24,7 @@ export function Navigation() {
                     <div className={"nav-item navbar-nav me-auto mb-2 mb-lg-0 text-l"} style={{alignItems: "center"}}>
                         <Link className={"nav-link"} href={"/history"}><span>Material History</span></Link>
                         <Link className={"nav-link"} href={"/gacha"}><span>Gacha</span></Link>
-                        <Link className={"nav-link"} href={"/"}><span>Battle Pass</span></Link>
+                        <Link className={"nav-link"} href={"/battlepass"}><span>Battle Pass</span></Link>
                     </div>
 
                 </div>
