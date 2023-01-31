@@ -15,7 +15,7 @@ export interface GachaBannerData {
 }
 
 export default async function Page() {
-    const period = {start: dayjs().add(-40, "day"), end: dayjs()};
+    const period = {start: dayjs().add(-35, "day"), end: dayjs()};
 
     const materialHistory = (await getMaterialWithUserData(1)).getHistoryForPeriod(period);
     const pullCost = new MaterialQuantity(materialHistory.material, 280);

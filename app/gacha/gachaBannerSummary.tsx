@@ -43,7 +43,7 @@ export function GachaBannerSummary(props: GachaBannerSummaryProps) {
     return <>
         <FramedDiv sides={true} style={{width: "75%"}}>
             <GachaBannerSummaryHeader gachaBanner={gachaBanner} value={nbPulls}
-                                      onChange={event => setNbPulls(parseInt(event.target.value))}/>
+                                      setNbPulls={setNbPulls}/>
 
             {
                 !bannerCalculator.canCompleteGacha() ?
@@ -58,7 +58,7 @@ export function GachaBannerSummary(props: GachaBannerSummaryProps) {
 
             <p>
                 - You will be able to complete the next banner
-                in {nextBannerCalculator.getNumberOfDaysForCompletionFunds()} days, aka the {
+                in {bannerCalculator.getNumberOfDaysForCompletionFunds() + nextBannerCalculator.getNumberOfDaysForCompletionFunds()} days, aka the {
                 dayjs()
                     .add(bannerCalculator.getNumberOfDaysForCompletionFunds(), "day")
                     .add(nextBannerCalculator.getNumberOfDaysForCompletionFunds(), "day")
