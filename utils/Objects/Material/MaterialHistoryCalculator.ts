@@ -1,11 +1,11 @@
-import dayjs, {Dayjs} from "dayjs";
+import dayjs, {Dayjs, OpUnitType, QUnitType} from "dayjs";
 import _ from "lodash";
 import {Period} from "@/utils/Objects/Material/MaterialLogCollection";
 import {MaterialQuantityLog} from "@/utils/Objects/Material/MaterialQuantityLog";
 import {MaterialQuantity} from "@/utils/Objects/Material/MaterialQuantity";
 import {MaterialHistory} from "@/utils/Objects/Material/MaterialHistory";
 
-/** Class that contain all the logic for collection wide calculations */
+/** Class that contain all the functions for material logs analysis */
 export class MaterialHistoryCalculator {
     readonly materialHistory: MaterialHistory
 
@@ -17,9 +17,19 @@ export class MaterialHistoryCalculator {
     get logs() {
         return this.materialHistory.logCollection;
     }
+    /** Returns the gain or loss of the whole collection. */
+    public calcNetDelta(): number {
+        return this.logs.getNewestLogOrThrow().quantity - this.logs.getOldestLogOrThrow().quantity;
+    }
 
-    calcAvgDelta(period?: Period, per: dayjs.QUnitType | dayjs.OpUnitType = "days"): number {
-        return this.logs.calcAvgDelta(period, per);
+    /** Return the average delta of the period */
+    public calcAvgDelta(period?: Period, per: QUnitType | OpUnitType = "days"): number {
+        if (period === undefined) {return this.calcAvgGain(this.logs.getCollectionPeriod(), per)}
+
+        const timeDuration = period.end.diff(period.start, per, true);
+        if (timeDuration === 0) return 0
+
+        return _.divide(this.calcNetDelta(), timeDuration);
     }
 
     calcAvgGain(period?: Period, per: dayjs.QUnitType | dayjs.OpUnitType = "days"): number {
@@ -45,20 +55,14 @@ export class MaterialHistoryCalculator {
     }
 
     private getLinearFormulaAt(x: Dayjs): { a: number; b: number } {
-        console.log("Logs: ", this.logs)
         const baseLog = this.logs.getLogBeforeDate(x);
         const nextLog = this.logs.getLogAfterDate(x);
 
         if (baseLog === undefined) {throw new Error("Cannot find log before date. The function cannot be called unless there's a log before and after the given date")}
         if (nextLog === undefined) {throw new Error("Cannot find log after date. The function cannot be called unless there's a log before and after the given date")}
 
-        console.log("baseLog", baseLog)
-        console.log("nextLog", nextLog)
-
         const quantityDifference = nextLog.quantity - baseLog.quantity;
         const timeDifference = nextLog.logDate.unix() - baseLog.logDate.unix();
-
-        console.log(quantityDifference)
 
         const slope = _.divide(quantityDifference, timeDifference);
         const point = baseLog.quantity - (slope * baseLog.logDate.unix())
@@ -73,8 +77,6 @@ export class MaterialHistoryCalculator {
     private getLinearQuantityAtTimestamp(date: Dayjs): number {
         const dateIsBeforeFirstLog = date.isBefore(this.logs.getOldestLogOrThrow().logDate);
         if (dateIsBeforeFirstLog) {throw new Error("Cannot extrapolate the quantity. The oldest log is newer than the date given")}
-
-        const dateIsAfterLastLog = date.isAfter(this.logs.getNewestLogOrThrow().log_date);
 
         const linFunc = this.getLinearFormulaAt(date);
         console.log("linfunc", linFunc)

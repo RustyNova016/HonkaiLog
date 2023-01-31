@@ -33,7 +33,7 @@ export class MaterialHistory {
         return this.logCollection;
     }
 
-    getName(plural?: boolean, startcase?: boolean): string {
+    public getName(plural?: boolean, startcase?: boolean): string {
         return this.material.getName(plural, startcase);
     }
 

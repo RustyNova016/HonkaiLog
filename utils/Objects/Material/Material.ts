@@ -25,14 +25,16 @@ export class Material {
     }
 
     /** Create a Material instance from a validation pattern */
-    static parse(data: z.infer<typeof MaterialJSONZod>, userId?: string) {
+    static parse(data: z.infer<typeof MaterialJSONZod>) {
         return new Material(data.id, data.name);
     }
 
     /** Create a new instance of the logs with userdata
      * @deprecated
+     * @ts-ignore
      */
     public addUserData(logSource: LogSource): MaterialHistory {
+        // @ts-ignore
         return new MaterialHistory(this.id, this.name, logSource)
     }
 

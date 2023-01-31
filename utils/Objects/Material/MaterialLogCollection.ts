@@ -9,7 +9,6 @@ import _ from "lodash";
 import {z} from "zod";
 import {MaterialQuantityLogArrayZod} from "@/lib/Zod/Validations/MaterialQuantityLog";
 import dayjs, {Dayjs, OpUnitType, QUnitType} from "dayjs";
-import {MaterialHistoryCalculator} from "@/utils/Objects/Material/MaterialHistoryCalculator";
 import {LogSource} from "@/utils/Types/LogSource";
 
 export type Period = { start: Dayjs, end: Dayjs };
@@ -120,7 +119,12 @@ export class MaterialLogCollection {
 
         for (let i = 0; i < this.logs.length; i++) {
             if (i !== 0) {
-                delta = this.logs[i - 1].getChronologicalDifference(this.logs[i])
+                const prevLog = this.logs[i - 1];
+                const log = this.logs[i];
+
+                if (prevLog === undefined || log === undefined) {return 0}
+
+                delta = prevLog.getChronologicalDifference(log)
             }
 
             if (delta > 0) {
@@ -138,7 +142,11 @@ export class MaterialLogCollection {
 
         for (let i = 0; i < this.logs.length; i++) {
             if (i !== 0) {
-                delta = this.logs[i - 1].getChronologicalDifference(this.logs[i])
+                const prevLog = this.logs[i - 1];
+                const log = this.logs[i];
+
+                if (prevLog === undefined || log === undefined) {return 0}
+                delta = prevLog.getChronologicalDifference(log)
             }
 
             if (delta < 0) {
@@ -148,22 +156,6 @@ export class MaterialLogCollection {
 
         return totalSpent;
     }
-
-    public findAll(params: {date?: Dayjs}): MaterialQuantityLog[] {
-        const outs = []
-
-        for (const log of this.logs) {
-            if(params.date !== undefined){
-                if (!log.logDate.isSame(params.date)){
-                    continue
-                }
-            }
-
-            outs.push(log)
-        }
-
-        return outs
-}
 
     /** Export the logs to a plain object */
     public export(): z.infer<typeof MaterialQuantityLogArrayZod> {
@@ -181,8 +173,20 @@ export class MaterialLogCollection {
         return new MaterialLogCollection(this.material, this.logs.filter(test))
     }
 
-    public getAnalyser() {
-        return new MaterialHistoryCalculator(this)
+    public findAll(params: { date?: Dayjs }): MaterialQuantityLog[] {
+        const outs = []
+
+        for (const log of this.logs) {
+            if (params.date !== undefined) {
+                if (!log.logDate.isSame(params.date)) {
+                    continue
+                }
+            }
+
+            outs.push(log)
+        }
+
+        return outs
     }
 
     /** @deprecated */
@@ -225,7 +229,6 @@ export class MaterialLogCollection {
     }
 
 
-
     /** @deprecated */
     getLogsBetween(dateFrom?: Date, dateTo?: Date): MaterialLogCollection {
         const {dateLowerBound, dateUpperBound} = this.getTimeframe(dateFrom, dateTo);
@@ -240,18 +243,63 @@ export class MaterialLogCollection {
         )
     }
 
+    public getLogsInPeriod(period: Period, keepLastLogBeforeDate?: boolean, keepFirstLogBeforeDate?: boolean): MaterialLogCollection {
+        return this
+            .getLogsNewerThan(period.start, keepLastLogBeforeDate)
+            .getLogsOlderThan(period.end, keepFirstLogBeforeDate)
+    }
+
     /** Return the logs of a specific timeframe
-     * @deprecated*/
+     * @deprecated
+     * */
     public getLogsInTimeframe(timeframe: ITimeframe, addPreviousLog?: boolean): MaterialLogCollection {
         const filteredLogs = this.filter((log) => log.inTimeframe(timeframe));
 
         if (addPreviousLog) {
             for (let i = 0; i < this.logs.length; i++) {
+                // @ts-ignore
                 if (this.logs[i].log_date > timeframe.start) {
                     if (i !== 0) {
+                        // @ts-ignore
                         filteredLogs.addLogs([this.logs[i - 1]])
                     }
                 }
+            }
+        }
+
+        return filteredLogs
+    }
+
+    /** Return all the logs that were made after a date
+     *  Optionally add the last log made before the date
+     */
+    public getLogsNewerThan(date: Dayjs, keepLastLogBeforeDate?: boolean): MaterialLogCollection {
+        const filteredLogs = this.filter((value) => {return dayjs(value.log_date).isAfter(date) || dayjs(value.log_date).isSame(date)});
+
+        if (keepLastLogBeforeDate) {
+            const oldLogs = this.getLogsOlderThan(date);
+
+            if (!oldLogs.isEmpty()) {
+                const lastLog = oldLogs.getNewestLogOrThrow()
+                filteredLogs.push(lastLog);
+            }
+        }
+
+        return filteredLogs
+    }
+
+    /** Return all the logs that were made before a date
+     *  Optionally add the first log made after the date
+     */
+    public getLogsOlderThan(date: Dayjs, keepFirstLogBeforeDate?: boolean) {
+        const filteredLogs = this.filter((value) => {return value.logDate.isBefore(date) || dayjs(value.log_date).isSame(date)});
+
+        if (keepFirstLogBeforeDate) {
+            const newLogs = this.getLogsNewerThan(date);
+
+            if (!newLogs.isEmpty()) {
+                const lastLog = newLogs.getOldestLogOrThrow()
+                filteredLogs.push(lastLog);
             }
         }
 
@@ -272,8 +320,9 @@ export class MaterialLogCollection {
 
     /** Return the newest log */
     public getNewestLogOrThrow(): MaterialQuantityLog {
-        this.throwOnEmptyArray()
-        return this.logs[this.logs.length - 1];
+        const log = this.getNewestLog();
+        if (log === undefined) {throw new EmptyLogCollectionException()}
+        return log;
     }
 
     public getOldestLog(): MaterialQuantityLog | undefined {
@@ -282,8 +331,9 @@ export class MaterialLogCollection {
 
     /** Return the oldest log in the list */
     public getOldestLogOrThrow(): MaterialQuantityLog {
-        this.throwOnEmptyArray();
-        return this.logs[0];
+        const log = this.getNewestLog();
+        if (log === undefined) {throw new EmptyLogCollectionException()}
+        return log;
     }
 
     /** Return the amount of time elapsed between the oldest log and the newest log */
@@ -319,8 +369,11 @@ export class MaterialLogCollection {
         return this.logs.length === 0;
     }
 
-    /** Create a log and save it to the database */
+    /** Create a log and save it to the database
+     * @deprecated
+     * */
     public async makeLog(quantity: number) {
+        // @ts-ignore
         await MaterialQuantityLog.makeLog(new MaterialQuantity(this.material, quantity))
     }
 
@@ -331,6 +384,7 @@ export class MaterialLogCollection {
                 return log
             }
         }
+        return undefined
     }
 
     /** Give the previous log in the array */
@@ -344,6 +398,7 @@ export class MaterialLogCollection {
 
             previousLog = log;
         }
+        return undefined
     }
 
     /** Add one or multiple logs to the log array */
@@ -354,48 +409,6 @@ export class MaterialLogCollection {
         this.sortChronologically()
         this.cleanUp()
         return this
-    }
-
-    /** Return all the logs that were made before a date
-     *  Optionally add the first log made after the date
-     */
-    public getLogsOlderThan(date: Dayjs, keepFirstLogBeforeDate?: boolean) {
-        const filteredLogs = this.filter((value) => {return value.logDate.isBefore(date) || dayjs(value.log_date).isSame(date)});
-
-        if (keepFirstLogBeforeDate) {
-            const newLogs = this.getLogsNewerThan(date);
-
-            if (!newLogs.isEmpty()) {
-                const lastLog = newLogs.getOldestLogOrThrow()
-                filteredLogs.push(lastLog);
-            }
-        }
-
-        return filteredLogs
-    }
-
-    public getLogsInPeriod(period: Period, keepLastLogBeforeDate?: boolean, keepFirstLogBeforeDate?: boolean): MaterialLogCollection {
-        return this
-            .getLogsNewerThan(period.start, keepLastLogBeforeDate)
-            .getLogsOlderThan(period.end, keepFirstLogBeforeDate)
-    }
-
-    /** Return all the logs that were made after a date
-     *  Optionally add the last log made before the date
-     */
-    public getLogsNewerThan(date: Dayjs, keepLastLogBeforeDate?: boolean): MaterialLogCollection {
-        const filteredLogs = this.filter((value) => {return dayjs(value.log_date).isAfter(date) || dayjs(value.log_date).isSame(date)});
-
-        if (keepLastLogBeforeDate) {
-            const oldLogs = this.getLogsOlderThan(date);
-
-            if (!oldLogs.isEmpty()) {
-                const lastLog = oldLogs.getNewestLogOrThrow()
-                filteredLogs.push(lastLog);
-            }
-        }
-
-        return filteredLogs
     }
 
     /** Sort this.log from oldest to newest log */
@@ -441,6 +454,7 @@ export class MaterialLogCollection {
             const previousLog = this.logs[i - 1];
             const nextLog = this.logs[i + 1];
 
+            if (log === undefined) {continue}
             if (previousLog === undefined) {continue}
             if (nextLog === undefined) {continue}
 
@@ -450,16 +464,19 @@ export class MaterialLogCollection {
             const isSameQuantitySandwich = isSameQuantityAsPrevious && isSameQuantityAsNext
 
             if (isSameDateAsPrevious && isSameQuantityAsPrevious) {
-                console.log("Removing log: ", log, "for being duplicate of:", previousLog)
+                //console.log("Removing log: ", log, "for being duplicate of:", previousLog)
                 this.remove(log);
             }
+
+            if (isSameQuantitySandwich) {this.remove(log);}
+
         }
 
         this.sortChronologically()
     }
 
     private remove(log: MaterialQuantityLog) {
-        _.remove(this.logs, (value, index) => {return log.isSame(value)});
+        _.remove(this.logs, (value) => {return log.isSame(value)});
         this.cleanUp();
     }
 

@@ -47,14 +47,20 @@ export class MaterialQuantityLog {
         return this.id === undefined
     }
 
+    // @ts-ignore
     /** Create a MaterialQuantityLog instance from a json object
      * @deprecated */
+    // @ts-ignore
     static fromJSON(jsonLog: MaterialLogItemJSON, material: MaterialHistory): MaterialQuantityLog {
+        // @ts-ignore
         return new MaterialQuantityLog(jsonLog.id, new Date(jsonLog.log_date), jsonLog.userId);
     }
 
-    /** Create a log and save it to the database */
+    /** Create a log and save it to the database
+     * @deprecated
+     * */
     static async makeLog(quantity: MaterialQuantity) {
+        // @ts-ignore
         const res = await saveMaterialQuantityLogFromMatQuan(quantity)
 
         logger.info("Done sending!", "Material Log")
@@ -62,8 +68,8 @@ export class MaterialQuantityLog {
         // TODO: check for errors
     }
 
-    static parse(data: z.infer<typeof MaterialQuantityLogZod>, material: MaterialHistory) {
-        return new MaterialQuantityLog(data.id, new Date(data.loggedAt), material.userID, new MaterialQuantity(material, data.quantity))
+    static parse(data: z.infer<typeof MaterialQuantityLogZod>, materialHistory: MaterialHistory) {
+        return new MaterialQuantityLog(data.id, new Date(data.loggedAt), materialHistory.userID, new MaterialQuantity(materialHistory.material, data.quantity))
     }
 
     /** Convert anything log related to MaterialQuantityLog */
