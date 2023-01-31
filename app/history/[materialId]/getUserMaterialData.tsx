@@ -36,3 +36,4 @@ export async function getMaterialWithUserData(idMaterial: number): Promise<Mater
     //console.info("Latest count in object: ", materialWithUserData.logCollection.getCurrentCount())
     return materialWithUserData;
 }
+
