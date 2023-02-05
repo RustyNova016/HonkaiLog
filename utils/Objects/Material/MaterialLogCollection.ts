@@ -40,96 +40,6 @@ export class MaterialLogCollection {
         })
     }
 
-    /** Return the average delta of the period */
-    public calcAvgDelta(period?: Period, per: QUnitType | OpUnitType = "days"): number {
-        if (period === undefined) {
-            return this.calcAvgGain(this.getCollectionPeriod(), per)
-        }
-
-        const timeDuration = period.end.diff(period.start, per, true);
-        if (timeDuration === 0) return 0
-
-        return _.divide(this.calcNetDelta(), timeDuration);
-    }
-
-    /** Return the average gain of the period */
-    public calcAvgGain(period?: Period, per: QUnitType | OpUnitType = "days"): number {
-        if (period === undefined) {
-            return this.calcAvgGain(this.getCollectionPeriod(), per)
-        }
-
-        const timeDuration = period.end.diff(period.start, per, true);
-        if (timeDuration === 0) return 0
-
-        return _.divide(this.calcNetGain(), timeDuration);
-    }
-
-    /** Return the average loss of the period */
-    public calcAvgLoss(period?: Period, per: QUnitType | OpUnitType = "days"): number {
-        if (period === undefined) {
-            return this.calcAvgGain(this.getCollectionPeriod(), per)
-        }
-
-        const timeDuration = period.end.diff(period.start, per, true);
-        if (timeDuration === 0) return 0
-
-        return _.divide(this.calcNetLoss(), timeDuration);
-    }
-
-    /** Returns the gain or loss of the whole collection. */
-    public calcNetDelta(): number {
-        return this.getNewestLogOrThrow().quantity - this.getOldestLogOrThrow().quantity;
-    }
-
-    /** Return the net gain of the whole collection. */
-    public calcNetGain(): number {
-        let gain = 0;
-        let delta = 0;
-
-        for (let i = 0; i < this.logs.length; i++) {
-            if (i !== 0) {
-                const prevLog = this.logs[i - 1];
-                const log = this.logs[i];
-
-                if (prevLog === undefined || log === undefined) {
-                    return 0
-                }
-
-                delta = prevLog.getChronologicalDifference(log)
-            }
-
-            if (delta > 0) {
-                gain += delta;
-            }
-        }
-
-        return gain;
-    }
-
-    /** Return the net loss of the whole collection */
-    public calcNetLoss(): number {
-        let totalSpent = 0;
-        let delta = 0;
-
-        for (let i = 0; i < this.logs.length; i++) {
-            if (i !== 0) {
-                const prevLog = this.logs[i - 1];
-                const log = this.logs[i];
-
-                if (prevLog === undefined || log === undefined) {
-                    return 0
-                }
-                delta = prevLog.getChronologicalDifference(log)
-            }
-
-            if (delta < 0) {
-                totalSpent += delta;
-            }
-        }
-
-        return totalSpent;
-    }
-
     /** Export the logs to a plain object */
     public export(): z.infer<typeof MaterialQuantityLogArrayZod> {
         const logs = []
@@ -312,21 +222,6 @@ export class MaterialLogCollection {
         })
         return this
     }
-
-    /** Add a log to the log array */
-    private addMaterialLog(log: MaterialQuantityLog) {
-        // TODO: Check for duplicates/Optimizations
-        // TODO: Check if the logs is the same
-        this.logs.push(log)
-    }
-
-    /** Add multiple logs to the array */
-    private addMaterialLogs(logs: MaterialQuantityLog[]) {
-        for (const log of logs) {
-            this.addMaterialLog(log);
-        }
-    }
-
     private cleanUp() {
         this.sortChronologically()
 

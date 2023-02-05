@@ -1,5 +1,3 @@
-import dayjs, {Dayjs} from "dayjs";
-
 interface PrismaMaterialLogCreate {
     idMaterial: number;
     idUser: string;
@@ -16,10 +14,18 @@ interface honkaiLogv1MaterialLog {
 
 export function convertHonkaiLogv1Datasource(item: honkaiLogv1MaterialLog): null | PrismaMaterialLogCreate {
     let idMat: number;
-    if (item.id_material === "1") {idMat = 1} else {return null}
+    if (item.id_material === "1") {
+        idMat = 1
+    } else {
+        return null
+    }
 
     let idUser: string;
-    if (item.id_user === "2") {idUser = "clbi86bpc0000z3v86fmco1nl"} else {return null}
+    if (item.id_user === "2") {
+        idUser = "clbi86bpc0000z3v86fmco1nl"
+    } else {
+        return null
+    }
 
     return {
         quantity: parseInt(item.quantity),

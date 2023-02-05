@@ -1,5 +1,4 @@
 import {MaterialQuantity} from "./MaterialQuantity";
-import {ITimeframe} from "../../../context/TimeframeContext";
 import {z} from "zod";
 import {MaterialQuantityLogJSONZod} from "@/lib/Zod/Validations/MaterialQuantityLog";
 import dayjs from "dayjs";
@@ -67,13 +66,6 @@ export class MaterialQuantityLog {
     /** Return the difference of the quantity of logs between two logs */
     public getQuantityDifference(log: MaterialQuantityLog): number {
         return this.quantity - log.quantity;
-    }
-
-    /** Return true if the log was made during that timeframe */
-    public inTimeframe(timeframe: ITimeframe) {
-        const afterStart = new Date(this.log_date) >= timeframe.start;
-        const beforeEnd = new Date(this.log_date) <= timeframe.end;
-        return afterStart && beforeEnd;
     }
 
     public isSame(log: MaterialQuantityLog) {

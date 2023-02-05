@@ -2,7 +2,7 @@
 import {CenteredDiv} from "../../Layout/CenteredDiv";
 import {Stack} from "react-bootstrap";
 import {PropsWithClass, PropsWithStyle} from "../../../tools/Types";
-import {LoadingIcon} from "../../../components/UI/Loading/LoadingIcon";
+import {LoadingIcon} from "@/components/UI/Loading/LoadingIcon";
 
 export interface LoadingComponentProps extends PropsWithClass, PropsWithStyle {
     height?: string;
