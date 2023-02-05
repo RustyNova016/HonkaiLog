@@ -1,21 +1,21 @@
 "use client"
 import {useForm} from "react-hook-form";
 import {useRouter} from "next/navigation";
-import {saveMaterialQuantityLog} from "@/utils/Objects/Funcs/SaveMaterialQuantityLog";
+import {saveMaterialQuantityLog} from "@/app/history/[materialId]/saveMaterialQuantityLog";
 
 export interface MaterialQuantityInputFormI {
     quantity: string
 }
 
 export function MaterialLogsInput(props: { defaultQuantity: number, materialId: number }) {
-    const {register, handleSubmit, watch, formState: {errors}} = useForm<MaterialQuantityInputFormI>();
+    const {register, handleSubmit} = useForm<MaterialQuantityInputFormI>();
     const router = useRouter();
 
     async function OnSubmit(data: MaterialQuantityInputFormI) {
         await saveMaterialQuantityLog({
             quantity: parseInt(data.quantity),
             idMaterial: props.materialId
-        }).then(value => {router.refresh()})
+        }).then(() => {router.refresh()})
     }
 
     return <>

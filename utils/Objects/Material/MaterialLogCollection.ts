@@ -1,14 +1,8 @@
 import {MaterialQuantityLog} from "@/utils/Objects/Material/MaterialQuantityLog";
-import {MaterialLogsAPIFetchResponse} from "../../../pages/api/material/logs/[id]";
-import {MaterialQuantity} from "./MaterialQuantity";
-import {ITimeframe} from "../../../context/TimeframeContext";
-import {TimeRef} from "../../TimeTools";
-import {Timeframe} from "../../classes/Timeframe";
 import _ from "lodash";
 import {z} from "zod";
 import {MaterialQuantityLogArrayZod} from "@/lib/Zod/Validations/MaterialQuantityLog";
 import dayjs, {Dayjs, OpUnitType, QUnitType} from "dayjs";
-import {LogSource} from "@/utils/Types/LogSource";
 import {Material} from "@/utils/Objects/Material/Material";
 
 export type Period = { start: Dayjs, end: Dayjs };
@@ -46,117 +40,6 @@ export class MaterialLogCollection {
         })
     }
 
-    /** Add logs from any source
-     *  @return boolean Return true if logs got added
-     *  @deprecated
-     */
-    public addLogs(logs?: MaterialQuantityLog[], APIResponseData?: MaterialLogsAPIFetchResponse): boolean {
-        let logAdded = false
-
-        if (logs !== undefined) {
-            this.addMaterialLogs(logs)
-            logAdded = true
-        }
-
-        if (APIResponseData !== undefined) {
-            this.addAPIResponseLogs(APIResponseData)
-            logAdded = true
-        }
-
-        this.sortChronologically()
-
-        return logAdded
-    }
-
-    /** Return the average delta of the period */
-    public calcAvgDelta(period?: Period, per: QUnitType | OpUnitType = "days"): number {
-        if (period === undefined) {return this.calcAvgGain(this.getCollectionPeriod(), per)}
-
-        const timeDuration = period.end.diff(period.start, per, true);
-        if (timeDuration === 0) return 0
-
-        return _.divide(this.calcNetDelta(), timeDuration);
-    }
-
-    /** Return the average gain of the period */
-    public calcAvgGain(period?: Period, per: QUnitType | OpUnitType = "days"): number {
-        if (period === undefined) {return this.calcAvgGain(this.getCollectionPeriod(), per)}
-
-        const timeDuration = period.end.diff(period.start, per, true);
-        if (timeDuration === 0) return 0
-
-        return _.divide(this.calcNetGain(), timeDuration);
-    }
-
-    /** Return the average gain of the period
-     * @deprecated*/
-    public calcAvgGainUntilToday(per: TimeRef = "days"): number {
-        const timeElapsed = this.getTimeElapsedToToday(per)
-        if (timeElapsed === 0) return 0
-
-        return this.calcNetGain() / timeElapsed;
-    }
-
-    /** Return the average loss of the period */
-    public calcAvgLoss(period?: Period, per: QUnitType | OpUnitType = "days"): number {
-        if (period === undefined) {return this.calcAvgGain(this.getCollectionPeriod(), per)}
-
-        const timeDuration = period.end.diff(period.start, per, true);
-        if (timeDuration === 0) return 0
-
-        return _.divide(this.calcNetLoss(), timeDuration);
-    }
-
-    /** Returns the gain or loss of the whole collection. */
-    public calcNetDelta(): number {
-        return this.getNewestLogOrThrow().quantity - this.getOldestLogOrThrow().quantity;
-    }
-
-    /** Return the net gain of the whole collection. */
-    public calcNetGain(): number {
-        let gain = 0;
-        let delta = 0;
-
-        for (let i = 0; i < this.logs.length; i++) {
-            if (i !== 0) {
-                const prevLog = this.logs[i - 1];
-                const log = this.logs[i];
-
-                if (prevLog === undefined || log === undefined) {return 0}
-
-                delta = prevLog.getChronologicalDifference(log)
-            }
-
-            if (delta > 0) {
-                gain += delta;
-            }
-        }
-
-        return gain;
-    }
-
-    /** Return the net loss of the whole collection */
-    public calcNetLoss(): number {
-        let totalSpent = 0;
-        let delta = 0;
-
-        for (let i = 0; i < this.logs.length; i++) {
-            if (i !== 0) {
-                const prevLog = this.logs[i - 1];
-                const log = this.logs[i];
-
-                if (prevLog === undefined || log === undefined) {return 0}
-                delta = prevLog.getChronologicalDifference(log)
-            }
-
-            if (delta < 0) {
-                totalSpent += delta;
-            }
-        }
-
-        return totalSpent;
-    }
-
     /** Export the logs to a plain object */
     public export(): z.infer<typeof MaterialQuantityLogArrayZod> {
         const logs = []
@@ -190,19 +73,6 @@ export class MaterialLogCollection {
         return outs
     }
 
-    /** @deprecated */
-    getAverageGain(): number {
-        const nbDays = this.getNbDays();
-        return this.calcNetGain() / nbDays;
-    }
-
-    /** @deprecated */
-    getAverageGainOfPeriod(dateFrom?: Date, dateTo?: Date): number {
-        const {dateLowerBound, dateUpperBound} = this.getTimeframe(dateFrom, dateTo);
-
-        return this.getLogsBetween(dateLowerBound, dateUpperBound).getAverageGain();
-    }
-
     public getCollectionPeriod() {
         return {
             start: this.getOldestLogOrThrow().logDate,
@@ -229,53 +99,20 @@ export class MaterialLogCollection {
         return this.getLogsOlderThan(date).getNewestLog();
     }
 
-
-    /** @deprecated */
-    getLogsBetween(dateFrom?: Date, dateTo?: Date): MaterialLogCollection {
-        const {dateLowerBound, dateUpperBound} = this.getTimeframe(dateFrom, dateTo);
-
-        return new MaterialLogCollection(
-            this.material,
-            this.logs.filter(
-                (log) => {
-                    return new Date(log.log_date) >= dateLowerBound && new Date(log.log_date) <= dateUpperBound;
-                }
-            )
-        )
-    }
-
     public getLogsInPeriod(period: Period, keepLastLogBeforeDate?: boolean, keepFirstLogBeforeDate?: boolean): MaterialLogCollection {
         return this
             .getLogsNewerThan(period.start, keepLastLogBeforeDate)
             .getLogsOlderThan(period.end, keepFirstLogBeforeDate)
     }
 
-    /** Return the logs of a specific timeframe
-     * @deprecated
-     * */
-    public getLogsInTimeframe(timeframe: ITimeframe, addPreviousLog?: boolean): MaterialLogCollection {
-        const filteredLogs = this.filter((log) => log.inTimeframe(timeframe));
-
-        if (addPreviousLog) {
-            for (let i = 0; i < this.logs.length; i++) {
-                // @ts-ignore
-                if (this.logs[i].log_date > timeframe.start) {
-                    if (i !== 0) {
-                        // @ts-ignore
-                        filteredLogs.addLogs([this.logs[i - 1]])
-                    }
-                }
-            }
-        }
-
-        return filteredLogs
-    }
-
     /** Return all the logs that were made after a date
      *  Optionally add the last log made before the date
      */
+
     public getLogsNewerThan(date: Dayjs, keepLastLogBeforeDate?: boolean): MaterialLogCollection {
-        const filteredLogs = this.filter((value) => {return dayjs(value.log_date).isAfter(date) || dayjs(value.log_date).isSame(date)});
+        const filteredLogs = this.filter((value) => {
+            return dayjs(value.log_date).isAfter(date) || dayjs(value.log_date).isSame(date)
+        });
 
         if (keepLastLogBeforeDate) {
             const oldLogs = this.getLogsOlderThan(date);
@@ -293,7 +130,9 @@ export class MaterialLogCollection {
      *  Optionally add the first log made after the date
      */
     public getLogsOlderThan(date: Dayjs, keepFirstLogBeforeDate?: boolean) {
-        const filteredLogs = this.filter((value) => {return value.logDate.isBefore(date) || dayjs(value.log_date).isSame(date)});
+        const filteredLogs = this.filter((value) => {
+            return value.logDate.isBefore(date) || dayjs(value.log_date).isSame(date)
+        });
 
         if (keepFirstLogBeforeDate) {
             const newLogs = this.getLogsNewerThan(date);
@@ -307,14 +146,6 @@ export class MaterialLogCollection {
         return filteredLogs
     }
 
-    /** Return the number of days between each ends of the period
-     *  @deprecated
-     */
-    public getNbDays(): number {
-        const time = this.getNewestLogOrThrow().log_date.getTime() - this.getOldestLogOrThrow().log_date.getTime();
-        return time / (1000 * 60 * 60 * 24);
-    }
-
     public getNewestLog(): MaterialQuantityLog | undefined {
         return this.logs[this.logs.length - 1];
     }
@@ -322,7 +153,9 @@ export class MaterialLogCollection {
     /** Return the newest log */
     public getNewestLogOrThrow(): MaterialQuantityLog {
         const log = this.getNewestLog();
-        if (log === undefined) {throw new EmptyLogCollectionException()}
+        if (log === undefined) {
+            throw new EmptyLogCollectionException()
+        }
         return log;
     }
 
@@ -333,49 +166,15 @@ export class MaterialLogCollection {
     /** Return the oldest log in the list */
     public getOldestLogOrThrow(): MaterialQuantityLog {
         const log = this.getOldestLog();
-        if (log === undefined) {throw new EmptyLogCollectionException()}
-        return log;
-    }
-
-    /** Return the amount of time elapsed between the oldest log and the newest log */
-    public getTimeElapsed(timeRef: TimeRef = "milliseconds"): number {
-        return new Timeframe(this.getOldestLogOrThrow().log_date, this.getNewestLogOrThrow().log_date).getTimeDifference(timeRef);
-    }
-
-    /** Return the amount of time elapsed between the oldest log and today */
-    public getTimeElapsedToToday(timeRef: TimeRef = "milliseconds"): number {
-        return new Timeframe(this.getOldestLogOrThrow().log_date, new Date).getTimeDifference(timeRef);
-    }
-
-    /** Returns the timeframe of the history. If no date is given, the timeframe is from the oldest logs to the latest logs.
-     * @deprecated
-     */
-    getTimeframe(dateFrom: Date | undefined, dateTo: Date | undefined) {
-        const dateLowerBound = dateFrom || this.getOldestLogOrThrow().log_date;
-        const dateUpperBound = dateTo || this.getNewestLogOrThrow().log_date;
-        return {dateLowerBound, dateUpperBound};
-    }
-
-    /** @deprecated */
-    public insertLogs(logSource: LogSource) {
-        const logs = MaterialQuantityLog.toLogs(logSource);
-
-        for (const log of logs) {
-            this.addMaterialLog(log);
+        if (log === undefined) {
+            throw new EmptyLogCollectionException()
         }
+        return log;
     }
 
     /** Return true if the collection is isEmpty */
     public isEmpty(): boolean {
         return this.logs.length === 0;
-    }
-
-    /** Create a log and save it to the database
-     * @deprecated
-     * */
-    public async makeLog(quantity: number) {
-        // @ts-ignore
-        await MaterialQuantityLog.makeLog(new MaterialQuantity(this.material, quantity))
     }
 
     /** Give the next log in the array */
@@ -423,31 +222,6 @@ export class MaterialLogCollection {
         })
         return this
     }
-
-    /** Put the MaterialQuantityLog objects into the array using an API response as input data
-     * @deprecated
-     * */
-    private addAPIResponseLogs(res: MaterialLogsAPIFetchResponse): void {
-        for (const materialLog of res.Material_logs) {
-            // @ts-ignore
-            this.addMaterialLog(MaterialQuantityLog.fromJSON(materialLog, this.material))
-        }
-    }
-
-    /** Add a log to the log array */
-    private addMaterialLog(log: MaterialQuantityLog) {
-        // TODO: Check for duplicates/Optimizations
-        // TODO: Check if the logs is the same
-        this.logs.push(log)
-    }
-
-    /** Add multiple logs to the array */
-    private addMaterialLogs(logs: MaterialQuantityLog[]) {
-        for (const log of logs) {
-            this.addMaterialLog(log);
-        }
-    }
-
     private cleanUp() {
         this.sortChronologically()
 
@@ -456,9 +230,15 @@ export class MaterialLogCollection {
             const previousLog = this.logs[i - 1];
             const nextLog = this.logs[i + 1];
 
-            if (log === undefined) {continue}
-            if (previousLog === undefined) {continue}
-            if (nextLog === undefined) {continue}
+            if (log === undefined) {
+                continue
+            }
+            if (previousLog === undefined) {
+                continue
+            }
+            if (nextLog === undefined) {
+                continue
+            }
 
             const isSameDateAsPrevious = previousLog.logDate.isSame(log.logDate);
             const isSameQuantityAsPrevious = previousLog.quantity === log.quantity;
@@ -470,7 +250,9 @@ export class MaterialLogCollection {
                 this.remove(log);
             }
 
-            if (isSameQuantitySandwich) {this.remove(log);}
+            if (isSameQuantitySandwich) {
+                this.remove(log);
+            }
 
         }
 
@@ -478,7 +260,9 @@ export class MaterialLogCollection {
     }
 
     private remove(log: MaterialQuantityLog) {
-        _.remove(this.logs, (value) => {return log.isSame(value)});
+        _.remove(this.logs, (value) => {
+            return log.isSame(value)
+        });
     }
 
     /** Throw an error if logs is isEmpty. Useful to stop calculations without data */
