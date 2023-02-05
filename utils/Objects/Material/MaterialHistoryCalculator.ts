@@ -5,13 +5,19 @@ import {MaterialQuantityLog} from "@/utils/Objects/Material/MaterialQuantityLog"
 import {MaterialQuantity} from "@/utils/Objects/Material/MaterialQuantity";
 import {MaterialHistory} from "@/utils/Objects/Material/MaterialHistory";
 import logger from "../../../tools/Logger";
+import {z} from "zod";
+import {MaterialHistoryCalculatorJSON} from "@/lib/Zod/Validations/MaterialHistoryCalculatorJSON";
+
+export interface MaterialHistoryCalculatorFilter {
+    period: Period;
+}
 
 /** Class that contain all the functions for material logs analysis */
 export class MaterialHistoryCalculator {
     private readonly materialHistory: MaterialHistory
-    private readonly filter: { period: Period }
+    private readonly filter: MaterialHistoryCalculatorFilter
 
-    constructor(materialHistory: MaterialHistory, filter: { period: Period }) {
+    constructor(materialHistory: MaterialHistory, filter: MaterialHistoryCalculatorFilter) {
         this.materialHistory = materialHistory;
         this.filter = filter;
     }
@@ -195,6 +201,29 @@ export class MaterialHistoryCalculator {
         }
 
         return new MaterialHistoryCalculator(historyCopy, this.filter);
+    }
+
+    public static parse(data: z.infer<typeof MaterialHistoryCalculatorJSON>): MaterialHistoryCalculator {
+        const parsedData = MaterialHistoryCalculatorJSON.parse(data);
+        return new MaterialHistoryCalculator(
+            MaterialHistory.parse(parsedData.materialHistory),
+            {
+                period: {start: dayjs(parsedData.filter.period.start), end: dayjs(parsedData.filter.period.end)}
+            }
+        )
+    }
+
+    public toJSON(): z.infer<typeof MaterialHistoryCalculatorJSON> {
+        const period = this.filter.period;
+        return {
+            materialHistory: this.materialHistory.toJSON(),
+            filter: {
+                period: {
+                    start: period.start.toJSON(),
+                    end: period.end.toJSON()
+                }
+            }
+        }
     }
 
     private getAvgTimeDuration(per: "millisecond" | "second" | "minute" | "hour" | "day" | "month" | "year" | "date" | "milliseconds" | "seconds" | "minutes" | "hours" | "days" | "months" | "years" | "dates" | "d" | "D" | "M" | "y" | "h" | "m" | "s" | "ms" | "quarter" | "quarters" | "Q" | "week" | "weeks" | "w") {

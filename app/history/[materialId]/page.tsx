@@ -24,7 +24,7 @@ export default async function Page({params}: any) {
                     <MaterialLogsManager material={materialHistory}/>
                 </Suspense>
 
-                <HistorySummary materialJson={materialHistory.toJSON()} idUser={materialHistory.userID}/>
+                <HistorySummary materialJson={materialHistory.toJSON()}/>
             </CenterContent>
         </FadingIn>
     </>

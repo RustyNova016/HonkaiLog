@@ -1,7 +1,7 @@
 import {MaterialLogCollection, Period} from "./MaterialLogCollection";
 import {Material} from "@/utils/Objects/Material/Material";
 import {z} from "zod";
-import {UserMaterialData, UserMaterialJSONZod} from "@/lib/Zod/Validations/UserMaterial";
+import {UserMaterialJSONZod} from "@/lib/Zod/Validations/UserMaterial";
 
 export class MaterialHistory {
     /** The collection holding all the logs made by the user for the logs */
@@ -17,8 +17,6 @@ export class MaterialHistory {
         this.logCollection = materialQuantityLogs
     }
 
-    public copy(): MaterialHistory {return MaterialHistory.parse(this.toJSON(), this.userID)}
-
     get id() {
         return this.material.id
     }
@@ -27,9 +25,14 @@ export class MaterialHistory {
         return this.material.name
     }
 
-    static parse(data: UserMaterialData, userId: string) {
-        const newMaterial = Material.parse(data);
-        return new MaterialHistory(newMaterial, MaterialLogCollection.parse(data.materialQuantityLogs, newMaterial), userId)
+    static parse(data: z.infer<typeof UserMaterialJSONZod>) {
+        const parsedData = UserMaterialJSONZod.parse(data);
+        const newMaterial = Material.parse(parsedData);
+        return new MaterialHistory(newMaterial, MaterialLogCollection.parse(parsedData.materialQuantityLogs, newMaterial), parsedData.userID)
+    }
+
+    public copy(): MaterialHistory {
+        return MaterialHistory.parse(this.toJSON())
     }
 
     /** Filter the logs to only keep the ones inside a given period */

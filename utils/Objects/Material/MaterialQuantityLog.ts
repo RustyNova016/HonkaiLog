@@ -103,7 +103,7 @@ export class MaterialQuantityLog {
         return {
             id: this.id,
             quantity: this.quantity,
-            loggedAt: this.logDate.toString(),
+            loggedAt: this.logDate.toJSON(),
             idMaterial: this.material.id,
             idUser: this.userId
         }

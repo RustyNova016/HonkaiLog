@@ -12,10 +12,6 @@ export class MaterialQuantityCalculator {
         this.targetQuantity = targetQuantity;
     }
 
-    get materialHistory() {
-        return this.history.materialHistory;
-    }
-
     public getDaysBeforeReachingQuantity(): number {
         if (this.hasEnough()) {return 0}
 

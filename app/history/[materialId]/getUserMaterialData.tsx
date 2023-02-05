@@ -24,7 +24,7 @@ export async function getUserMaterialData(idMaterial: number) {
     })
 
     // Parse it with zod to be typesafe
-    return UserMaterialDataZod.parse(materialWithLogs);
+    return UserMaterialDataZod.parse({...materialWithLogs, userID: user.id});
 }
 
 /** Get the MaterialHistory object
@@ -32,8 +32,9 @@ export async function getUserMaterialData(idMaterial: number) {
  * @param idMaterial
  */
 export async function getMaterialHistory(idMaterial: number): Promise<MaterialHistory> {
-    const materialWithUserData = MaterialHistory.parse(await getUserMaterialData(idMaterial), (await getServerUser()).id);
-    //console.info("Latest count in object: ", materialWithUserData.logCollection.getCurrentCount())
+    console.log("object")
+    const materialWithUserData = MaterialHistory.parse(await getUserMaterialData(idMaterial));
+    console.info("Latest count in object: ", materialWithUserData.logCollection.getCurrentCount())
     return materialWithUserData;
 }
 

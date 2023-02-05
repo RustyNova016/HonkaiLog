@@ -1,7 +1,6 @@
 import {MaterialQuantity, MaterialQuantityInterface} from "@/utils/Objects/Material/MaterialQuantity";
 import _ from "lodash";
 import {GachaBanner} from "./GachaBanner";
-import {MaterialHistory} from "@/utils/Objects/Material/MaterialHistory";
 import {MaterialQuantityCalculator} from "@/utils/Objects/Material/MaterialQuantityCalculator";
 import {Material} from "@/utils/Objects/Material/Material";
 import {MaterialHistoryCalculator} from "@/utils/Objects/Material/MaterialHistoryCalculator";
@@ -12,18 +11,18 @@ export class GachaBannerCalculator {
     currentInventory: MaterialQuantityInterface;
     currentPullCount: number;
     gachaBanner: GachaBanner;
-    materialHistory: MaterialHistory;
+    historyCalculator: MaterialHistoryCalculator;
 
-    constructor(gachaBanner: GachaBanner, currentInventory: MaterialQuantityInterface, materialHistory: MaterialHistory, currentPullCount: number = 0, currentCompletion: number = 0) {
+    constructor(gachaBanner: GachaBanner, historyCalculator: MaterialHistoryCalculator, currentInventory: MaterialQuantityInterface, currentPullCount: number = 0, currentCompletion: number = 0) {
         this.gachaBanner = gachaBanner;
         this.currentInventory = currentInventory;
-        this.materialHistory = materialHistory;
         this.currentPullCount = currentPullCount;
         this.currentCompletion = currentCompletion;
+        this.historyCalculator = historyCalculator
     }
 
     get material(): Material {
-        return this.materialHistory.material;
+        return this.historyCalculator.material;
     }
 
     get pullCost() {
@@ -45,7 +44,7 @@ export class GachaBannerCalculator {
     }
 
     public getNumberOfDaysForCompletionFunds(): number {
-        return new MaterialQuantityCalculator(new MaterialHistoryCalculator(this.materialHistory), this.currentInventory.quantity, this.getRemainingCostForCompletion().quantity).getDaysBeforeReachingQuantity()
+        return new MaterialQuantityCalculator(this.historyCalculator, this.currentInventory.quantity, this.getRemainingCostForCompletion().quantity).getDaysBeforeReachingQuantity()
     }
 
     public getPercentageAchievable(): number {
@@ -56,7 +55,7 @@ export class GachaBannerCalculator {
         const costForCompletion = this.getTotalCostOfCompletion();
         return new MaterialQuantity(
             costForCompletion.material,
-            costForCompletion.quantity - (this.getTotalAmountOfPullsOnBanner()  * this.pullCost.quantity)
+            costForCompletion.quantity - (this.getTotalAmountOfPullsOnBanner() * this.pullCost.quantity)
         )
     }
 
@@ -72,7 +71,9 @@ export class GachaBannerCalculator {
 
     public getRemainingInventory(): MaterialQuantity {
         let quantity = this.pullCost.quantity - this.getRemainingCostForCompletion().quantity;
-        if (quantity < 0) {quantity = 0}
+        if (quantity < 0) {
+            quantity = 0
+        }
 
         return new MaterialQuantity(
             this.pullCost.material,

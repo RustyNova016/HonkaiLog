@@ -26,7 +26,8 @@ export class Material {
 
     /** Create a Material instance from a validation pattern */
     static parse(data: z.infer<typeof MaterialJSONZod>): Material {
-        return new Material(data.id, data.name);
+        const parsedData = MaterialJSONZod.parse(data);
+        return new Material(parsedData.id, parsedData.name);
     }
 
     /** Create a new instance of the logs with userdata

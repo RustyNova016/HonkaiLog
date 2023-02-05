@@ -5,7 +5,7 @@ import {Col, Row} from "react-bootstrap";
 import Image from "next/image";
 
 export function SmallLinkCard(props: { title: string, description?: string, link: string, imagelink?: string }) {
-    return <Link href={props.link}>
+    return <Link href={props.link} style={{height: "max-content"}}>
         <div className={style.card}>
             <Row>
                 {props.imagelink ? <Col md={3}>

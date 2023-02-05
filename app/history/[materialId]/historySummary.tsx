@@ -12,8 +12,8 @@ import {Col, Row} from "@/lib/Bootstrap/Layout";
 import {MaterialSummaryGraph} from "@/app/history/[materialId]/materialSummaryGraph";
 import {MaterialHistoryCalculator} from "@/utils/Objects/Material/MaterialHistoryCalculator";
 
-export function HistorySummary({materialJson, idUser}: { materialJson: UserMaterialData, idUser: string }) {
-    const materialHistory = MaterialHistory.parse(materialJson, idUser)
+export function HistorySummary({materialJson}: { materialJson: UserMaterialData}) {
+    const materialHistory = MaterialHistory.parse(materialJson)
     const [nbrDaysBack, setNbrDaysBack] = useState(1);
     let periodStart: Dayjs;
 
