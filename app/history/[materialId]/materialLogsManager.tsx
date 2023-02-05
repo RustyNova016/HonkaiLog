@@ -7,7 +7,7 @@ export default function MaterialLogsManager({material}: { material: MaterialHist
     const currentCount = material.getLogs().getCurrentCount();
 
     return <FramedDiv sides={true} style={{width: "75%"}}>
-        <SectionTitle title={material.material.getName(currentCount > 1, true) + " logs"}/>
+        <SectionTitle title={material.material.toString(currentCount > 1, true) + " logs"}/>
 
         <div className={"flex flex-row"} style={{justifyContent: "space-between"}}>
             <p className={"text-base"}>

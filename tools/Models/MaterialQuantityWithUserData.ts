@@ -16,7 +16,7 @@ export class MaterialQuantityWithUserData {
     }
 
     static addLogsToMaterialQuantity(quantity: MaterialQuantity, material: MaterialHistory) {
-        if (!quantity.material.isSameMaterial(material)) throw new Error("The logs aren't the same");
+        if (!quantity.material.isSame(material)) throw new Error("The logs aren't the same");
 
         return new MaterialQuantityWithUserData(material, quantity.quantity)
     }

@@ -1,5 +1,5 @@
 import {MaterialQuantityWithUserData} from "../../tools/Models/MaterialQuantityWithUserData";
-import {getMaterialWithUserData} from "@/app/history/[materialId]/getUserMaterialData";
+import {getMaterialHistory} from "@/app/history/[materialId]/getUserMaterialData";
 import {GachaBanner} from "@/utils/Objects/Gacha/GachaBanner";
 import {FadingIn} from "@/components/Animators/FadingIn";
 import {CenterContent} from "@/components/Layouts/CenterContent";
@@ -17,7 +17,7 @@ export interface GachaBannerData {
 export default async function Page() {
     const period = {start: dayjs().add(-35, "day"), end: dayjs()};
 
-    const materialHistory = (await getMaterialWithUserData(1)).getHistoryForPeriod(period);
+    const materialHistory = (await getMaterialHistory(1)).filterPeriod(period);
     const pullCost = new MaterialQuantity(materialHistory.material, 280);
     const expaBannerRaw = new GachaBanner("Expa Banner", 100, 1, pullCost)
     const currentInventory = new MaterialQuantity(materialHistory.material, materialHistory.getLogs().getCurrentCount())

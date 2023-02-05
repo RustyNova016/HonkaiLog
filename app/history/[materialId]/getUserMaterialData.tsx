@@ -31,7 +31,7 @@ export async function getUserMaterialData(idMaterial: number) {
  *
  * @param idMaterial
  */
-export async function getMaterialWithUserData(idMaterial: number): Promise<MaterialHistory> {
+export async function getMaterialHistory(idMaterial: number): Promise<MaterialHistory> {
     const materialWithUserData = MaterialHistory.parse(await getUserMaterialData(idMaterial), (await getServerUser()).id);
     //console.info("Latest count in object: ", materialWithUserData.logCollection.getCurrentCount())
     return materialWithUserData;

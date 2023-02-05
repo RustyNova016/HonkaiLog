@@ -1,7 +1,6 @@
 import {MaterialQuantityLog} from "@/utils/Objects/Material/MaterialQuantityLog";
 import {MaterialLogsAPIFetchResponse} from "../../../pages/api/material/logs/[id]";
 import {MaterialQuantity} from "./MaterialQuantity";
-import {MaterialHistory} from "@/utils/Objects/Material/MaterialHistory";
 import {ITimeframe} from "../../../context/TimeframeContext";
 import {TimeRef} from "../../TimeTools";
 import {Timeframe} from "../../classes/Timeframe";
@@ -10,6 +9,7 @@ import {z} from "zod";
 import {MaterialQuantityLogArrayZod} from "@/lib/Zod/Validations/MaterialQuantityLog";
 import dayjs, {Dayjs, OpUnitType, QUnitType} from "dayjs";
 import {LogSource} from "@/utils/Types/LogSource";
+import {Material} from "@/utils/Objects/Material/Material";
 
 export type Period = { start: Dayjs, end: Dayjs };
 
@@ -19,14 +19,14 @@ export class MaterialLogCollection {
     readonly logs: MaterialQuantityLog[] = [];
 
     /** Which logs this collection belong to */
-    readonly material: MaterialHistory;
+    readonly material: Material;
 
-    constructor(material: MaterialHistory, logs: MaterialQuantityLog[]) {
+    constructor(material: Material, logs: MaterialQuantityLog[]) {
         this.material = material;
         this.logs = MaterialLogCollection.sortLogArray(logs);
     }
 
-    static parse(data: z.infer<typeof MaterialQuantityLogArrayZod>, material: MaterialHistory) {
+    static parse(data: z.infer<typeof MaterialQuantityLogArrayZod>, material: Material) {
         const materialQuantityLogs = [];
 
         for (const materialQuantityLogJSON of data) {
@@ -173,6 +173,7 @@ export class MaterialLogCollection {
         return new MaterialLogCollection(this.material, this.logs.filter(test))
     }
 
+    /** Find all the logs that fit the criteria */
     public findAll(params: { date?: Dayjs }): MaterialQuantityLog[] {
         const outs = []
 
@@ -331,7 +332,7 @@ export class MaterialLogCollection {
 
     /** Return the oldest log in the list */
     public getOldestLogOrThrow(): MaterialQuantityLog {
-        const log = this.getNewestLog();
+        const log = this.getOldestLog();
         if (log === undefined) {throw new EmptyLogCollectionException()}
         return log;
     }
@@ -428,6 +429,7 @@ export class MaterialLogCollection {
      * */
     private addAPIResponseLogs(res: MaterialLogsAPIFetchResponse): void {
         for (const materialLog of res.Material_logs) {
+            // @ts-ignore
             this.addMaterialLog(MaterialQuantityLog.fromJSON(materialLog, this.material))
         }
     }
@@ -477,7 +479,6 @@ export class MaterialLogCollection {
 
     private remove(log: MaterialQuantityLog) {
         _.remove(this.logs, (value) => {return log.isSame(value)});
-        this.cleanUp();
     }
 
     /** Throw an error if logs is isEmpty. Useful to stop calculations without data */

@@ -7,10 +7,11 @@ import {MaterialQuantityWithUserData} from "../../../tools/Models/MaterialQuanti
 import {ITimeframe} from "../../../context/TimeframeContext";
 import {MaterialLogCollection} from "./MaterialLogCollection";
 import {z} from "zod";
-import {MaterialQuantityLogZod} from "@/lib/Zod/Validations/MaterialQuantityLog";
+import {MaterialQuantityLogJSONZod} from "@/lib/Zod/Validations/MaterialQuantityLog";
 import dayjs from "dayjs";
 import {saveMaterialQuantityLogFromMatQuan} from "@/utils/Objects/Funcs/SaveMaterialQuantityLogFromMatQuan";
 import {LogSource} from "@/utils/Types/LogSource";
+import {Material} from "@/utils/Objects/Material/Material";
 
 /** Snapshot of a quantity at a given time */
 export class MaterialQuantityLog {
@@ -68,8 +69,9 @@ export class MaterialQuantityLog {
         // TODO: check for errors
     }
 
-    static parse(data: z.infer<typeof MaterialQuantityLogZod>, materialHistory: MaterialHistory) {
-        return new MaterialQuantityLog(data.id, new Date(data.loggedAt), materialHistory.userID, new MaterialQuantity(materialHistory.material, data.quantity))
+    static parse(data: z.infer<typeof MaterialQuantityLogJSONZod>, material: Material) {
+        // TODO: Check material id and user id
+        return new MaterialQuantityLog(data.id, new Date(data.loggedAt), data.idUser, new MaterialQuantity(material, data.quantity))
     }
 
     /** Convert anything log related to MaterialQuantityLog */
@@ -97,7 +99,7 @@ export class MaterialQuantityLog {
         return logSource;
     }
 
-    public export(): z.infer<typeof MaterialQuantityLogZod> {
+    public export(): z.infer<typeof MaterialQuantityLogJSONZod> {
         return {
             id: this.id,
             quantity: this.quantity,

@@ -10,6 +10,7 @@ import {HistorySummaryAverages} from "@/app/history/[materialId]/historySummaryA
 import dayjs, {Dayjs} from "dayjs";
 import {Col, Row} from "@/lib/Bootstrap/Layout";
 import {MaterialSummaryGraph} from "@/app/history/[materialId]/materialSummaryGraph";
+import {MaterialHistoryCalculator} from "@/utils/Objects/Material/MaterialHistoryCalculator";
 
 export function HistorySummary({materialJson, idUser}: { materialJson: UserMaterialData, idUser: string }) {
     const materialHistory = MaterialHistory.parse(materialJson, idUser)
@@ -23,8 +24,7 @@ export function HistorySummary({materialJson, idUser}: { materialJson: UserMater
     }
 
     console.info("Setting logs from ", periodStart.toString(), "to today");
-    const logs = materialHistory.getLogs().getLogsNewerThan(periodStart, true);
-    console.info("New log collection: ", logs);
+    const historyCalculator = new MaterialHistoryCalculator(materialHistory, {period: {start: periodStart, end: dayjs()}});
 
     return <>
         <FramedDiv sides={true} style={{width: "75%"}}>
@@ -34,18 +34,17 @@ export function HistorySummary({materialJson, idUser}: { materialJson: UserMater
                 <TimeframeSelection nbrDaysBack={nbrDaysBack} setNbrDaysBack={setNbrDaysBack}/>
             </div>
 
-            {logs.getLogAfterDate(periodStart) !== undefined ?
+            {historyCalculator.logCollection.getLogAfterDate(periodStart) !== undefined ?
                 <>
                     <Row>
                         <Col>
-                            <HistorySummaryNet material={materialHistory} logs={logs}/>
+                            <HistorySummaryNet calculator={historyCalculator}/>
                         </Col>
                         <Col>
-                            <HistorySummaryAverages material={materialHistory} logs={logs}
-                                                    period={{start: periodStart, end: dayjs()}}/>
+                            <HistorySummaryAverages calculator={historyCalculator}/>
                         </Col>
                     </Row>
-                    <MaterialSummaryGraph materialHistory={materialHistory} startDate={periodStart}/>
+                    <MaterialSummaryGraph historyCalculator={historyCalculator}/>
                 </>
                 :
                 <>Create a new log or change the time period to get your data </>

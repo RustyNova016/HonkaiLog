@@ -25,7 +25,7 @@ export class Material {
     }
 
     /** Create a Material instance from a validation pattern */
-    static parse(data: z.infer<typeof MaterialJSONZod>) {
+    static parse(data: z.infer<typeof MaterialJSONZod>): Material {
         return new Material(data.id, data.name);
     }
 
@@ -47,13 +47,13 @@ export class Material {
     }
 
     /** Return the name of the logs, alongside some optional formatting */
-    public getName(plural?: boolean, startcase?: boolean) {
+    public toString(plural?: boolean, startcase?: boolean): string {
         const name = plural ? this.name + "s" : this.name;
         return startcase ? _.startCase(name) : name
     }
 
     /** Output true if the logs have the same ID */
-    public isSameMaterial(mat: Material): boolean {
+    public isSame(mat: Material): boolean {
         // TODO: Deep comparison
         return this.id === mat.id;
     }

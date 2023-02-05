@@ -11,7 +11,7 @@ export const MaterialQuantityLogShape = {
     idUser: UserZodShape.id,
 };
 
-export const MaterialQuantityLogZod = z.object(MaterialQuantityLogShape)
+export const MaterialQuantityLogJSONZod = z.object(MaterialQuantityLogShape)
 
 
 export const MaterialQuantityLogCreateJSONShape = {
@@ -32,4 +32,4 @@ export const MaterialQuantityCreateReq = z.object({
     idMaterial: MaterialQuantityLogShape.idMaterial
 })
 
-export const MaterialQuantityLogArrayZod = z.array(MaterialQuantityLogZod);
+export const MaterialQuantityLogArrayZod = z.array(MaterialQuantityLogJSONZod);

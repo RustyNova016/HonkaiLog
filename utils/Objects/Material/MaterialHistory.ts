@@ -1,21 +1,23 @@
 import {MaterialLogCollection, Period} from "./MaterialLogCollection";
 import {Material} from "@/utils/Objects/Material/Material";
 import {z} from "zod";
-import {MaterialQuantityLogArrayZod} from "@/lib/Zod/Validations/MaterialQuantityLog";
 import {UserMaterialData, UserMaterialJSONZod} from "@/lib/Zod/Validations/UserMaterial";
 
 export class MaterialHistory {
     /** The collection holding all the logs made by the user for the logs */
-    public logCollection: MaterialLogCollection
-    public material: Material
+    public readonly logCollection: MaterialLogCollection
+    /** The material concerned */
+    public readonly material: Material
     /** Id of the user the data is from */
-    public userID: string;
+    public readonly userID: string;
 
-    constructor(material: Material, materialQuantityLogs: z.infer<typeof MaterialQuantityLogArrayZod>, userId: string) {
+    constructor(material: Material, materialQuantityLogs: MaterialLogCollection, userId: string) {
         this.material = material
         this.userID = userId;
-        this.logCollection = MaterialLogCollection.parse(materialQuantityLogs, this);
+        this.logCollection = materialQuantityLogs
     }
+
+    public copy(): MaterialHistory {return MaterialHistory.parse(this.toJSON(), this.userID)}
 
     get id() {
         return this.material.id
@@ -26,15 +28,25 @@ export class MaterialHistory {
     }
 
     static parse(data: UserMaterialData, userId: string) {
-        return new MaterialHistory(Material.parse(data), data.materialQuantityLogs, userId)
+        const newMaterial = Material.parse(data);
+        return new MaterialHistory(newMaterial, MaterialLogCollection.parse(data.materialQuantityLogs, newMaterial), userId)
+    }
+
+    /** Filter the logs to only keep the ones inside a given period */
+    public filterPeriod(period: Period): MaterialHistory {
+        return new MaterialHistory(this.material, this.logCollection.getLogsInPeriod(period), this.userID)
     }
 
     public getLogs() {
         return this.logCollection;
     }
 
-    public getName(plural?: boolean, startcase?: boolean): string {
-        return this.material.getName(plural, startcase);
+    public toString(plural?: boolean, startcase?: boolean): string {
+        return this.material.toString(plural, startcase);
+    }
+
+    public hasLogs(): boolean {
+        return this.logCollection.logs.length !== 0;
     }
 
     /** Export the logs to a plain object */
@@ -45,9 +57,5 @@ export class MaterialHistory {
             materialQuantityLogs: this.logCollection.export(),
             userID: this.userID
         }
-    }
-
-    getHistoryForPeriod(period: Period): MaterialHistory {
-        return new MaterialHistory(this.material, this.logCollection.getLogsInPeriod(period).export(), this.userID)
     }
 }

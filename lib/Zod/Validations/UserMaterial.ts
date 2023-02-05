@@ -1,5 +1,5 @@
 import {z} from "zod";
-import {MaterialQuantityLogZod} from "@/lib/Zod/Validations/MaterialQuantityLog";
+import {MaterialQuantityLogJSONZod} from "@/lib/Zod/Validations/MaterialQuantityLog";
 import {MaterialZodShape} from "@/lib/Zod/Validations/MaterialJSONZod";
 
 export type UserMaterialData = z.infer<typeof UserMaterialDataZod>;
@@ -7,14 +7,14 @@ export type UserMaterialData = z.infer<typeof UserMaterialDataZod>;
 export const UserMaterialDataZod = z.object({
     ...MaterialZodShape,
     materialQuantityLogs: z.array(
-        MaterialQuantityLogZod
+        MaterialQuantityLogJSONZod
     )
 })
 
 export const UserMaterialJSONZod = z.object({
     ...MaterialZodShape,
     materialQuantityLogs: z.array(
-        MaterialQuantityLogZod
+        MaterialQuantityLogJSONZod
     ),
     userID: z.string()
 })

@@ -1,4 +1,5 @@
-import {MaterialLogCollection} from "@/utils/Objects/Material/MaterialLogCollection";
+import {MaterialHistoryCalculator} from "@/utils/Objects/Material/MaterialHistoryCalculator";
+import dayjs from "dayjs";
 
 export interface GraphPoint {
     x: Date,
@@ -6,11 +7,11 @@ export interface GraphPoint {
 }
 
 export class MaterialHistoryGrapher {
-    private logs: MaterialLogCollection
+    private calculator: MaterialHistoryCalculator;
 
-    constructor(logs: MaterialLogCollection) {
-        if (logs.isEmpty()) {throw new Error("Log Collection cannot be empty")}
-        this.logs = logs;
+    constructor(calculator: MaterialHistoryCalculator) {
+        console.log()
+        this.calculator = calculator.addLinearSplit().filterToPeriod();
     }
 
     /** Generate the graph of the quantity of logs over time
@@ -19,8 +20,12 @@ export class MaterialHistoryGrapher {
     public generateQuantityGraph(): GraphPoint[] {
         const output: GraphPoint[] = [];
 
-        for (const log of this.logs.logs) {
+        for (const log of this.calculator.logs) {
             output.push({x: log.log_date, y: log.quantity})
+        }
+
+        if(output.length > 1){
+            output.push({x: dayjs().toDate(), y: this.calculator.logCollection.getNewestLogOrThrow().quantity})
         }
 
         return output
