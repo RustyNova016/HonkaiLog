@@ -1,16 +1,13 @@
 import style from './CSS/theme.module.scss';
-import {Row} from "react-bootstrap";
+import classNames from "classnames";
+import _ from "lodash";
 
 export function SectionTitle(props: { title: string }) {
-    return <Row>
-        <h1 className={style.sectionTitle}>{props.title}</h1>
-    </Row>
+    return <h1 className={classNames(style.sectionTitle, "text-4xl")}>{_.startCase(props.title)}</h1>
 }
 
 export function PageTitle(props: { title: string }) {
-    return <Row>
-        <h1 className={style.pageTitle}>
-            <b>⪡ {props.title} ⪢</b>
-        </h1>
-    </Row>
+    return <h1 className={style.pageTitle}>
+        <b>⪡ {_.startCase(props.title)} ⪢</b>
+    </h1>
 }

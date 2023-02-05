@@ -1,9 +1,9 @@
+"use client"; //TODO: Convert to Server Component
 import styles from "./CSS/FramedDiv.module.scss";
 import {PropsWithClass, PropsWithStyle} from "../../tools/Types";
-import {addCSSClasses} from "../../tools/Miscs";
 import {PropsWithChildren} from "react";
 import {ReturnChildren} from "../returnChildren";
-import {Container} from "react-bootstrap";
+import classNames from "classnames";
 
 export interface FramedDivProps extends PropsWithChildren, PropsWithClass, PropsWithStyle {
     sides?: boolean;
@@ -19,10 +19,8 @@ function FramedDiv(props: FramedDivProps) {
     if (props.sides) { ContentDivClasses.push(styles.sideBorder); }
 
     return (
-        <div className={addCSSClasses(ContentDivClasses)} style={props.style}>
-            <Container>
-                <ReturnChildren {...props}/>
-            </Container>
+        <div className={classNames(ContentDivClasses, "flex flex-col")} style={props.style}>
+            <ReturnChildren {...props}/>
         </div>
     );
 }

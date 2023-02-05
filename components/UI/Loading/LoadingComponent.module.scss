@@ -1,0 +1,11 @@
+.flexboxCentered {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.LoadingIcon {
+  transform: rotate(45deg);
+  margin: 5px;
+}

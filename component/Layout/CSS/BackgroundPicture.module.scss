@@ -5,16 +5,12 @@
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  min-height: 100vh;
-  height: auto;
+  height: inherit;
 }
 
 .backgroundPictureOverlay {
-  display: flex;
-  flex-direction: column;
   background-color: $main-bg-color;
-  min-height: inherit;
-  height: auto;
+  height: inherit;
 }
 
 .footerWarper {

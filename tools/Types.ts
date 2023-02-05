@@ -5,8 +5,3 @@ export interface PropsWithClass {
 export interface PropsWithStyle {
     style?: React.CSSProperties;
 }
-
-export interface SequelizeTableCommonDBResults extends Object{
-    createdAt: string;
-    updatedAt: string;
-}
