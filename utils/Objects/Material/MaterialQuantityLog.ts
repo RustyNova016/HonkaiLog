@@ -1,16 +1,8 @@
-import {UserDBResponse} from "../../../database/user";
 import {MaterialQuantity} from "./MaterialQuantity";
-import logger from "../../../tools/Logger";
-import {MaterialLogItemJSON} from "../../../database/material_logs";
-import {MaterialHistory} from "@/utils/Objects/Material/MaterialHistory";
-import {MaterialQuantityWithUserData} from "../../../tools/Models/MaterialQuantityWithUserData";
 import {ITimeframe} from "../../../context/TimeframeContext";
-import {MaterialLogCollection} from "./MaterialLogCollection";
 import {z} from "zod";
 import {MaterialQuantityLogJSONZod} from "@/lib/Zod/Validations/MaterialQuantityLog";
 import dayjs from "dayjs";
-import {saveMaterialQuantityLogFromMatQuan} from "@/utils/Objects/Funcs/SaveMaterialQuantityLogFromMatQuan";
-import {LogSource} from "@/utils/Types/LogSource";
 import {Material} from "@/utils/Objects/Material/Material";
 
 /** Snapshot of a quantity at a given time */
@@ -22,7 +14,7 @@ export class MaterialQuantityLog {
     log_date: Date;
     materialQuantity: MaterialQuantity
     /** ID of the user having made the log */
-    userId: UserDBResponse["id"];
+    userId: string;
 
     constructor(id: number | undefined, log_date: Date, userId: string, materialQuantity: MaterialQuantity) {
         this.id = id;
@@ -48,55 +40,9 @@ export class MaterialQuantityLog {
         return this.id === undefined
     }
 
-    // @ts-ignore
-    /** Create a MaterialQuantityLog instance from a json object
-     * @deprecated */
-    // @ts-ignore
-    static fromJSON(jsonLog: MaterialLogItemJSON, material: MaterialHistory): MaterialQuantityLog {
-        // @ts-ignore
-        return new MaterialQuantityLog(jsonLog.id, new Date(jsonLog.log_date), jsonLog.userId);
-    }
-
-    /** Create a log and save it to the database
-     * @deprecated
-     * */
-    static async makeLog(quantity: MaterialQuantity) {
-        // @ts-ignore
-        const res = await saveMaterialQuantityLogFromMatQuan(quantity)
-
-        logger.info("Done sending!", "Material Log")
-
-        // TODO: check for errors
-    }
-
     static parse(data: z.infer<typeof MaterialQuantityLogJSONZod>, material: Material) {
         // TODO: Check material id and user id
         return new MaterialQuantityLog(data.id, new Date(data.loggedAt), data.idUser, new MaterialQuantity(material, data.quantity))
-    }
-
-    /** Convert anything log related to MaterialQuantityLog */
-    public static toLogs(logSource: LogSource): MaterialQuantityLog[] {
-        if (logSource instanceof Array) {
-            return logSource
-        }
-
-        if (logSource instanceof MaterialQuantityLog) {
-            return [logSource]
-        }
-
-        if (logSource instanceof MaterialLogCollection) {
-            return logSource.logs
-        }
-
-        if (logSource instanceof MaterialQuantityWithUserData) {
-            return this.toLogs(logSource.material.logCollection)
-        }
-
-        if (logSource instanceof MaterialHistory) {
-            return this.toLogs(logSource.logCollection)
-        }
-
-        return logSource;
     }
 
     public export(): z.infer<typeof MaterialQuantityLogJSONZod> {
