@@ -1,6 +1,6 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import {HttpStatusCode} from "../../../../tools/API/HttpStatusCodes";
-import {getServerUser} from "@/lib/NextAuth/GetSession";
+import {getServerUser, getServerUserFromRequest} from "@/lib/NextAuth/GetSession";
 import prisma from "@/lib/prismadb";
 import {MaterialQuantityCreateReq} from "@/utils/Objects/Material/validations/MaterialQuantityLog.JSONZod";
 
@@ -8,7 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method === "POST") {
         // Set entries
         const parsedBody = MaterialQuantityCreateReq.parse(req.body);
-        const userId = getServerUser(req, res).then(value => value.id);
+        const userId = getServerUserFromRequest(req, res).then(value => value.id);
 
         // Insert the logs
         const resDB = await prisma.materialQuantityLog.create({

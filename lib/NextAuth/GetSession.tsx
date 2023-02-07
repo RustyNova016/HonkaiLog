@@ -1,7 +1,7 @@
-import {unstable_getServerSession} from "next-auth";
-import {authOptions} from "../../pages/api/auth/[...nextauth]";
+import {getServerSession, unstable_getServerSession} from "next-auth";
 import {z} from "zod";
 import {NextApiRequest, NextApiResponse} from "next";
+import {authOptions} from "./AuthOptions";
 
 const SessionUserZod = z.object({
     id: z.string(),
@@ -11,17 +11,26 @@ const SessionUserZod = z.object({
 })
 
 
-export async function getServerSession(req?: NextApiRequest, res?: NextApiResponse) {
+export async function getServerSessionMiddleware(req?: NextApiRequest, res?: NextApiResponse) {
     if (req !== undefined && res !== undefined) {
-        return await unstable_getServerSession(req, res, authOptions);
+        return await getServerSession(req, res);
     } else {
-        return await unstable_getServerSession(authOptions);
+        return await getServerSession();
     }
 
 }
 
-export async function getServerUser(req?: NextApiRequest, res?: NextApiResponse) {
-    const session = await getServerSession(req, res);
+export async function getServerUser() {
+    const session = await getServerSession();
+
+    if (session === null) {throw new Error("Session is null. User isn't logged in")}
+    if (session.user === null) {throw new Error("User is null. User isn't logged in")}
+
+    return SessionUserZod.parse(session.user);
+}
+
+export async function getServerUserFromRequest(req?: NextApiRequest, res?: NextApiResponse) {
+    const session = await getServerSessionMiddleware(req, res);
 
     if (session === null) {throw new Error("Session is null. User isn't logged in")}
     if (session.user === null) {throw new Error("User is null. User isn't logged in")}
