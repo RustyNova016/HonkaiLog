@@ -1,8 +1,8 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import {HttpStatusCode} from "../../../../tools/API/HttpStatusCodes";
 import {getServerUser} from "@/lib/NextAuth/GetSession";
-import {MaterialQuantityCreateReq} from "@/lib/Zod/Validations/MaterialQuantityLog";
 import prisma from "@/lib/prismadb";
+import {MaterialQuantityCreateReq} from "@/utils/Objects/Material/validations/MaterialQuantityLog.JSONZod";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === "POST") {

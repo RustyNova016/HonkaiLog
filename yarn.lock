@@ -5018,7 +5018,7 @@ primereact@^8.7.2:
     "@types/react-transition-group" "^4.4.1"
     react-transition-group "^4.4.1"
 
-prisma-zod-generator@^0.8.2:
+prisma-zod-generator@^0.8.11:
   version "0.8.11"
   resolved "https://registry.yarnpkg.com/prisma-zod-generator/-/prisma-zod-generator-0.8.11.tgz#6ca4e0e38b96aa925dd0894fe32f3a1e7d84153a"
   integrity sha512-wp0+pxSJLMQhlOkfH+Y4FhFiZrrn7QEVL4aPJAoMyiW4Il0wJmipBMAfjJydKyu9tmGQp4QcAcD6vHNf9tI6ZA==

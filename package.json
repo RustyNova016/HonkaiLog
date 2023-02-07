@@ -30,7 +30,7 @@
         "nextjs-redirect": "^6.0.1",
         "primeicons": "^6.0.1",
         "primereact": "^8.7.2",
-        "prisma-zod-generator": "^0.8.2",
+        "prisma-zod-generator": "^0.8.11",
         "react": "18.2.0",
         "react-awesome-reveal": "^4.2.3",
         "react-bootstrap": "^2.7.0",

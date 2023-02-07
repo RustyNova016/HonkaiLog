@@ -1,5 +1,5 @@
 import {z} from "zod";
-import {MaterialQuantityJSONZod} from "@/lib/Zod/Validations/MaterialQuantityJSONZod";
+import {MaterialQuantityJSONZod} from "@/utils/Objects/Material/validations/MaterialQuantity.JSONZod";
 
 export const GachaBannerJSONZod = z.object({
     name: z.string(),

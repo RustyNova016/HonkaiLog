@@ -1,12 +1,13 @@
 import dayjs, {Dayjs, OpUnitType, QUnitType} from "dayjs";
 import _ from "lodash";
-import {MaterialLogCollection, Period} from "@/utils/Objects/Material/MaterialLogCollection";
+import {MaterialLogCollection} from "@/utils/Objects/Material/MaterialLogCollection";
 import {MaterialQuantityLog} from "@/utils/Objects/Material/MaterialQuantityLog";
 import {MaterialQuantity} from "@/utils/Objects/Material/MaterialQuantity";
 import {MaterialHistory} from "@/utils/Objects/Material/MaterialHistory";
 import logger from "../../../tools/Logger";
 import {z} from "zod";
-import {MaterialHistoryCalculatorJSON} from "@/lib/Zod/Validations/MaterialHistoryCalculatorJSON";
+import {MaterialHistoryCalculatorJSONZod} from "@/utils/Objects/Material/validations/MaterialHistoryCalculator.JSONZod";
+import {Period} from "@/utils/types/Period";
 
 export interface MaterialHistoryCalculatorFilter {
     period: Period;
@@ -203,8 +204,8 @@ export class MaterialHistoryCalculator {
         return new MaterialHistoryCalculator(historyCopy, this.filter);
     }
 
-    public static parse(data: z.infer<typeof MaterialHistoryCalculatorJSON>): MaterialHistoryCalculator {
-        const parsedData = MaterialHistoryCalculatorJSON.parse(data);
+    public static parse(data: z.infer<typeof MaterialHistoryCalculatorJSONZod>): MaterialHistoryCalculator {
+        const parsedData = MaterialHistoryCalculatorJSONZod.parse(data);
         return new MaterialHistoryCalculator(
             MaterialHistory.parse(parsedData.materialHistory),
             {
@@ -213,7 +214,7 @@ export class MaterialHistoryCalculator {
         )
     }
 
-    public toJSON(): z.infer<typeof MaterialHistoryCalculatorJSON> {
+    public toJSON(): z.infer<typeof MaterialHistoryCalculatorJSONZod> {
         const period = this.filter.period;
         return {
             materialHistory: this.materialHistory.toJSON(),

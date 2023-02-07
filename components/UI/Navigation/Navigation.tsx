@@ -17,7 +17,7 @@ export function Navigation() {
                     <div className={"flex align-middle navbar-brand text-center mx-2"}>
                         <Link href={ROUTESOLD.home} style={{height: "inherit"}}
                               className={"navbar-brand p-0 text-center"}>
-                            <span className={"text-2xl"}>HonkaiLog</span>
+                            <span className={"text-2xl font-medium montserrat"}>HonkaiLog</span>
                         </Link>
                     </div>
 

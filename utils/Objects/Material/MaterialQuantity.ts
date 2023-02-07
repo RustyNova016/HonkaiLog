@@ -1,6 +1,6 @@
 import {Material} from "@/utils/Objects/Material/Material";
 import {z} from "zod";
-import {MaterialQuantityJSONZod} from "@/lib/Zod/Validations/MaterialQuantityJSONZod";
+import {MaterialQuantityJSONZod} from "@/utils/Objects/Material/validations/MaterialQuantity.JSONZod";
 
 /** A class that represent a quantity of materials. Like a stack of items */
 export class MaterialQuantity {

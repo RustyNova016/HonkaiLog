@@ -1,5 +1,5 @@
 import {z} from "zod";
-import {MaterialJSONZod} from "@/lib/Zod/Validations/MaterialJSONZod";
+import {MaterialJSONZod} from "@/utils/Objects/Material/validations/Material.JSONZod";
 
 export const MaterialQuantityJSONZod = z.object({
     material: MaterialJSONZod,
