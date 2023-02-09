@@ -1,8 +1,8 @@
 import {FadingIn} from "@/components/Animators/FadingIn";
 import {CenterContent} from "@/components/Layouts/CenterContent";
-import {PageTitle} from "../../component/pageComponents/Theme/Theme";
 import FramedDiv from "../../component/Layout/FramedDiv";
 import {BattlepassSummary} from "@/app/battlepass/battlepassSummary";
+import {PageTitle} from "@/components/UI/Theme/PageTitle";
 
 export default async function Page() {
     return <>

@@ -3,7 +3,7 @@ import {signOut} from "next-auth/react";
 import classNames from "classnames";
 import {z} from "zod";
 import {Session} from "next-auth";
-import NavbarStyles from "@/components/UI/Navigation/navigation.module.scss";
+import NavbarStyles from "@/components/UI/Navigation/Navigation.module.scss";
 import Image from "next/image";
 
 export interface NavbarLoggedInStatusProps {

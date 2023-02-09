@@ -1,0 +1,11 @@
+@import "styles/colors";
+@import "styles/variables";
+
+.pageTitle {
+  color: $main-text-color;
+  font-family: $montserrat-font;
+  font-size: 4rem;
+  text-align: center;
+
+  margin: 20px;
+}

@@ -10,11 +10,11 @@ export class Material {
     /** Name of the logs */
     public name: string;
 
-    public namePlural: string | null;
-    public imageLink: string | null;
+    public namePlural: string | undefined;
+    public imageLink: string | undefined;
 
 
-    constructor(id: number, name: string, namePlural: string | null, imageLink: string | null) {
+    constructor(id: number, name: string, namePlural: string | undefined, imageLink: string | undefined) {
         this.id = id;
         this.name = name;
         this.namePlural = namePlural;
@@ -42,7 +42,7 @@ export class Material {
         let str: string = this.name;
 
         if (plural){
-            str = this.namePlural === null ? this.name + "s" : this.namePlural;
+            str = (this.namePlural === "" && this.namePlural === undefined) ? this.name + "s" : this.namePlural;
         }
 
         return startcase ? _.startCase(str) : str

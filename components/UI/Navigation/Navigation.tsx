@@ -2,7 +2,7 @@ import {NavigationUserInfo} from "./NavigationUserInfo";
 import {Suspense} from "react";
 import Link from "next/link";
 import Image from "next/image";
-import NavbarStyles from "./navigation.module.scss"
+import NavbarStyles from "./Navigation.module.scss"
 import classNames from "classnames";
 import {LoadingIcon} from "@/components/UI/Loading/LoadingIcon";
 

@@ -21,7 +21,7 @@ export async function getServerSessionMiddleware(req?: NextApiRequest, res?: Nex
 }
 
 export async function getServerUser() {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
 
     if (session === null) {throw new Error("Session is null. User isn't logged in")}
     if (session.user === null) {throw new Error("User is null. User isn't logged in")}

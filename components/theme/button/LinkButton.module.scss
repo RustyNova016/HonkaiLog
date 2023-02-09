@@ -1,0 +1,26 @@
+@import "./styles/colors";
+
+.LinkButton {
+    background-color: $button-blue;
+    border: none;
+    border-radius: 5px;
+
+    text-align: center;
+
+    height: fit-content;
+    width: fit-content;
+
+    padding: 10px 10px;
+
+    font-weight: 600;
+    color: #ffffff;
+
+    overflow: hidden;
+    white-space: nowrap;
+
+    &:hover {
+        background-color: darken($button-blue, 20%);
+        text-decoration: none;
+        color: darken(#ffffff, 10%);
+    }
+}
