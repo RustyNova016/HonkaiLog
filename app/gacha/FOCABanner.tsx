@@ -5,17 +5,17 @@ import {GachaBanner} from "@/utils/Objects/Gacha/GachaBanner";
 import FramedDiv from "../../component/Layout/FramedDiv";
 import {GachaBannerCalculator} from "@/utils/Objects/Gacha/GachaBannerCalculator";
 import {z} from "zod";
-import {MaterialQuantityJSONZod} from "@/lib/Zod/Validations/MaterialQuantityJSONZod";
+import {MaterialQuantityJSONZod} from "@/utils/Objects/Material/validations/MaterialQuantity.JSONZod";
 import {IncompleteBannerBody} from "@/app/gacha/incompleteBannerBody";
 import dayjs from "dayjs";
 import {FOCABannerHeader} from "@/app/gacha/FOCABannerHeader";
 import {MaterialHistoryCalculator} from "@/utils/Objects/Material/MaterialHistoryCalculator";
-import {MaterialHistoryCalculatorJSON} from "@/lib/Zod/Validations/MaterialHistoryCalculatorJSON";
+import {MaterialHistoryCalculatorJSONZod} from "@/utils/Objects/Material/validations/MaterialHistoryCalculator.JSONZod";
 
 interface FOCABannerParams {
     pullCost: z.infer<typeof MaterialQuantityJSONZod>;
     currentInventory: z.infer<typeof MaterialQuantityJSONZod>
-    materialCalculator: z.infer<typeof MaterialHistoryCalculatorJSON>
+    materialCalculator: z.infer<typeof MaterialHistoryCalculatorJSONZod>
 }
 
 export function FOCABanner(props: FOCABannerParams) {

@@ -1,7 +1,7 @@
 import {MaterialHistory} from "@/utils/Objects/Material/MaterialHistory";
 import FramedDiv from "../../../component/Layout/FramedDiv";
-import {SectionTitle} from "../../../component/pageComponents/Theme/Theme";
 import {MaterialLogsInput} from "@/app/history/[materialId]/materialLogsInput";
+import {SectionTitle} from "@/components/UI/Theme/SectionTitle";
 
 export default function MaterialLogsManager({material}: { material: MaterialHistory }) {
     const currentCount = material.getLogs().getCurrentCount();

@@ -1,7 +1,8 @@
-import {MaterialLogCollection, Period} from "./MaterialLogCollection";
+import {MaterialLogCollection} from "./MaterialLogCollection";
 import {Material} from "@/utils/Objects/Material/Material";
 import {z} from "zod";
 import {UserMaterialJSONZod} from "@/lib/Zod/Validations/UserMaterial";
+import {Period} from "@/utils/types/Period";
 
 export class MaterialHistory {
     /** The collection holding all the logs made by the user for the logs */
@@ -55,8 +56,7 @@ export class MaterialHistory {
     /** Export the logs to a plain object */
     public toJSON(): z.infer<typeof UserMaterialJSONZod> {
         return {
-            id: this.id,
-            name: this.name,
+            ...this.material.export(),
             materialQuantityLogs: this.logCollection.export(),
             userID: this.userID
         }

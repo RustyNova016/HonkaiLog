@@ -1,8 +1,8 @@
 import styles from '../styles/Home.module.scss'
 import {SmallLinkCard} from "../component/Layout/SmallLinkCard";
-import {PageTitle} from "../component/pageComponents/Theme/Theme";
 import {FadingIn} from "@/components/Animators/FadingIn";
 import {CenterContent} from "@/components/Layouts/CenterContent";
+import {PageTitle} from "@/components/UI/Theme/PageTitle";
 
 
 export default function Home() {
@@ -11,7 +11,7 @@ export default function Home() {
             <FadingIn direction={"down"} cascade={true}>
                 <PageTitle title={"Welcome to HonkaiLog!"}/>
 
-                <p className={styles.description}>
+                <p className={styles['description']}>
                     A website to keep track of your progress in Honkai Impact 3rd
                 </p>
             </FadingIn>

@@ -2,10 +2,11 @@ import {z} from "zod";
 import {getMaterialHistory} from "@/app/history/[materialId]/getUserMaterialData";
 import {FadingIn} from "@/components/Animators/FadingIn";
 import {CenterContent} from "@/components/Layouts/CenterContent";
-import {PageTitle, SectionTitle} from "../../../../component/pageComponents/Theme/Theme";
 import FramedDiv from "../../../../component/Layout/FramedDiv";
 import {MaterialLogsInput} from "@/app/history/[materialId]/materialLogsInput";
 import {redirect} from "next/navigation";
+import {SectionTitle} from "@/components/UI/Theme/SectionTitle";
+import {PageTitle} from "@/components/UI/Theme/PageTitle";
 
 export default async function Page({params}: any) {
     const parsedParams = z.object({materialId: z.string()}).parse(params)

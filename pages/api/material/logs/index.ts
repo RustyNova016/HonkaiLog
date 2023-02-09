@@ -1,14 +1,19 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import {HttpStatusCode} from "../../../../tools/API/HttpStatusCodes";
-import {getServerUser} from "@/lib/NextAuth/GetSession";
-import {MaterialQuantityCreateReq} from "@/lib/Zod/Validations/MaterialQuantityLog";
 import prisma from "@/lib/prismadb";
+import {MaterialQuantityCreateReq} from "@/utils/Objects/Material/validations/MaterialQuantityLog.JSONZod";
+import {getServerSession} from "next-auth";
+import {authOptions} from "@/lib/NextAuth/AuthOptions";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === "POST") {
         // Set entries
+        const userId = getServerSession(req, res, authOptions).then(value => value?.user?.id)
         const parsedBody = MaterialQuantityCreateReq.parse(req.body);
-        const userId = getServerUser(req, res).then(value => value.id);
+
+        if (await userId === undefined) {
+            res.status(HttpStatusCode.Unauthorized).end()
+        }
 
         // Insert the logs
         const resDB = await prisma.materialQuantityLog.create({

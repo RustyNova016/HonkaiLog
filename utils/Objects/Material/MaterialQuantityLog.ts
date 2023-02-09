@@ -1,8 +1,8 @@
 import {MaterialQuantity} from "./MaterialQuantity";
 import {z} from "zod";
-import {MaterialQuantityLogJSONZod} from "@/lib/Zod/Validations/MaterialQuantityLog";
 import dayjs from "dayjs";
 import {Material} from "@/utils/Objects/Material/Material";
+import {MaterialQuantityLogJSONZod} from "@/utils/Objects/Material/validations/MaterialQuantityLog.JSONZod";
 
 /** Snapshot of a quantity at a given time */
 export class MaterialQuantityLog {

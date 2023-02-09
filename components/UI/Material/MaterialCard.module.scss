@@ -1,0 +1,74 @@
+@import "styles/colors";
+@import "styles/variables";
+
+.materialCard {
+    display: grid;
+
+    height: fit-content;
+    margin: 10px;
+
+    border-radius: 25px;
+    background-color: $popup-bg;
+
+    .imgContainer {
+        grid-row: 1/1;
+        grid-column: 1/1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        height: 128px;
+        width: 128px;
+
+        border-radius: 25px;
+    }
+
+    .name {
+        grid-row: 1/1;
+        grid-column: 2/2;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        font-family: $montserrat-font;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+
+    .LinkContainer {
+        grid-row: 1/1;
+        grid-column: 3/3;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .Link {
+        background-color: $button-blue;
+        border: none;
+        border-radius: 5px;
+
+        text-align: center;
+
+        height: fit-content;
+        width: fit-content;
+
+        padding: 5px 5px;
+
+        font-weight: 600;
+
+
+        #parent:hover &:hover {
+            background-color: darken($button-blue, 20%);
+            text-decoration: none;
+            color: #FFFFFF;
+        }
+    }
+
+    .Description {
+        grid-row: 3/3;
+        grid-column: 1/3;
+    }
+}

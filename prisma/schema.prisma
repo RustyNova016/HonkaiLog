@@ -2,6 +2,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator zod {
+  provider = "prisma-zod-generator"
+}
+
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
@@ -57,6 +61,8 @@ model VerificationToken {
 model Material {
   id                   Int                   @id @default(autoincrement())
   name                 String                @db.VarChar(255)
+  namePlural           String?               @db.VarChar(255)
+  imageLink            String?               @db.VarChar(255)
   materialQuantityLogs MaterialQuantityLog[]
 }
 

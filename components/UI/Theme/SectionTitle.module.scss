@@ -1,0 +1,21 @@
+@import "styles/colors";
+@import "styles/variables";
+
+.sectionTitle {
+  color: $main-text-color;
+  font-family: $montserrat-font;
+  font-size: 1.75rem;
+  font-weight: 500;
+
+  border-color: $main-text-color;
+  border-width: 0px 0px 3px 3px;
+  border-style: solid;
+  border-radius: 2px;
+
+  margin: 0px 10px 10px 5px;
+
+  padding: 7px 10px;
+
+  width: fit-content;
+  height: fit-content;
+}

@@ -1,11 +1,10 @@
 import {MaterialQuantityLog} from "@/utils/Objects/Material/MaterialQuantityLog";
 import _ from "lodash";
 import {z} from "zod";
-import {MaterialQuantityLogArrayZod} from "@/lib/Zod/Validations/MaterialQuantityLog";
 import dayjs, {Dayjs, OpUnitType, QUnitType} from "dayjs";
 import {Material} from "@/utils/Objects/Material/Material";
-
-export type Period = { start: Dayjs, end: Dayjs };
+import {Period} from "@/utils/types/Period";
+import {MaterialLogCollectionJSONZod} from "@/utils/Objects/Material/validations/MaterialLogCollection.JSONZod";
 
 /** List of all the Material_logs of a logs. It can be used to calculate data about the usage of the materials */
 export class MaterialLogCollection {
@@ -20,7 +19,7 @@ export class MaterialLogCollection {
         this.logs = MaterialLogCollection.sortLogArray(logs);
     }
 
-    static parse(data: z.infer<typeof MaterialQuantityLogArrayZod>, material: Material) {
+    static parse(data: z.infer<typeof MaterialLogCollectionJSONZod>, material: Material) {
         const materialQuantityLogs = [];
 
         for (const materialQuantityLogJSON of data) {
@@ -41,7 +40,7 @@ export class MaterialLogCollection {
     }
 
     /** Export the logs to a plain object */
-    public export(): z.infer<typeof MaterialQuantityLogArrayZod> {
+    public export(): z.infer<typeof MaterialLogCollectionJSONZod> {
         const logs = []
 
         for (const log of this.logs) {
