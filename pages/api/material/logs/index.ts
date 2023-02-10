@@ -1,5 +1,5 @@
 import {NextApiRequest, NextApiResponse} from "next";
-import {HttpStatusCode} from "../../../../tools/API/HttpStatusCodes";
+import {HttpStatusCode} from "@/utils/enums/HttpStatusCodes";
 import prisma from "@/lib/prismadb";
 import {MaterialQuantityCreateReq} from "@/utils/Objects/Material/validations/MaterialQuantityLog.JSONZod";
 import {getServerSession} from "next-auth";

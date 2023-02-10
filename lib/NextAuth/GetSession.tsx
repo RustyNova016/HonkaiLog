@@ -37,3 +37,12 @@ export async function getServerUserFromRequest(req?: NextApiRequest, res?: NextA
 
     return SessionUserZod.parse(session.user);
 }
+
+export async function getAPISideUserOrThrow(req: NextApiRequest, res: NextApiResponse) {
+    const serverSession = await getServerSession(req, res, authOptions)
+
+    if (serverSession === null) {throw new Error("Session is null. User isn't logged in")}
+    if (serverSession.user === undefined) {throw new Error("User is null. User isn't logged in")}
+
+    return serverSession.user
+}

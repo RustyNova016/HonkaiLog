@@ -1,6 +1,6 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import prisma from "@/lib/prismadb";
-import {HttpStatusCode} from "../../../../tools/API/HttpStatusCodes";
+import {HttpStatusCode} from "@/utils/enums/HttpStatusCodes";
 import {convertHonkaiLogv1Datasource, honkaiLogV1Data} from "../../../../data/Datasource1";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
