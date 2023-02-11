@@ -1,4 +1,4 @@
-import {MaterialHistory} from "@/utils/Objects/Material/MaterialHistory";
+import {MaterialHistory} from "@/utils/entities/Material/MaterialHistory";
 import FramedDiv from "../../../component/Layout/FramedDiv";
 import {MaterialLogsInput} from "@/app/history/[materialId]/materialLogsInput";
 import {SectionTitle} from "@/components/UI/Theme/SectionTitle";

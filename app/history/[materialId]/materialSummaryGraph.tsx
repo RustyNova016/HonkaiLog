@@ -1,6 +1,6 @@
 import {CanvasJSWithSSR} from "@/lib/CanvasJS/CanvasJSWithSSR";
-import {MaterialHistoryGrapher} from "@/utils/Objects/Material/MaterialHistoryGrapher";
-import {MaterialHistoryCalculator} from "@/utils/Objects/Material/MaterialHistoryCalculator";
+import {MaterialHistoryGrapher} from "@/utils/entities/Material/MaterialHistoryGrapher";
+import {MaterialHistoryCalculator} from "@/utils/entities/Material/MaterialHistoryCalculator";
 
 export interface MaterialSummaryGraphProps {
     historyCalculator: MaterialHistoryCalculator;
@@ -27,7 +27,7 @@ export function MaterialSummaryGraph({historyCalculator}: MaterialSummaryGraphPr
         },
         data: [{
             type: "line",
-            toolTipContent: "{x}: {y}",
+            toolTipContent: "{dateString}: {y} {material}{comment}",
             dataPoints: dataPoints
         }]
     }

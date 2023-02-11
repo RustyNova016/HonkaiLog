@@ -2,7 +2,7 @@
 import {SectionTitle} from "@/components/UI/Theme/SectionTitle";
 import {Form} from "react-bootstrap";
 import {useState} from "react";
-import {BattlePassCalculator} from "@/utils/Objects/battlePassCalculator";
+import {BattlePassCalculator} from "@/utils/entities/battlePassCalculator";
 
 export function BattlepassSummary() {
     const [BPXP, setBPXP] = useState(0);

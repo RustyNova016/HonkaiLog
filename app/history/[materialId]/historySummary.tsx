@@ -1,8 +1,7 @@
 "use client"
 import FramedDiv from "../../../component/Layout/FramedDiv";
 import {SectionTitle} from "@/components/UI/Theme/SectionTitle";
-import {UserMaterialData} from "@/lib/Zod/Validations/UserMaterial";
-import {MaterialHistory} from "@/utils/Objects/Material/MaterialHistory";
+import {MaterialHistory, MaterialHistoryJSON} from "@/utils/entities/Material/MaterialHistory";
 import {useState} from "react";
 import {TimeframeSelection} from "@/app/history/[materialId]/timeframeSelection";
 import {HistorySummaryNet} from "@/app/history/[materialId]/historySummaryNet";
@@ -10,10 +9,14 @@ import {HistorySummaryAverages} from "@/app/history/[materialId]/historySummaryA
 import dayjs, {Dayjs} from "dayjs";
 import {Col, Row} from "@/lib/Bootstrap/Layout";
 import {MaterialSummaryGraph} from "@/app/history/[materialId]/materialSummaryGraph";
-import {MaterialHistoryCalculator} from "@/utils/Objects/Material/MaterialHistoryCalculator";
+import {MaterialHistoryCalculator} from "@/utils/entities/Material/MaterialHistoryCalculator";
 
-export function HistorySummary({materialJson}: { materialJson: UserMaterialData}) {
-    const materialHistory = MaterialHistory.parse(materialJson)
+export function HistorySummary({materialJson}: { materialJson: MaterialHistoryJSON }) {
+    const materialHistory = MaterialHistory.fromJSON(materialJson)
+    console.log("Number of logs:", materialHistory.logCollection.logs.length)
+    console.log("Logs:", materialHistory.logCollection.logs)
+    console.log("Logs json:", materialHistory.logCollection.toJSON())
+    console.log("Log json:", materialHistory.logCollection.getNewestLogOrThrow().toJSON())
     const [nbrDaysBack, setNbrDaysBack] = useState(1);
     let periodStart: Dayjs;
 
@@ -24,7 +27,14 @@ export function HistorySummary({materialJson}: { materialJson: UserMaterialData}
     }
 
     console.info("Setting logs from ", periodStart.toString(), "to today");
-    const historyCalculator = new MaterialHistoryCalculator(materialHistory, {period: {start: periodStart, end: dayjs()}});
+    const historyCalculator = new MaterialHistoryCalculator(materialHistory, {
+        period: {
+            start: periodStart,
+            end: dayjs()
+        }
+    });
+
+    console.log("Final Logs:", historyCalculator.logCollection.logs)
 
     return <>
         <FramedDiv sides={true} style={{width: "75%"}}>

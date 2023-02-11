@@ -1,12 +1,12 @@
 import {getMaterialHistory} from "@/app/history/[materialId]/getUserMaterialData";
-import {GachaBanner} from "@/utils/Objects/Gacha/GachaBanner";
+import {GachaBanner} from "@/utils/entities/Gacha/GachaBanner";
 import {FadingIn} from "@/components/Animators/FadingIn";
 import {CenterContent} from "@/components/Layouts/CenterContent";
 import {GachaBannerSummary} from "@/app/gacha/gachaBannerSummary";
-import {MaterialQuantity} from "@/utils/Objects/Material/MaterialQuantity";
+import {MaterialQuantity} from "@/utils/entities/Material/MaterialQuantity";
 import dayjs from "dayjs";
 import {FOCABanner} from "@/app/gacha/FOCABanner";
-import {MaterialHistoryCalculator} from "@/utils/Objects/Material/MaterialHistoryCalculator";
+import {MaterialHistoryCalculator} from "@/utils/entities/Material/MaterialHistoryCalculator";
 import {PageTitle} from "@/components/UI/Theme/PageTitle";
 
 export default async function Page() {

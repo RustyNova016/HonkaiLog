@@ -10,7 +10,7 @@ import {PageTitle} from "@/components/UI/Theme/PageTitle";
 
 export default async function Page({params}: any) {
     const parsedParams = z.object({materialId: z.string()}).parse(params)
-    const material = await getMaterialHistory(Number(parsedParams.materialId));
+    const material = await getMaterialHistory(parsedParams.materialId);
 
     if (!material.getLogs().isEmpty()) {redirect("/history/" + material.id)}
 

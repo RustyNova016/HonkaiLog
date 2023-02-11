@@ -1,5 +1,5 @@
 import _ from "lodash";
-import {MaterialHistoryCalculator} from "@/utils/Objects/Material/MaterialHistoryCalculator";
+import {MaterialHistoryCalculator} from "@/utils/entities/Material/MaterialHistoryCalculator";
 
 interface HistorySummaryAveragesProps {
     calculator: MaterialHistoryCalculator;

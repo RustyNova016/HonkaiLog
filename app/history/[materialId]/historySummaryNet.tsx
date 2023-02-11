@@ -1,4 +1,4 @@
-import {MaterialHistoryCalculator} from "@/utils/Objects/Material/MaterialHistoryCalculator";
+import {MaterialHistoryCalculator} from "@/utils/entities/Material/MaterialHistoryCalculator";
 
 interface HistorySummaryNet {
     calculator: MaterialHistoryCalculator

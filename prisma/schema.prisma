@@ -1,86 +1,113 @@
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 generator zod {
-  provider = "prisma-zod-generator"
+    provider = "prisma-zod-generator"
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
+    id                String  @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String? @db.Text
+    access_token      String? @db.Text
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String? @db.Text
+    session_state     String?
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([provider, providerAccountId])
+    @@unique([provider, providerAccountId])
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
-  id                   String                @id @default(cuid())
-  name                 String?
-  email                String?               @unique
-  emailVerified        DateTime?
-  image                String?
-  accounts             Account[]
-  sessions             Session[]
-  materialQuantityLogs MaterialQuantityLog[]
-  BattlepassLog        BattlepassLog[]
+    id                   String                     @id @default(cuid())
+    name                 String?
+    email                String?                    @unique
+    emailVerified        DateTime?
+    image                String?
+    accounts             Account[]
+    sessions             Session[]
+    materialQuantityLogs MaterialQuantityLogModel[]
+    BattlepassLog        BattlepassLogModel[]
+    HoyoverseImportModel HoyoverseImportModel[]
 }
 
 model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
+    identifier String
+    token      String   @unique
+    expires    DateTime
 
-  @@unique([identifier, token])
+    @@unique([identifier, token])
 }
 
-model Material {
-  id                   Int                   @id @default(autoincrement())
-  name                 String                @db.VarChar(255)
-  namePlural           String?               @db.VarChar(255)
-  imageLink            String?               @db.VarChar(255)
-  materialQuantityLogs MaterialQuantityLog[]
+model MaterialModel {
+    id                   String                     @id @default(cuid())
+    name                 String
+    namePlural           String?
+    imageLink            String?
+    materialQuantityLogs MaterialQuantityLogModel[]
+
+    @@unique([name])
+    @@map("Material")
 }
 
-model MaterialQuantityLog {
-  id         Int      @id @default(autoincrement())
-  quantity   Int
-  loggedAt   DateTime @default(now())
-  idMaterial Int
-  material   Material @relation(fields: [idMaterial], references: [id])
-  idUser     String
-  user       User     @relation(fields: [idUser], references: [id])
+model MaterialQuantityLogModel {
+    id             String   @id @default(cuid())
+    quantityTotal  Int
+    quantityChange Int?
+    comment        String?
+    atTime         DateTime @default(now())
+
+    idMaterial String
+    material   MaterialModel @relation(fields: [idMaterial], references: [id])
+
+    idUser String
+    user   User   @relation(fields: [idUser], references: [id])
+
+    idImport String?
+    import   HoyoverseImportModel? @relation(fields: [idImport], references: [id])
+
+    @@map("MaterialQuantityLog")
 }
 
-model BattlepassLog {
-  id                   Int      @id @default(autoincrement())
-  xp                   Int
-  currentLimitProgress Int
-  loggedAt             DateTime @default(now())
-  idUser               String
-  user                 User     @relation(fields: [idUser], references: [id])
+model HoyoverseImportModel {
+    id                  String                     @id @default(cuid())
+    serverUpdateTime    DateTime
+    MaterialQuantityLog MaterialQuantityLogModel[]
+
+    idUser String
+    user   User   @relation(fields: [idUser], references: [id])
+
+    @@unique([serverUpdateTime, idUser])
+    @@map("HoyoverseImport")
+}
+
+model BattlepassLogModel {
+    id                   String   @id @default(cuid())
+    xp                   Int
+    currentLimitProgress Int
+    loggedAt             DateTime @default(now())
+    idUser               String
+    user                 User     @relation(fields: [idUser], references: [id])
+
+    @@map("BattlepassLog")
 }

@@ -1,4 +1,4 @@
-import {GachaBanner} from "@/utils/Objects/Gacha/GachaBanner";
+import {GachaBanner} from "@/utils/entities/Gacha/GachaBanner";
 import {SectionTitle} from "@/components/UI/Theme/SectionTitle";
 import {Form} from "react-bootstrap";
 import {z} from "zod";

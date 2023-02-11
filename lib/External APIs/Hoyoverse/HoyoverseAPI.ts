@@ -1,5 +1,5 @@
 import axios from "axios";
-import {FetchHoyoCrystalLogRes, HoyoCrystalLogData} from "@/utils/types/api/hoyoverse/crystals";
+import {FetchHoyoCrystalLogRes, HoyoCrystalLogData} from "@/utils/types/api/hoyoverse/FetchHoyoCrystalLogRes";
 import {stringify} from "json5";
 
 export class HoyoverseAPI {

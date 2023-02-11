@@ -1,5 +1,5 @@
-import {GachaBannerCalculator} from "@/utils/Objects/Gacha/GachaBannerCalculator";
-import {GachaBanner} from "@/utils/Objects/Gacha/GachaBanner";
+import {GachaBannerCalculator} from "@/utils/entities/Gacha/GachaBannerCalculator";
+import {GachaBanner} from "@/utils/entities/Gacha/GachaBanner";
 import dayjs from "dayjs";
 
 export function IncompleteBannerBody(props: { bannerCalculator: GachaBannerCalculator, gachaBanner: GachaBanner }) {

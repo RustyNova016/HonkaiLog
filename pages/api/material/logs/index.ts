@@ -1,7 +1,7 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import {HttpStatusCode} from "@/utils/enums/HttpStatusCodes";
 import prisma from "@/lib/prismadb";
-import {MaterialQuantityCreateReq} from "@/utils/Objects/Material/validations/MaterialQuantityLog.JSONZod";
+import {MaterialQuantityCreateReq} from "@/utils/entities/Material/validations/MaterialQuantityLog.JSONZod";
 import {getServerSession} from "next-auth";
 import {authOptions} from "@/lib/NextAuth/AuthOptions";
 
