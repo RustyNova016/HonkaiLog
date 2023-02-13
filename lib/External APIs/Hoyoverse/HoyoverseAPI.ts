@@ -22,12 +22,9 @@ export class HoyoverseAPI {
         return res
     }
 
-    private static getCrystalAPIUrl(authKey: string, page: number): string {
-        return `https://sg-public-api.hoyoverse.com/common/bh3_self_help_query/UserMaterialQuery/GetUserHCoin?authkey_ver=1&sign_type=2&pageSize=20&page=${page}&authkey=${encodeURIComponent(authKey)}`
-    }
-
     private static async fetchCrystalsLogPage(page: number, authKey: string) {
         const url = this.getCrystalAPIUrl(authKey, page);
+        console.log("Sending Request to:", url)
         const res = await axios.get<FetchHoyoCrystalLogRes>(url);
 
         const fetchHoyoCrystalRes = res.data;
@@ -36,5 +33,9 @@ export class HoyoverseAPI {
         }
 
         return fetchHoyoCrystalRes
+    }
+
+    private static getCrystalAPIUrl(authKey: string, page: number): string {
+        return `https://sg-public-api.hoyoverse.com/common/bh3_self_help_query/UserMaterialQuery/GetUserHCoin?authkey_ver=1&sign_type=2&pageSize=20&page=${page}&authkey=${encodeURIComponent(authKey)}`
     }
 }

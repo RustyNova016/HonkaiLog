@@ -2,7 +2,7 @@ import {MaterialQuantity, MaterialQuantityInterface} from "@/utils/entities/Mate
 import _ from "lodash";
 import {GachaBanner} from "./GachaBanner";
 import {MaterialQuantityCalculator} from "@/utils/entities/Material/MaterialQuantityCalculator";
-import {MaterialEntity} from "@/utils/entities/Material/MaterialEntity";
+import {Material} from "@/utils/entities/Material/Material";
 import {MaterialHistoryCalculator} from "@/utils/entities/Material/MaterialHistoryCalculator";
 
 
@@ -21,7 +21,7 @@ export class GachaBannerCalculator {
         this.historyCalculator = historyCalculator
     }
 
-    get material(): MaterialEntity {
+    get material(): Material {
         return this.historyCalculator.material;
     }
 

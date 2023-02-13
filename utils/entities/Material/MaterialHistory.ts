@@ -1,5 +1,5 @@
 import {MaterialLogCollection} from "./MaterialLogCollection";
-import {MaterialEntity, MaterialJSON} from "@/utils/entities/Material/MaterialEntity";
+import {Material, MaterialJSON} from "@/utils/entities/Material/Material";
 import {Period} from "@/utils/types/Period";
 import {MaterialModel} from "@prisma/client";
 import {MaterialQuantityLogModel} from ".prisma/client";
@@ -9,11 +9,11 @@ export class MaterialHistory {
     /** The collection holding all the logs made by the user for the logs */
     public readonly logCollection: MaterialLogCollection
     /** The material concerned */
-    public readonly material: MaterialEntity
+    public readonly material: Material
     /** Id of the user the data is from */
     public readonly userID: string;
 
-    constructor(material: MaterialEntity, materialQuantityLogs: MaterialLogCollection, userId: string) {
+    constructor(material: Material, materialQuantityLogs: MaterialLogCollection, userId: string) {
         this.material = material
         this.userID = userId;
         this.logCollection = materialQuantityLogs
@@ -29,7 +29,7 @@ export class MaterialHistory {
 
     public static fromModels(material: MaterialModel, logs: MaterialQuantityLogModel[], idUser: string): MaterialHistory {
         return new MaterialHistory(
-            MaterialEntity.fromModel(material),
+            Material.fromModel(material),
             MaterialLogCollection.fromModel(logs),
             idUser
         )
@@ -66,7 +66,7 @@ export class MaterialHistory {
 
     public static fromJSON(data: MaterialHistoryJSON): MaterialHistory {
         return new MaterialHistory(
-            MaterialEntity.fromJSON(data.material),
+            Material.fromJSON(data.material),
             MaterialLogCollection.fromJson(data.logs),
             data.idUser
         )

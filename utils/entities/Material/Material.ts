@@ -4,7 +4,7 @@ import _ from "lodash";
 import {MaterialModel} from "@prisma/client";
 
 /** Class of a logs object. E.G. Gold, crystals, exp logs, etc... */
-export class MaterialEntity implements MaterialModel {
+export class Material implements MaterialModel {
     constructor(
         public id: string,
         public name: string,
@@ -20,8 +20,8 @@ export class MaterialEntity implements MaterialModel {
         return this._namePlural;
     }
 
-    public static fromModel(data: MaterialModel): MaterialEntity {
-        return new MaterialEntity(
+    public static fromModel(data: MaterialModel): Material {
+        return new Material(
             data.id,
             data.name,
             data.namePlural,
@@ -30,9 +30,9 @@ export class MaterialEntity implements MaterialModel {
     }
 
     /** Create a Material instance from a validation pattern */
-    static parse(data: z.infer<typeof MaterialJSONZod>): MaterialEntity {
+    static parse(data: z.infer<typeof MaterialJSONZod>): Material {
         const parsedData = MaterialJSONZod.parse(data);
-        return new MaterialEntity(parsedData.id, parsedData.name, parsedData.namePlural, parsedData.imageLink);
+        return new Material(parsedData.id, parsedData.name, parsedData.namePlural, parsedData.imageLink);
     }
 
     /** Export the logs to a plain object */
@@ -46,7 +46,7 @@ export class MaterialEntity implements MaterialModel {
     }
 
     /** Output true if the logs have the same ID */
-    public isSame(mat: MaterialEntity): boolean {
+    public isSame(mat: Material): boolean {
         // TODO: Deep comparison
         return this.id === mat.id;
     }
@@ -65,8 +65,8 @@ export class MaterialEntity implements MaterialModel {
         return Object.assign({}, this.toModel());
     }
 
-    public static fromJSON(data: MaterialJSON): MaterialEntity {
-        return MaterialEntity.fromModel(data)
+    public static fromJSON(data: MaterialJSON): Material {
+        return Material.fromModel(data)
     }
 }
 

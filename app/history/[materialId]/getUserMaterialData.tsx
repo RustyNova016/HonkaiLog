@@ -8,8 +8,9 @@ import {MaterialQuantityLogORM} from "@/prisma/ORMs/MaterialQuantityLogORM";
  * @param idMaterial
  */
 export async function getMaterialHistory(idMaterial: string): Promise<MaterialHistory> {
-    console.log("object")
     const idUser = (await getServerUser()).id;
+    console.log("Return:", await MaterialQuantityLogORM.getMaterialQuantityLogsModel(idUser, idMaterial))
+    
     const materialHistory = MaterialHistory.fromModels(
         await MaterialORM.getMaterialModel(idMaterial),
         await MaterialQuantityLogORM.getMaterialQuantityLogsModel(idUser, idMaterial),

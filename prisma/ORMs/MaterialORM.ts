@@ -1,6 +1,8 @@
 import prismadb from "@/lib/prismadb";
 import {MaterialModel} from "@prisma/client";
-import {MaterialEntity} from "@/utils/entities/Material/MaterialEntity";
+import {Material} from "@/utils/entities/Material/Material";
+import {MaterialHistory} from "@/utils/entities/Material/MaterialHistory";
+import {MaterialQuantityLogORM} from "@/prisma/ORMs/MaterialQuantityLogORM";
 
 export class MaterialORM {
     public static async findMaterialByName(materialName: string) {
@@ -23,10 +25,10 @@ export class MaterialORM {
         })
     }
 
-    public static async getMaterial(idMaterial: string): Promise<MaterialEntity> {
+    public static async getMaterial(idMaterial: string): Promise<Material> {
         const material = await this.getMaterialModel(idMaterial)
 
-        return new MaterialEntity(
+        return new Material(
             material.id,
             material.name,
             material.namePlural,
@@ -36,5 +38,13 @@ export class MaterialORM {
 
     private static getPrisma() {
         return prismadb.materialModel;
+    }
+
+    public static async getMaterialHistory(idMaterial: string, idUser: string){
+        return MaterialHistory.fromModels(
+            await MaterialORM.getMaterialModel(idMaterial),
+            await MaterialQuantityLogORM.getMaterialQuantityLogsModel(idUser, idMaterial),
+            idUser
+        )
     }
 }

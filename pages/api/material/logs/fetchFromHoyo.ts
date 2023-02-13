@@ -7,7 +7,7 @@ import {HoyoverseImportORM} from "@/prisma/ORMs/HoyoverseImportORM";
 export default async function (req: NextApiRequest, res: NextApiResponse) {
     const idUser = getAPISideUserOrThrow(req, res).then(value => value.id)
     const query = req.query;
-    const parse = z.string(req.body.authKey).safeParse(query["authkey"])
+    const parse = z.string().safeParse(query["authkey"])
 
 
     if (!parse.success) {
@@ -15,7 +15,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
         return
     }
 
-    const authKey: string = parse.data
+    const authKey: string = parse.data.replaceAll(" ", "+")
     const hoyoData = HoyoverseAPI.fetchCrystalLogs(authKey)
 
     const logsInserted = await HoyoverseImportORM.insertCrystalImport(await hoyoData, await idUser)

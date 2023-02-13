@@ -27,7 +27,7 @@ export class MaterialQuantityLogORM {
         })
     }
 
-    public static async insertHoyoCrystalLog(log: HoyoCrystalLog, idUser: string, idImport: string) {
+    public static async insertHoyoCrystalLog(log: HoyoCrystalLog, idUser: string, idImport: string, idNextLog: string | null) {
         console.log("Inserting log: ", log)
 
         const material = (await MaterialORM.findMaterialByName("crystal"))[0];
@@ -41,9 +41,16 @@ export class MaterialQuantityLogORM {
         const quantityChange = z.number().parse(parseInt(log.item[2].value));
         const quantityTotal = z.number().parse(parseInt(log.item[3].value));
         const idMaterial = material.id;
-        const found = await this.findByTimestamp(atTime, quantityTotal, idMaterial)
+        const foundLogs = await this.getPrisma().findMany({
+            where: {
+                idMaterial: material.id,
+                quantityTotal,
+                atTime,
+                idUser
+            }
+        })
 
-        if (found === null) {
+        if (foundLogs.length === 0) {
             return this.create({
                 data: {
                     atTime: atTime,
@@ -52,58 +59,36 @@ export class MaterialQuantityLogORM {
                     quantityTotal: quantityTotal,
                     idMaterial: idMaterial,
                     idUser,
-                    idImport
+                    idImport,
+                    idNextLog
                 }
             })
         }
-
-        if (found.idImport === null) {
-            this.getPrisma().update({
-                data: {
-                    idImport: idImport
-                },
-                where: {
-                    quantityTotal_atTime_idMaterial: {
-                        atTime,
-                        idMaterial,
-                        quantityTotal
-                    }
-                }
-            })
-        }
-
         return
     }
 
-    public static insertHoyoCrystalLogs(log: HoyoCrystalLog[], idUser: string, idImport: string) {
-        const insertPromises = []
+    public static async insertHoyoCrystalLogs(log: HoyoCrystalLog[], idUser: string, idImport: string) {
+        let lastLog
+        const allLogs = []
 
         for (const hoyoCrystalLog of log) {
-            insertPromises.push(this.insertHoyoCrystalLog(hoyoCrystalLog, idUser, idImport));
+            const idLastLog = (await lastLog)?.id;
+            lastLog = this.insertHoyoCrystalLog(hoyoCrystalLog, idUser, idImport, idLastLog === undefined ? null : idLastLog);
+            allLogs.push(lastLog)
         }
 
-        return Promise.all(insertPromises)
+        return allLogs
     }
 
-    private static async create(data: z.infer<typeof MaterialQuantityLogModelCreateOneSchema>) {
+    private static async create(data: z.infer<typeof MaterialQuantityLogModelCreateOneSchema>): Promise<MaterialQuantityLogModel> {
         //TODO: Check for existing logs
         //TODO: Add comment
         return this.getPrisma().create(data);
     }
 
-    private static async findByTimestamp(atTime: Date, quantityTotal: number, idMaterial: string) {
-        return this.getPrisma().findUnique({
-            where: {
-                quantityTotal_atTime_idMaterial: {
-                    atTime,
-                    idMaterial,
-                    quantityTotal
-                }
-            }
-        })
-    }
-
     private static getPrisma() {
         return prismadb.materialQuantityLogModel;
     }
+
+
 }

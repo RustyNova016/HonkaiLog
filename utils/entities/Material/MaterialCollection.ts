@@ -1,30 +1,30 @@
 import {z} from "zod";
-import {MaterialEntity} from "@/utils/entities/Material/MaterialEntity";
+import {Material} from "@/utils/entities/Material/Material";
 import {MaterialCollectionJSONZod} from "@/utils/entities/Material/validations/MaterialCollection.JSONZod";
 import {MaterialModel} from "@prisma/client";
 
 export class MaterialCollection {
-    public readonly collection: MaterialEntity[]
+    public readonly collection: Material[]
 
-    constructor(collection: MaterialEntity[]) {
+    constructor(collection: Material[]) {
         this.collection = collection;
     }
 
     public static parse(MaterialCollectionJson: z.infer<typeof MaterialCollectionJSONZod>) {
-        const collection: MaterialEntity[] = [];
+        const collection: Material[] = [];
 
         for (const materialJson of MaterialCollectionJson) {
-            collection.push(MaterialEntity.parse(materialJson))
+            collection.push(Material.parse(materialJson))
         }
 
         return new MaterialCollection(collection);
     }
 
     public static fromModels(data: MaterialModel[]){
-        const collection: MaterialEntity[] = [];
+        const collection: Material[] = [];
 
         for (const materialJson of data) {
-            collection.push(MaterialEntity.fromModel(materialJson))
+            collection.push(Material.fromModel(materialJson))
         }
 
         return new MaterialCollection(collection);

@@ -74,8 +74,8 @@ model MaterialQuantityLogModel {
     id             String   @id @default(cuid())
     quantityTotal  Int
     quantityChange Int?
+    atTime         DateTime
     comment        String?
-    atTime         DateTime @default(now())
 
     idMaterial String
     material   MaterialModel @relation(fields: [idMaterial], references: [id])
@@ -86,16 +86,21 @@ model MaterialQuantityLogModel {
     idImport String?
     import   HoyoverseImportModel? @relation(fields: [idImport], references: [id])
 
+    idNextLog   String?                   @unique
+    nextLog     MaterialQuantityLogModel? @relation("LogHistory", fields: [idNextLog], references: [id])
+    previousLog MaterialQuantityLogModel? @relation("LogHistory")
+
+    @@unique([idUser, idMaterial, atTime, quantityTotal])
     @@map("MaterialQuantityLog")
 }
 
 model HoyoverseImportModel {
-    id                  String                     @id @default(cuid())
-    serverUpdateTime    DateTime
-    MaterialQuantityLog MaterialQuantityLogModel[]
+    id               String   @id @default(cuid())
+    serverUpdateTime DateTime
 
-    idUser String
-    user   User   @relation(fields: [idUser], references: [id])
+    idUser                   String
+    user                     User                       @relation(fields: [idUser], references: [id])
+    MaterialQuantityLogModel MaterialQuantityLogModel[]
 
     @@unique([serverUpdateTime, idUser])
     @@map("HoyoverseImport")

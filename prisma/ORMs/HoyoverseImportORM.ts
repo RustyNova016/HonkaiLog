@@ -10,7 +10,7 @@ export class HoyoverseImportORM {
         return await MaterialQuantityLogORM.insertHoyoCrystalLogs(data.list, idUser, importLog.id)
     }
 
-    private static async create(idUser: string, serverUpdateTime: Date | string) {
+    private static async create(idUser: string, serverUpdateTime: Date) {
         return this.getPrisma().create({
             data: {
                 idUser,

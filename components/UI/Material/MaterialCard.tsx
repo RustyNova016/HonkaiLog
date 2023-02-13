@@ -1,11 +1,11 @@
-import {MaterialEntity} from "@/utils/entities/Material/MaterialEntity";
+import {Material} from "@/utils/entities/Material/Material";
 import MaterialCardStyles from "./MaterialCard.module.scss"
 import {routes} from "@/lib/routes";
 import Image from "next/image";
 import React from "react";
 import {LinkButton} from "@/components/theme/button/LinkButton";
 
-export function MaterialCard({material}: { material: MaterialEntity }) {
+export function MaterialCard({material}: { material: Material }) {
     return <div className={MaterialCardStyles["materialCard"]}>
         <div className={MaterialCardStyles["imgContainer"]}>
             <Image src={routes.materialIcons + material.imageLink} alt={material.toString()} width={128}

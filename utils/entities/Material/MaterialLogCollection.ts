@@ -1,43 +1,37 @@
-import {
-    MaterialQuantityLog,
-    MaterialQuantityLogJSON,
-    MaterialQuantityLogModelIndex
-} from "@/utils/entities/Material/MaterialQuantityLog";
+import {LogOrigin, MaterialQuantityLog, MaterialQuantityLogJSON} from "@/utils/entities/Material/MaterialQuantityLog";
 import _ from "lodash";
-import dayjs, {Dayjs, OpUnitType, QUnitType} from "dayjs";
+import {Dayjs} from "dayjs";
 import {Period} from "@/utils/types/Period";
 import {MaterialQuantityLogModel} from ".prisma/client";
-import logger from "../../../tools/Logger";
+import Logger from "../../../tools/Logger";
+import {addLogBeforeChange} from "@/utils/functions/Material/LogGenerators";
+import {DateComparison} from "@/lib/DayJs/DayTs";
+import {BlockPlacement} from "@/utils/enums/BlockPlacement";
 
 /** List of all the Material_logs of a logs. It can be used to calculate data about the usage of the materials */
 export class MaterialLogCollection {
     /** List of the logs contained in the collection */
-    readonly logs: MaterialQuantityLog[] = [];
+    private readonly _logs: MaterialQuantityLog[] = []; //TODO: Turn into Map
+    public logGenerators = [addLogBeforeChange]
 
-    constructor(logs: MaterialQuantityLog[]) {
-        this.logs = MaterialLogCollection.sortLogArray(logs);
+    constructor(inputLogs: MaterialQuantityLog[]) {
+        this.push(...inputLogs)
+        Logger.info("MaterialLogCollection successfully init")
     }
 
+    /** Return the log sorted from oldest to newest */
+    get logs(): MaterialQuantityLog[] {
+        const result: MaterialQuantityLog[] = []
+        let currentLog = this.getOldestLog();
+        if (currentLog === null) {return result}
 
-
-    private static sortLogs(): MaterialLogCollection {
-        const sortedLogs = [];
-
-        for (const log of this.logs) {
-
+        while (currentLog !== null) {
+            //console.log("Test: ", currentLog)
+            result.push(currentLog)
+            currentLog = this.getNextLog(currentLog);
         }
-    }
 
-    private removeAllGeneratedLogs() {
-        _.remove(this.logs, (log) => {
-            return log.isGenerated
-        });
-    }
-
-    private removeById(id: string){
-        _.remove(this.logs, (log) => {
-            return log.id === id
-        });
+        return result
     }
 
     public static fromJson(data: MaterialLogCollectionJSON): MaterialLogCollection {
@@ -54,28 +48,47 @@ export class MaterialLogCollection {
         return new MaterialLogCollection(materialQuantityLogs);
     }
 
-    public static sortLogArray(logs: MaterialQuantityLog[]) {
-        return logs.sort((a, b) => {
-            if (a.madeBefore(b)) {
-                return -1
-            } else {
-                return 1
-            }
-        })
-    }
-
     /** Filter the logs according to a test into a new MaterialLogCollection */
     public filter(test: (value: MaterialQuantityLog, index: number, array: MaterialQuantityLog[]) => boolean): MaterialLogCollection {
-        return new MaterialLogCollection(this.logs.filter(test))
+        return new MaterialLogCollection(this._logs.filter(test))
+    }
+
+    public filterPeriod(period: Period, addPrevious: boolean = false, addNext: boolean = false) {
+        const logCollection = new MaterialLogCollection(this._logs.filter(thisLog => {
+            if (thisLog.atTimeAsDayTs.isBefore(period.start)) {return false}
+            if (thisLog.atTimeAsDayTs.isAfter(period.end)) {return false}
+            return true
+        }));
+
+        if (addPrevious) {
+            const oldestLog = logCollection.getOldestLog();
+            if (oldestLog === null) {return null;}
+            logCollection.pushOne(this.getPreviousLog(oldestLog))
+        }
+
+        if (addNext) {
+            const newestLog = logCollection.getNewestLog();
+            if (newestLog === null) {return null;}
+            logCollection.pushOne(this.getNextLog(newestLog))
+        }
+
+        return logCollection
+    }
+
+    public find(idLog: string): MaterialQuantityLog | null {
+        for (const log of this._logs) {
+            if (log.id === idLog) {return log}
+        }
+        return null;
     }
 
     /** Find all the logs that fit the criteria */
     public findAll(params: { date?: Dayjs }): MaterialQuantityLog[] {
         const outs = []
 
-        for (const log of this.logs) {
+        for (const log of this._logs) {
             if (params.date !== undefined) {
-                if (!log.atTimeAsDayJs.isSame(params.date)) {
+                if (!log.atTimeAsDayTs.isSame(params.date)) {
                     continue
                 }
             }
@@ -88,130 +101,124 @@ export class MaterialLogCollection {
 
     public getCollectionPeriod() {
         return {
-            start: this.getOldestLogOrThrow().atTimeAsDayJs,
-            end: this.getNewestLogOrThrow().atTimeAsDayJs
+            start: this.getOldestLogOrThrow().atTimeAsDayTs,
+            end: this.getNewestLogOrThrow().atTimeAsDayTs
         }
     }
 
-    public getCollectionPeriodDuration(per: QUnitType | OpUnitType = "days"): number {
-        const period = this.getCollectionPeriod();
-        return period.end.diff(period.start, per, true);
-    }
-
-    /** Return the current count of logs that the user last entered. */
+    /** Return the current count of logs that the user last entered.
+     * @deprecated*/
     public getCurrentCount(): number {
         this.throwOnEmptyArray()
         return this.getNewestLogOrThrow().quantityTotal;
     }
 
-    public getLogAfterDate(date: Dayjs): MaterialQuantityLog | undefined {
-        return this.getLogsNewerThan(date).getOldestLog();
+    public getLogAfterDate(date: Dayjs): MaterialQuantityLog | null {
+        const filter = this.filterPeriod({start: this.getOldestLog()?.atTimeAsDayTs || date, end: date}, false, true);
+        if (filter === null) {return null}
+        return filter.getNewestLog();
     }
 
-    public getLogBeforeDate(date: Dayjs): MaterialQuantityLog | undefined {
-        return this.getLogsOlderThan(date).getNewestLog();
+    public getLogBeforeDate(date: Dayjs): MaterialQuantityLog | null {
+        const filter = this.filterPeriod({start: date, end: this.getNewestLog()?.atTimeAsDayTs || date}, true, false);
+        if (filter === null) {return null}
+        return filter.getOldestLog();
     }
 
+    /** @deprecated */
     public getLogsInPeriod(period: Period, keepLastLogBeforeDate?: boolean, keepFirstLogBeforeDate?: boolean): MaterialLogCollection {
-        return this
-            .getLogsNewerThan(period.start, keepLastLogBeforeDate)
-            .getLogsOlderThan(period.end, keepFirstLogBeforeDate)
+        const filterPeriod1 = this.filterPeriod(period, keepLastLogBeforeDate, keepFirstLogBeforeDate);
+        if (filterPeriod1 === null) {throw new EmptyLogCollectionException()}
+        return filterPeriod1
     }
 
-    /** Return all the logs that were made after a date
-     *  Optionally add the last log made before the date
-     */
-
-    public getLogsNewerThan(date: Dayjs, keepLastLogBeforeDate?: boolean): MaterialLogCollection {
-        const filteredLogs = this.filter((value) => {
-            return dayjs(value.atTimeAsDayJs).isAfter(date) || dayjs(value.atTimeAsDayJs).isSame(date)
-        });
-
-        if (keepLastLogBeforeDate) {
-            const oldLogs = this.getLogsOlderThan(date);
-
-            if (!oldLogs.isEmpty()) {
-                const lastLog = oldLogs.getNewestLogOrThrow()
-                filteredLogs.push(lastLog);
-            }
+    public getNewestLog() {
+        for (const log of this._logs) {
+            if (log.idNextLog === null) {return log}
         }
 
-        return filteredLogs
-    }
-
-    /** Return all the logs that were made before a date
-     *  Optionally add the first log made after the date
-     */
-    public getLogsOlderThan(date: Dayjs, keepFirstLogBeforeDate?: boolean) {
-        const filteredLogs = this.filter((value) => {
-            return value.atTimeAsDayJs.isBefore(date) || dayjs(value.atTimeAsDayJs).isSame(date)
-        });
-
-        if (keepFirstLogBeforeDate) {
-            const newLogs = this.getLogsNewerThan(date);
-
-            if (!newLogs.isEmpty()) {
-                const lastLog = newLogs.getOldestLogOrThrow()
-                filteredLogs.push(lastLog);
-            }
-        }
-
-        return filteredLogs
-    }
-
-    public getNewestLog(): MaterialQuantityLog | undefined {
-        return this.logs[this.logs.length - 1];
+        return null
     }
 
     /** Return the newest log */
     public getNewestLogOrThrow(): MaterialQuantityLog {
         const log = this.getNewestLog();
-        if (log === undefined) {
+        if (log === null) {
             throw new EmptyLogCollectionException()
         }
         return log;
     }
 
-    public getOldestLog(): MaterialQuantityLog | undefined {
-        return this.logs[0];
+    public getNextLog(log: MaterialQuantityLog) {
+        if (log.idNextLog === null) {return null}
+        return this.find(log.idNextLog);
+    }
+
+    public getOldestLog() {
+        for (const log of this._logs) {
+            if (this.getPreviousLog(log) === null) {return log}
+        }
+
+        return null
     }
 
     /** Return the oldest log in the list */
     public getOldestLogOrThrow(): MaterialQuantityLog {
         const log = this.getOldestLog();
-        if (log === undefined) {
+        if (log === null) {
             throw new EmptyLogCollectionException()
         }
         return log;
     }
 
+    public getPreviousLog(nextLog: MaterialQuantityLog) {
+        for (const log of this._logs) {
+            if (log.idNextLog === nextLog.id) { return log }
+        }
+
+        return null;
+    }
+
     /** Return true if the collection is isEmpty */
     public isEmpty(): boolean {
-        return this.logs.length === 0;
+        return this._logs.length === 0;
     }
 
-    /** Give the next log in the array */
-    public nextLog(baseLog: MaterialQuantityLog): MaterialQuantityLog | undefined {
-        for (const log of this.logs) {
-            if (baseLog.atTimeAsDayJs.isBefore(log.atTimeAsDayJs)) {
-                return log
-            }
+    public isLogBetween(log: MaterialQuantityLog, prevLog: MaterialQuantityLog): boolean {
+        const comparePrev = log.isPlaced(prevLog);
+        if (comparePrev === BlockPlacement.before) {return false}
+
+        const nextLog = this.getNextLog(prevLog);
+        if (nextLog === null) {return false}
+
+        const nextLogDate = log.atTimeAsDayTs.compareDates(nextLog.atTime)
+        if (nextLogDate === DateComparison.before) {return false}
+
+        if (prevLogDate === DateComparison.same && nextLogDate === DateComparison.same) {
+
         }
-        return undefined
+
+        const quantityChange = nextLog.quantityChange !== null? nextLog.quantityChange : 0
+        return (nextLog.quantityTotal - quantityChange) === log.quantityTotal
     }
 
-    /** Give the previous log in the array */
-    public previousLog(baseLog: MaterialQuantityLog): MaterialQuantityLog | undefined {
-        let previousLog: MaterialQuantityLog | undefined
+    public mapChronologically<returnType>(func: (value: MaterialQuantityLog, index: number, array: MaterialLogCollection) => returnType): returnType[] {
+        const result: returnType[] = []
+        let currentLog = this.getOldestLog();
+        if (currentLog === null) {return result}
+        let i = 0;
 
-        for (const log of this.logs) {
-            if (baseLog.atTimeAsDayJs.isAfter(log.atTimeAsDayJs)) {
-                return previousLog
-            }
-
-            previousLog = log;
+        while (currentLog !== null && currentLog.idNextLog !== null) {
+            result.push(func(currentLog, i, this))
+            i += 1;
+            currentLog = this.getNextLog(currentLog);
         }
-        return undefined
+
+        return result
+    }
+
+    public checkIfLogIsDuplicate(log: MaterialQuantityLog) {
+
     }
 
     /** Add one or multiple logs to the log array */
@@ -223,68 +230,78 @@ export class MaterialLogCollection {
         this.removeAllGeneratedLogs()
 
         // Then insert the logs:
-        this.logs.push(...items)
+        for (const item of items) {
+            if(item.origin !== LogOrigin.Official){
+
+            }
+
+            this._logs.push(item)
+            this.associateLog(item)
+        }
 
         // Rebuild the generated logs
+        //TODO
 
+        // Rebuild the chain log
+        this.associateLogs()
 
-        this.sortChronologically()
-        //this.cleanUp()
         return this
     }
 
-    public createGeneratedLogs() {
-        for (const log of this.logs) {
-            if (log.quantityChange !== null){
+    public runGenerators(){
 
-            }
-        }
     }
 
-    public searchByIndex(index: MaterialQuantityLogModelIndex): MaterialQuantityLog | null {
-        for (const log of this.logs) {
-            const isSameIndex = log.hasSameIndex(index)
-            if (isSameIndex) {
-                return log
-            }
-        }
-
-        return null
-    }
-
-    /** Sort this.log from oldest to newest log */
-    public sortChronologically() {
-        this.logs.sort((a, b) => {
-            if (a.madeBefore(b)) {
-                return -1
-            } else {
-                return 1
-            }
-        })
-        return this
+    public pushOne(item: MaterialQuantityLog | null) {
+        if (item === null) {return this}
+        return this.push(item)
     }
 
     public toJSON(): MaterialLogCollectionJSON {
-        return this.logs.map(value => value.toJSON())
+        return this._logs.map(value => value.toJSON())
     }
 
     public toModel(): MaterialQuantityLogModel[] {
         const logs = []
 
-        for (const log of this.logs) {
+        for (const log of this._logs) {
             logs.push(log.toModel())
         }
 
         return logs
     }
 
-    private cleanUp() {
-        this.sortChronologically()
+    /** Link log into the chain */
+    private associateLog(log: MaterialQuantityLog) {
+        if (log.idNextLog !== null) {return;}
 
-        for (let i = 0; i < this.logs.length; i++) {
-            const log = this.logs[i];
-            const previousLog = this.logs[i - 1];
-            const nextLog = this.logs[i + 1];
+        for (const prevLog of this._logs) {
+            const compare = log.isPlaced(prevLog);
+            if(compare === BlockPlacement.after){
+                if(this.getNextLog(prevLog) === null){
+
+                }
+            }
+            if (this.isLogBetween(log, prevLog)) {
+                log.idNextLog = prevLog.idNextLog
+                prevLog.idNextLog = log.id
+            }
+        }
+    }
+
+    /** Make sure all the logs are associated */
+    private associateLogs() {
+        for (const log of this._logs) {
+            this.associateLog(log);
+        }
+    }
+
+    private cleanUp() {
+
+        for (let i = 0; i < this._logs.length; i++) {
+            const log = this._logs[i];
+            const previousLog = this._logs[i - 1];
+            const nextLog = this._logs[i + 1];
 
             if (log === undefined) {
                 continue
@@ -296,7 +313,7 @@ export class MaterialLogCollection {
                 continue
             }
 
-            const isSameDateAsPrevious = previousLog.atTimeAsDayJs.isSame(log.atTimeAsDayJs);
+            const isSameDateAsPrevious = previousLog.atTimeAsDayTs.isSame(log.atTimeAsDayTs);
             const isSameQuantityAsPrevious = previousLog.quantityTotal === log.quantityTotal;
             const isSameQuantityAsNext = log.quantityTotal === nextLog.quantityTotal;
             const isSameQuantitySandwich = isSameQuantityAsPrevious && isSameQuantityAsNext
@@ -311,36 +328,31 @@ export class MaterialLogCollection {
             }
 
         }
-
-        this.sortChronologically()
     }
 
-    private pushOne(log: MaterialQuantityLog) {
-        logger.info("Adding log:", "[MaterialLogCollection/pushOne]", log)
+    /** Remove the log from the chain */
+    private dissociateLog(log: MaterialQuantityLog) {
+        const prevLog = this.getPreviousLog(log);
+        if (prevLog === null) {return}
 
-        const logBefore = log.createLogBefore();
-        logger.info("Created Log Maybe", "[MaterialLogCollection/pushOne]", logBefore)
-        if (logBefore !== undefined) {
-            logger.info("Created Log Before", "[MaterialLogCollection/pushOne]")
-            this.pushOne(logBefore)
-        }
-
-        // See if the date is already used
-        const foundLog = this.searchByIndex(log)
-        if (foundLog) {
-            logger.info("Found Log:", "[MaterialLogCollection/pushOne]", foundLog);
-            logger.info("Discarding addition of log:", "[MaterialLogCollection/pushOne]", log)
-            return
-        }
-
-        logger.info("Log Accepted", "[MaterialLogCollection/pushOne]")
-        this.logs.push(log)
+        const nextLog = this.getNextLog(log);
+        if (nextLog === null) {prevLog.idNextLog = null} else {prevLog.idNextLog = nextLog.id}
     }
 
-    private remove(log: MaterialQuantityLog) {
-        _.remove(this.logs, (value) => {
-            return log.isSame(value)
+    private remove(log: string | MaterialQuantityLog) {
+        const logToDel = typeof log === "string" ? this.find(log) : log
+        if (logToDel === null) {return}
+
+        this.dissociateLog(logToDel)
+        _.remove(this._logs, (log) => {
+            return log.id === logToDel.id
         });
+    }
+
+    private removeAllGeneratedLogs() {
+        this._logs.forEach(value => {
+            if (value.origin === LogOrigin.Generated) {this.remove(value)}
+        })
     }
 
     /** Throw an error if logs is isEmpty. Useful to stop calculations without data */

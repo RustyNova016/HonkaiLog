@@ -1,5 +1,4 @@
 import {z} from "zod";
-import {getMaterialHistory} from "./getUserMaterialData";
 import {CenterContent} from "@/components/Layouts/CenterContent";
 import {FadingIn} from "@/components/Animators/FadingIn";
 import {Suspense} from "react";
@@ -8,10 +7,12 @@ import MaterialLogsManager from "@/app/history/[materialId]/materialLogsManager"
 import {HistorySummary} from "@/app/history/[materialId]/historySummary";
 import {redirect} from "next/navigation";
 import {PageTitle} from "@/components/UI/Theme/PageTitle";
+import {MaterialORM} from "@/prisma/ORMs/MaterialORM";
+import {getServerUser} from "@/lib/NextAuth/GetSession";
 
 export default async function Page({params}: any) {
     const parsedParams = z.object({materialId: z.string()}).parse(params)
-    const materialHistory = await getMaterialHistory(parsedParams.materialId)
+    const materialHistory = await MaterialORM.getMaterialHistory(parsedParams.materialId, (await getServerUser()).id)
 
     if (!materialHistory.hasLogs()) {redirect("/history/" + materialHistory.id + "/new")}
 
