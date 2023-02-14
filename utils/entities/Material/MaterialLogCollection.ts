@@ -2,12 +2,14 @@ import {LogOrigin, MaterialQuantityLog, MaterialQuantityLogJSON} from "@/utils/e
 import {Dayjs} from "dayjs";
 import {Period} from "@/utils/types/Period";
 import {MaterialQuantityLogModel} from ".prisma/client";
-import {addLogBeforeChange} from "@/utils/functions/Material/LogGenerators";
+import {addLogBeforeChangeGenerator} from "@/utils/functions/Material/LogGenerators";
 import {Chain} from "@/utils/classes/Chain";
+
+export type LogGenerator = (collection: MaterialLogCollection) => MaterialQuantityLog | MaterialQuantityLog[] | undefined;
 
 /** List of all the Material_logs of a logs. It can be used to calculate data about the usage of the materials */
 export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
-    public logGenerators = [addLogBeforeChange]
+    public logGenerators: LogGenerator[] = [addLogBeforeChangeGenerator]
 
     constructor(inputLogs: MaterialQuantityLog[]) {
         super();
@@ -71,11 +73,6 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
         return logCollection
     }
 
-    /** @deprecated */
-    public find(idLog: string): MaterialQuantityLog | undefined {
-        return this.get(idLog)
-    }
-
     /** Find all the logs that fit the criteria
      * */
     public findAll(params: { date?: Dayjs }): MaterialQuantityLog[] {
@@ -92,6 +89,10 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
         }
 
         return outs
+    }
+
+    public addGenerator(logGenerator: LogGenerator){
+        this.logGenerators.push(logGenerator)
     }
 
     public getCollectionPeriod() {
@@ -182,9 +183,35 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
         }
 
         // Rebuild the generated logs
-        //TODO
+        this.generateLogs();
 
         return this
+    }
+
+    public resetGeneratedLog() {
+        this.removeAllGeneratedLogs();
+        this.generateLogs();
+    }
+
+    protected override insertBlock(newBlock: MaterialQuantityLog | null | undefined) {
+        if (newBlock === undefined || newBlock === null){return}
+        //TODO: Prevent insertion of generated if distance on graph too small
+        const duplicate = this.checkForDuplicate(newBlock);
+
+        // If there is, if it's generated, ignore insert, if not, throw error
+        const officialAlreadyInserted = duplicate?.origin === LogOrigin.Official;
+        const generatedAlreadyInserted = duplicate?.origin === LogOrigin.Generated
+        const newLogIsGenerated = newBlock.origin === LogOrigin.Generated;
+
+        if((officialAlreadyInserted || generatedAlreadyInserted) && newLogIsGenerated) {return;}
+
+        super.insertBlock(newBlock);
+    }
+
+    private pushPreserveGenerated(...items: MaterialQuantityLog[]){
+        for (const item of items) {
+            this.insertBlock(item)
+        }
     }
 
     public pushOne(item: MaterialQuantityLog | null) {
@@ -192,8 +219,17 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
         return this.push(item)
     }
 
-    public runGenerators() {
+    public generateLogs() {
+        const newLogs: MaterialQuantityLog[] = [];
 
+        for (const logGenerator of this.logGenerators) {
+            const generatorResult = logGenerator(this);
+            if(generatorResult === undefined) {continue}
+            if(generatorResult instanceof MaterialQuantityLog) {newLogs.push(generatorResult); continue}
+            newLogs.push(...generatorResult)
+        }
+
+        this.pushPreserveGenerated(...newLogs)
     }
 
     public toJSON(): MaterialLogCollectionJSON {
@@ -246,7 +282,7 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
     }
 
     private remove(log: string | MaterialQuantityLog) {
-        const logToDel = typeof log === "string" ? this.find(log) : log
+        const logToDel = typeof log === "string" ? this.get(log) : log
         if (logToDel === undefined) {return}
 
         this.removeBlock(logToDel);

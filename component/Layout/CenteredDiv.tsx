@@ -7,7 +7,7 @@ export function CenteredDiv(props: {
     className?: string;
 }) {
     return (
-        <div className={classNames(style.flexboxCentered, props.className)}>
+        <div className={classNames(style["flexboxCentered"], props.className)}>
             {props.children}
         </div>
     );

@@ -27,7 +27,7 @@ export function MaterialSummaryGraph({historyCalculator}: MaterialSummaryGraphPr
         },
         data: [{
             type: "line",
-            toolTipContent: "{dateString}: {y} {material}{comment}",
+            toolTipContent: "{tooltip}",
             dataPoints: dataPoints
         }]
     }

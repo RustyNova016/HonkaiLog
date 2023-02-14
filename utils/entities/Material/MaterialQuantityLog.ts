@@ -11,11 +11,8 @@ export type MaterialQuantityLogModelIndex = { atTime: Date, idUser: string, idMa
 
 /** Snapshot of a quantity at a given time */
 export class MaterialQuantityLog extends Block<MaterialQuantityLog> implements MaterialQuantityLogModel {
-    public copy(): MaterialQuantityLog {
-        return MaterialQuantityLog.fromJSON(this.toJSON())
-    }
     atTime: Date;
-    comment: string | null;
+    private _comment: string | null;
     idImport: string | null;
     idMaterial: string;
     public idNextLog: string | null
@@ -28,7 +25,7 @@ export class MaterialQuantityLog extends Block<MaterialQuantityLog> implements M
         if (id === undefined) {id = "GEN" + cuid2.createId()}
         super(id);
         this.quantityChange = quantityChange;
-        this.comment = comment;
+        this._comment = comment;
         this.atTime = atTime;
         this.idMaterial = idMaterial;
         this.idUser = idUser;
@@ -60,6 +57,10 @@ export class MaterialQuantityLog extends Block<MaterialQuantityLog> implements M
 
     public compareDate(log: MaterialQuantityLog): DateComparison {
         return compareDates(this.atTimeAsDayJs, log.atTime)
+    }
+
+    public copy(): MaterialQuantityLog {
+        return MaterialQuantityLog.fromJSON(this.toJSON())
     }
 
     public createLogBefore() {
@@ -109,7 +110,7 @@ export class MaterialQuantityLog extends Block<MaterialQuantityLog> implements M
         throw new Error("The log is invalid")
     }
 
-    public isSame(log: MaterialQuantityLog) {
+    public override isSame(log: MaterialQuantityLog) {
         return this.quantityTotal === log.quantityTotal &&
             this.atTimeAsDayJs.isSame(log.atTimeAsDayJs) &&
             this.idUser === log.idUser &&
@@ -137,9 +138,25 @@ export class MaterialQuantityLog extends Block<MaterialQuantityLog> implements M
             atTime: this.atTime,
             id: this.id,
             quantityTotal: this.quantityTotal,
-            comment: this.comment,
+            comment: this._comment,
             quantityChange: this.quantityChange
         }
+    }
+
+    get comment(): string | null {
+        if(this._comment === null && this.origin === LogOrigin.Generated){
+            return "Supposed quantity at this time"
+        }
+        return this._comment;
+    }
+
+    public override toString(): string {
+        return `<div>
+                    Logged at: ${this.atTime.toLocaleDateString()} ${this.atTime.toLocaleTimeString()}<br/>
+                    Quantity: ${this.quantityTotal} ${this.quantityChange !== null? `(${this.quantityChange})`: ""}<br/>
+                    ${this.comment}<br/>
+                    ${this.origin === LogOrigin.Generated? "(Generated)": ""}
+                </div>`
     }
 
     public weakCompare(log: MaterialQuantityLog): boolean {

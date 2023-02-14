@@ -54,10 +54,18 @@ export class Chain<BlockType extends Block<any>> {
 
     protected insertBlock(newBlock: BlockType | null | undefined) {
         if (newBlock === undefined || newBlock === null){return}
+        if (this.checkForDuplicate(newBlock)) {throw new Error("Error inserting the block: Block already in the chain")}
 
         const placement = this.findPlacement(newBlock);
         newBlock.link(placement.prevBlock, placement.nextBlock, this)
         this.chain.set(newBlock.id, newBlock)
+    }
+
+    public checkForDuplicate(block: BlockType) {
+        for (const blockBase of this.toArray()) {
+            if(block.isSame(blockBase)) {return blockBase}
+        }
+        return;
     }
 
     protected removeBlock(block: BlockType) {

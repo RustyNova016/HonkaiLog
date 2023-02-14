@@ -49,6 +49,10 @@ export abstract class Block<ChainBlockType extends Block<any>> {
         if (nextBlock !== undefined) {nextBlock._idPreviousBlock = this.id;}
     }
 
+    public isSame(blockBase: ChainBlockType): boolean{
+        return this.id === blockBase.id
+    }
+
     public unLink() {
         let prevBlock;
         let nextBlock;
