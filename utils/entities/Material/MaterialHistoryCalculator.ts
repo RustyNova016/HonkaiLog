@@ -21,10 +21,13 @@ export class MaterialHistoryCalculator {
 
     constructor(materialHistory: MaterialHistory, filter?: MaterialHistoryCalculatorFilter | undefined) {
         this.materialHistory = materialHistory;
+        const oldestLog = materialHistory.logCollection.getOldestLog();
+        console.log(oldestLog)
+        const newestLog = materialHistory.logCollection.getNewestLog();
         this.filter = filter || {
             period: {
-                start: materialHistory.logCollection.getOldestLog()?.atTimeAsDayTs || dayjs(),
-                end: materialHistory.logCollection.getNewestLog()?.atTimeAsDayTs || dayjs()
+                start: oldestLog?.atTimeAsDayJs || dayjs(),
+                end: newestLog?.atTimeAsDayJs || dayjs()
             }
         };
     }
@@ -66,6 +69,7 @@ export class MaterialHistoryCalculator {
         return new MaterialHistoryCalculator(historyCopy, this.filter);
     }
 
+    /** @deprecated */
     public addLogAtStartOfFilterPeriod() {
         // Check if there's not already a log there
         const date = this.filter.period.start;
@@ -111,11 +115,11 @@ export class MaterialHistoryCalculator {
     /** Returns the gain or loss of the whole collection. */
     public calcNetDelta(): number {
         const filteredLogs = this.getFilteredLogCollection();
-        if(filteredLogs === null) {return NaN}
+        if(filteredLogs === undefined) {return NaN}
 
         const newestLog = filteredLogs.getNewestLog();
         const oldestLog = filteredLogs.getOldestLog();
-        if (newestLog === null || oldestLog === null) {return NaN}
+        if (newestLog === undefined || oldestLog === undefined) {return NaN}
         console.log("Log Test:", newestLog, oldestLog)
         console.log("log list:", filteredLogs.toJSON())
 
@@ -127,7 +131,7 @@ export class MaterialHistoryCalculator {
         let gain = 0;
         let delta = 0;
         const logCollection = this.getFilteredLogCollection(true);
-        if (logCollection === null){return NaN}
+        if (logCollection === undefined){return NaN}
 
         const materialQuantityLogs = logCollection.logs;
         for (let i = 0; i < materialQuantityLogs.length; i++) {
@@ -155,7 +159,7 @@ export class MaterialHistoryCalculator {
         let totalSpent = 0;
         let delta = 0;
         const logCollection = this.getFilteredLogCollection(true);
-        if (logCollection === null){return NaN}
+        if (logCollection === undefined){return NaN}
 
         const materialQuantityLogs = logCollection.logs;
         for (let i = 0; i < materialQuantityLogs.length; i++) {
@@ -177,7 +181,8 @@ export class MaterialHistoryCalculator {
         return totalSpent;
     }
 
-    /** Create a log at a date given that have the supposed amount at that point in time */
+    /** Create a log at a date given that have the supposed amount at that point in time
+     * @deprecated  */
     public createSplitLog(date: Dayjs): MaterialQuantityLog | undefined {
         // Check if there's not already a log there
         const logFoundAtDate = this.logCollection.findAll({date: date})
@@ -236,7 +241,7 @@ export class MaterialHistoryCalculator {
     private getAvgTimeDuration(per: "millisecond" | "second" | "minute" | "hour" | "day" | "month" | "year" | "date" | "milliseconds" | "seconds" | "minutes" | "hours" | "days" | "months" | "years" | "dates" | "d" | "D" | "M" | "y" | "h" | "m" | "s" | "ms" | "quarter" | "quarters" | "Q" | "week" | "weeks" | "w") {
         let start = this.filter.period.start;
 
-        let oldestLogDate = this.logCollection.getOldestLogOrThrow().atTimeAsDayTs;
+        let oldestLogDate = this.logCollection.getOldestLogOrThrow().atTimeAsDayJs;
         if (start.isBefore(oldestLogDate)) {
             start = oldestLogDate
         }
@@ -245,7 +250,7 @@ export class MaterialHistoryCalculator {
         return timeDuration;
     }
 
-    private getFilteredLogCollection(previousLog = false, nextLog = false): MaterialLogCollection|null {
+    private getFilteredLogCollection(previousLog = false, nextLog = false): MaterialLogCollection | undefined {
         return this.materialHistory.logCollection.filterPeriod(this.filter.period, previousLog, nextLog);
     }
 
@@ -253,18 +258,18 @@ export class MaterialHistoryCalculator {
         const baseLog = this.logCollection.getLogBeforeDate(x);
         const nextLog = this.logCollection.getLogAfterDate(x);
 
-        if (baseLog === null) {
+        if (baseLog === undefined) {
             throw new Error("Cannot find log before date. The function cannot be called unless there's a log before and after the given date")
         }
-        if (nextLog === null) {
+        if (nextLog === undefined) {
             throw new Error("Cannot find log after date. The function cannot be called unless there's a log before and after the given date")
         }
 
         const quantityDifference = nextLog.quantityTotal - baseLog.quantityTotal;
-        const timeDifference = nextLog.atTimeAsDayTs.unix() - baseLog.atTimeAsDayTs.unix();
+        const timeDifference = nextLog.atTimeAsDayJs.unix() - baseLog.atTimeAsDayJs.unix();
 
         const slope = _.divide(quantityDifference, timeDifference);
-        const point = baseLog.quantityTotal - (slope * baseLog.atTimeAsDayTs.unix())
+        const point = baseLog.quantityTotal - (slope * baseLog.atTimeAsDayJs.unix())
 
         return {
             a: slope,
@@ -275,7 +280,7 @@ export class MaterialHistoryCalculator {
     /** Calculate the supposed quantity of the material if we consider it as a linear growth */
     private getLinearQuantityAtTimestamp(date: Dayjs): number | undefined {
         const oldestLog = this.materialHistory.logCollection.getOldestLogOrThrow();
-        const dateIsBeforeFirstLog = date.isBefore(oldestLog.atTimeAsDayTs);
+        const dateIsBeforeFirstLog = date.isBefore(oldestLog.atTimeAsDayJs);
 
         // Can't guess what happens before the first logs, so we return undefined
         if (dateIsBeforeFirstLog) {

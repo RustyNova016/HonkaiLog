@@ -12,6 +12,7 @@ import {MaterialSummaryGraph} from "@/app/history/[materialId]/materialSummaryGr
 import {MaterialHistoryCalculator} from "@/utils/entities/Material/MaterialHistoryCalculator";
 
 export function HistorySummary({materialJson}: { materialJson: MaterialHistoryJSON }) {
+    console.log(materialJson)
     const materialHistory = MaterialHistory.fromJSON(materialJson)
     console.log("Number of logs:", materialHistory.logCollection.logs.length)
     console.log("Logs:", materialHistory.logCollection.logs)
