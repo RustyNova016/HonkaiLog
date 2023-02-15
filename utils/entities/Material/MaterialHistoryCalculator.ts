@@ -3,9 +3,8 @@ import _ from "lodash";
 import {LogGenerator, MaterialLogCollection} from "@/utils/entities/Material/MaterialLogCollection";
 import {MaterialQuantityLog} from "@/utils/entities/Material/MaterialQuantityLog";
 import {MaterialHistory, MaterialHistoryJSON} from "@/utils/entities/Material/MaterialHistory";
-import {z} from "zod";
-import {MaterialHistoryCalculatorJSONZod} from "@/utils/entities/Material/validations/MaterialHistoryCalculator.JSONZod";
 import {Period} from "@/utils/types/Period";
+import {Material} from "@/utils/entities/Material/Material";
 
 export interface MaterialHistoryCalculatorFilter {
     period: Period;
@@ -39,14 +38,21 @@ export class MaterialHistoryCalculator {
         return this.materialHistory.material
     }
 
-    public static async parse(data: z.infer<typeof MaterialHistoryCalculatorJSONZod>): Promise<MaterialHistoryCalculator> {
-        const parsedData = MaterialHistoryCalculatorJSONZod.parse(data);
-        return new MaterialHistoryCalculator(
-            await MaterialHistory.fromJSON(parsedData.materialHistory),
+    public static fromJSON(data: MaterialHistoryCalculatorJSON): MaterialHistoryCalculator {
+        const materialHistoryCalculator = new MaterialHistoryCalculator(
+            new MaterialHistory(
+                Material.fromJSON(data.materialHistory.material),
+                new MaterialLogCollection(),
+                data.materialHistory.idUser
+            ),
             {
-                period: {start: dayjs(parsedData.filter.period.start), end: dayjs(parsedData.filter.period.end)}
+                period: {start: dayjs(data.filter.period.start), end: dayjs(data.filter.period.end)}
             }
-        )
+        );
+
+        materialHistoryCalculator.logCollection.insertFromJSON(data.materialHistory.logs)
+
+        return materialHistoryCalculator
     }
 
     /** Return the average delta of the period */
@@ -89,25 +95,20 @@ export class MaterialHistoryCalculator {
     public calcNetGain(): number {
         let gain = 0;
         let delta = 0;
-        const logCollection = this.getFilteredLogCollection(true);
-        if (logCollection === undefined) {return NaN}
+        let previousLog = this.getFilteredLogCollection(true)?.getOldestLog();
+        let currentLog = previousLog?.nextBlock;
 
-        const materialQuantityLogs = logCollection.logs;
-        for (let i = 0; i < materialQuantityLogs.length; i++) {
-            if (i !== 0) {
-                const prevLog = materialQuantityLogs[i - 1];
-                const log = materialQuantityLogs[i];
+        if (previousLog === undefined || currentLog === undefined) {return NaN}
 
-                if (prevLog === undefined || log === undefined) {
-                    return 0
-                }
-
-                delta = prevLog.getChronologicalDifference(log)
-            }
+        while (currentLog !== undefined) {
+            delta = (currentLog.quantityTotal + currentLog.quantityChangeOrZero) - previousLog.quantityTotal
 
             if (delta > 0) {
                 gain += delta;
             }
+
+            previousLog = currentLog
+            currentLog = currentLog.nextBlock
         }
 
         return gain;
@@ -115,29 +116,25 @@ export class MaterialHistoryCalculator {
 
     /** Return the net loss of the whole collection */
     public calcNetLoss(): number {
-        let totalSpent = 0;
+        let gain = 0;
         let delta = 0;
-        const logCollection = this.getFilteredLogCollection(true);
-        if (logCollection === undefined) {return NaN}
+        let previousLog = this.getFilteredLogCollection(true)?.getOldestLog();
+        let currentLog = previousLog?.nextBlock;
 
-        const materialQuantityLogs = logCollection.logs;
-        for (let i = 0; i < materialQuantityLogs.length; i++) {
-            if (i !== 0) {
-                const prevLog = materialQuantityLogs[i - 1];
-                const log = materialQuantityLogs[i];
+        if (previousLog === undefined || currentLog === undefined) {return NaN}
 
-                if (prevLog === undefined || log === undefined) {
-                    return 0
-                }
-                delta = prevLog.getChronologicalDifference(log)
-            }
+        while (currentLog !== undefined) {
+            delta = (currentLog.quantityTotal + currentLog.quantityChangeOrZero) - previousLog.quantityTotal
 
             if (delta < 0) {
-                totalSpent += delta;
+                gain += delta;
             }
+
+            previousLog = currentLog
+            currentLog = currentLog.nextBlock
         }
 
-        return totalSpent;
+        return gain;
     }
 
     public calcQuantityAtCurrentTime(datetime: Dayjs) {
@@ -159,7 +156,7 @@ export class MaterialHistoryCalculator {
     }
 
     public getCurrentCount() {
-        return this.materialHistory.logCollection.getNewestLog()?.quantityTotal || null
+        return this.materialHistory.logCollection.getNewestLog()?.quantityTotal || NaN
     }
 
     public getNetDelta(): number {
@@ -179,19 +176,23 @@ export class MaterialHistoryCalculator {
     }
 
     private addGenerators() {
-        const AddLogAtStartOfFilter: LogGenerator = () => {
-            const quantityTotal = this.calcQuantityAtCurrentTime(this.filter.period.start);
-            if (quantityTotal === undefined) {return;}
+        this.logCollection.addGenerator(this.getStartLogGenerator())
+        this.logCollection.addGenerator(this.getEndLogGenerator())
+    }
 
-            return new MaterialQuantityLog(
-                undefined,
-                quantityTotal,
-                this.filter.period.start.toDate(),
-                this.material.id,
-                this.materialHistory.userID,
-            )
+    private getAvgTimeDuration(per: "millisecond" | "second" | "minute" | "hour" | "day" | "month" | "year" | "date" | "milliseconds" | "seconds" | "minutes" | "hours" | "days" | "months" | "years" | "dates" | "d" | "D" | "M" | "y" | "h" | "m" | "s" | "ms" | "quarter" | "quarters" | "Q" | "week" | "weeks" | "w") {
+        let start = this.filter.period.start;
+
+        let oldestLogDate = this.logCollection.getOldestLogOrThrow().atTimeAsDayJs;
+        if (start.isBefore(oldestLogDate)) {
+            start = oldestLogDate
         }
 
+        const timeDuration = this.filter.period.end.diff(start, per, true);
+        return timeDuration;
+    }
+
+    private getEndLogGenerator() {
         const AddLogAtEndOfFilter: LogGenerator = () => {
             const quantityTotal = this.calcQuantityAtCurrentTime(this.filter.period.end);
             if (quantityTotal === undefined) {return;}
@@ -205,21 +206,7 @@ export class MaterialHistoryCalculator {
             )
         }
 
-        this.logCollection.addGenerator(AddLogAtStartOfFilter);
-        this.logCollection.addGenerator(AddLogAtEndOfFilter);
-        this.logCollection.resetGeneratedLog();
-    }
-
-    private getAvgTimeDuration(per: "millisecond" | "second" | "minute" | "hour" | "day" | "month" | "year" | "date" | "milliseconds" | "seconds" | "minutes" | "hours" | "days" | "months" | "years" | "dates" | "d" | "D" | "M" | "y" | "h" | "m" | "s" | "ms" | "quarter" | "quarters" | "Q" | "week" | "weeks" | "w") {
-        let start = this.filter.period.start;
-
-        let oldestLogDate = this.logCollection.getOldestLogOrThrow().atTimeAsDayJs;
-        if (start.isBefore(oldestLogDate)) {
-            start = oldestLogDate
-        }
-
-        const timeDuration = this.filter.period.end.diff(start, per, true);
-        return timeDuration;
+        return AddLogAtEndOfFilter
     }
 
     private getFilteredLogCollection(previousLog = false, nextLog = false): MaterialLogCollection | undefined {
@@ -247,6 +234,22 @@ export class MaterialHistoryCalculator {
             a: slope,
             b: point
         }
+    }
+
+    private getStartLogGenerator() {
+        const AddLogAtStartOfFilter: LogGenerator = () => {
+            const quantityTotal = this.calcQuantityAtCurrentTime(this.filter.period.start);
+            if (quantityTotal === undefined) {return;}
+
+            return new MaterialQuantityLog(
+                undefined,
+                quantityTotal,
+                this.filter.period.start.toDate(),
+                this.material.id,
+                this.materialHistory.userID,
+            )
+        }
+        return AddLogAtStartOfFilter
     }
 }
 

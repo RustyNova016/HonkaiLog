@@ -73,7 +73,14 @@ export class MaterialQuantityLog extends Block<MaterialQuantityLog> implements M
         return new MaterialQuantityLog(undefined, this.quantityTotal - this.quantityChange, atTimeMinus1.toDate(), this.idMaterial, this.idUser, null, "Calculated quantity at " + atTimeMinus1.toString())
     }
 
-    /** Return the difference of the quantity of logs between two logs sorted in chronological order*/
+    get quantityChangeOrZero(): number {
+        if(this.quantityChange === null) {return 0}
+        return this.quantityChange
+    }
+
+    /** Return the difference of the quantity of logs between two logs sorted in chronological order
+     * @deprecated
+     * */
     public getChronologicalDifference(log: MaterialQuantityLog): number {
         if (this.madeBefore(log)) {
             return log.quantityTotal - this.quantityTotal;
@@ -148,6 +155,11 @@ export class MaterialQuantityLog extends Block<MaterialQuantityLog> implements M
             return "Supposed quantity at this time"
         }
         return this._comment;
+    }
+
+    get quantityBefore(): number {
+        if(this.quantityChange === null) {return this.quantityTotal}
+        return this.quantityTotal - this.quantityChange;
     }
 
     public override toString(): string {

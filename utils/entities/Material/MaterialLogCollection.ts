@@ -11,9 +11,10 @@ export type LogGenerator = (collection: MaterialLogCollection) => MaterialQuanti
 export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
     public logGenerators: LogGenerator[] = [addLogBeforeChangeGenerator]
 
-    constructor(inputLogs: MaterialQuantityLog[]) {
+    constructor(inputLogs: MaterialQuantityLog[] | undefined = undefined, logGenerators: LogGenerator[] | undefined = undefined) {
         super();
-        this.push(...inputLogs)
+        if(logGenerators !== undefined) {logGenerators.forEach(value => this.addGenerator(value))}
+        if (inputLogs !== undefined) {this.push(...inputLogs)}
     }
 
     /** Return the logs sorted from oldest to newest */
@@ -21,8 +22,12 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
         return this.toArray()
     }
 
-    public static fromJson(data: MaterialLogCollectionJSON): MaterialLogCollection {
-        return new MaterialLogCollection(data.map(value => MaterialQuantityLog.fromJSON(value)))
+    public static fromJson(data: MaterialLogCollectionJSON, logGenerators: LogGenerator[] | undefined = undefined): MaterialLogCollection {
+        return new MaterialLogCollection(data.map(value => MaterialQuantityLog.fromJSON(value)), logGenerators)
+    }
+
+    public insertFromJSON(data: MaterialLogCollectionJSON): MaterialLogCollection {
+        return this.push(...data.map(value => MaterialQuantityLog.fromJSON(value)))
     }
 
     public static fromModel(data: MaterialQuantityLogModel[]): MaterialLogCollection {
@@ -170,9 +175,10 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
     }
 
     /** Add one or multiple logs to the log array */
-    public push(...items: MaterialQuantityLog[]) {
+    public push(...items: MaterialQuantityLog[]): MaterialLogCollection {
         // TODO: Check for duplicates/Optimizations
         // TODO: Check if the logs of the log is the same as this.logs
+        console.log("Inserting Logs")
 
         // First remove the generated logs that might interfere
         this.removeAllGeneratedLogs()
@@ -185,6 +191,7 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
         // Rebuild the generated logs
         this.generateLogs();
 
+        console.log("Log Inserted")
         return this
     }
 
@@ -220,6 +227,7 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
     }
 
     public generateLogs() {
+        console.log("Generating Logs")
         const newLogs: MaterialQuantityLog[] = [];
 
         for (const logGenerator of this.logGenerators) {
@@ -230,6 +238,7 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
         }
 
         this.pushPreserveGenerated(...newLogs)
+        console.log("Logs Generated")
     }
 
     public toJSON(): MaterialLogCollectionJSON {

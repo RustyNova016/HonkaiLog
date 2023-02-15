@@ -1,4 +1,3 @@
-"use client"
 /*
 CanvasJS React Charts - https://canvasjs.com/
 Copyright 2022 fenopix
@@ -12,7 +11,7 @@ https://canvasjs.com/license/
 import {ChartOptions} from "canvasjs";
 
 const React = require('react');
-let CanvasJS = require('./canvasjs.min');
+let CanvasJS = require('../canvasjs.min');
 CanvasJS = CanvasJS.Chart ? CanvasJS : window.CanvasJS;
 
 

@@ -1,4 +1,4 @@
-import {MaterialLogCollection} from "./MaterialLogCollection";
+import {LogGenerator, MaterialLogCollection} from "./MaterialLogCollection";
 import {Material, MaterialJSON} from "@/utils/entities/Material/Material";
 import {Period} from "@/utils/types/Period";
 import {MaterialModel} from "@prisma/client";
@@ -64,10 +64,10 @@ export class MaterialHistory {
         return this.material.toString(plural, startcase);
     }
 
-    public static fromJSON(data: MaterialHistoryJSON): MaterialHistory {
+    public static fromJSON(data: MaterialHistoryJSON, logGenerators: LogGenerator[] | undefined = undefined): MaterialHistory {
         return new MaterialHistory(
             Material.fromJSON(data.material),
-            MaterialLogCollection.fromJson(data.logs),
+            MaterialLogCollection.fromJson(data.logs, logGenerators),
             data.idUser
         )
     }

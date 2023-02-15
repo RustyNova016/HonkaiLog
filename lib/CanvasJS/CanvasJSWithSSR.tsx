@@ -1,6 +1,6 @@
 "use client"
 import {useEffect, useState} from "react";
-import {CanvasJSChartProps} from "@/lib/CanvasJS/canvasjs.react";
+import {CanvasJSChartProps} from "@/lib/CanvasJS/TS/canvasjs.react";
 
 export function CanvasJSWithSSR(props: CanvasJSChartProps) {
     const [showGraph, setShowGraph] = useState(false);
@@ -15,6 +15,6 @@ export function CanvasJSWithSSR(props: CanvasJSChartProps) {
     }, []);
     if (!showGraph) {return <>CanvasJS cannot load on serverside</>}
 
-    const {CanvasJSChart} = require('@/lib/CanvasJS/canvasjs.react');
+    const {CanvasJSChart} = require('@/lib/CanvasJS/TS/canvasjs.react');
     return (<CanvasJSChart options={props.options}/>);
 }
