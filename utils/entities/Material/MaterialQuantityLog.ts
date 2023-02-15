@@ -3,9 +3,10 @@ import dayjs from "dayjs";
 import {Override} from "openid-client";
 import logger from "../../../tools/Logger";
 import cuid2 from "@paralleldrive/cuid2";
-import {compareDates} from "@/lib/DayJs/DayTs";
+import {dayTs} from "@/lib/DayJs/DayTs";
 import {BlockPlacement} from "@/utils/enums/BlockPlacement";
 import {Block} from "@/utils/classes/Block";
+import {compareDates} from "@/utils/functions/CompareDate";
 
 export type MaterialQuantityLogModelIndex = { atTime: Date, idUser: string, idMaterial: string };
 
@@ -55,12 +56,16 @@ export class MaterialQuantityLog extends Block<MaterialQuantityLog> implements M
         return new MaterialQuantityLog(data.id, data.quantityTotal, data.atTime, data.idMaterial, data.idUser, data.quantityChange, data.comment, data.idImport, data.idNextLog)
     }
 
-    public compareDate(log: MaterialQuantityLog): DateComparison {
-        return compareDates(this.atTimeAsDayJs, log.atTime)
+    get atTimeAsDayTs() {
+        return dayTs(this.atTime);
+    }
+
+    public compareLogDates(log: MaterialQuantityLog): DateComparison {
+        return compareDates(this.atTime, log.atTime)
     }
 
     public copy(): MaterialQuantityLog {
-        return MaterialQuantityLog.fromJSON(this.toJSON())
+        return MaterialQuantityLog.fromModel(this.toModel())
     }
 
     public createLogBefore() {
@@ -104,7 +109,7 @@ export class MaterialQuantityLog extends Block<MaterialQuantityLog> implements M
         if (this.idNextLog === logToCompare.id) {return BlockPlacement.before}
         if (logToCompare.idNextLog === this.id) {return BlockPlacement.after}
 
-        const dateComparison = this.compareDate(logToCompare);
+        const dateComparison = this.compareLogDates(logToCompare);
         if (dateComparison === DateComparison.before) {return BlockPlacement.before}
         if (dateComparison === DateComparison.after) {return BlockPlacement.after}
 

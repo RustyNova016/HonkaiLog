@@ -14,7 +14,7 @@ export class MaterialHistoryGrapher {
 
     constructor(calculator: MaterialHistoryCalculator) {
         console.log()
-        this.calculator = calculator.filterToPeriod();
+        this.calculator = calculator;
     }
 
     /** Generate the graph of the quantity of logs over time
@@ -23,7 +23,7 @@ export class MaterialHistoryGrapher {
     public generateQuantityGraph(): GraphPoint[] {
         const output: GraphPoint[] = [];
 
-        for (const log of this.calculator.logs) {
+        for (const log of this.calculator.filteredLogCollection) {
             let comment = "";
 
             if (log.comment !== null) {

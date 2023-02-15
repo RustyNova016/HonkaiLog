@@ -1,6 +1,5 @@
 import {LogGenerator, MaterialLogCollection} from "./MaterialLogCollection";
 import {Material, MaterialJSON} from "@/utils/entities/Material/Material";
-import {Period} from "@/utils/types/Period";
 import {MaterialModel} from "@prisma/client";
 import {MaterialQuantityLogModel} from ".prisma/client";
 import {MaterialQuantityLogJSON} from "@/utils/entities/Material/MaterialQuantityLog";
@@ -27,6 +26,14 @@ export class MaterialHistory {
         return this.material.name
     }
 
+    public static fromJSON(data: MaterialHistoryJSON, logGenerators: LogGenerator[] | undefined = undefined): MaterialHistory {
+        return new MaterialHistory(
+            Material.fromJSON(data.material),
+            MaterialLogCollection.fromJson(data.logs, logGenerators),
+            data.idUser
+        )
+    }
+
     public static fromModels(material: MaterialModel, logs: MaterialQuantityLogModel[], idUser: string): MaterialHistory {
         return new MaterialHistory(
             Material.fromModel(material),
@@ -40,17 +47,20 @@ export class MaterialHistory {
         return MaterialHistory.fromModels(matModel.material, matModel.logs, this.userID)
     }
 
-    /** Filter the logs to only keep the ones inside a given period */
-    public filterPeriod(period: Period): MaterialHistory {
-        return new MaterialHistory(this.material, this.logCollection.getLogsInPeriod(period), this.userID)
-    }
-
     public getLogs() {
         return this.logCollection;
     }
 
     public hasLogs(): boolean {
         return this.logCollection.logs.length !== 0;
+    }
+
+    public toJSON(): MaterialHistoryJSON {
+        return {
+            material: this.material.toJSON(),
+            logs: this.logCollection.toJSON(),
+            idUser: this.userID
+        }
     }
 
     public toModels(): { material: MaterialModel; logs: MaterialQuantityLogModel[] } {
@@ -62,22 +72,6 @@ export class MaterialHistory {
 
     public toString(plural?: boolean, startcase?: boolean): string {
         return this.material.toString(plural, startcase);
-    }
-
-    public static fromJSON(data: MaterialHistoryJSON, logGenerators: LogGenerator[] | undefined = undefined): MaterialHistory {
-        return new MaterialHistory(
-            Material.fromJSON(data.material),
-            MaterialLogCollection.fromJson(data.logs, logGenerators),
-            data.idUser
-        )
-    }
-
-    public toJSON(): MaterialHistoryJSON {
-        return {
-            material: this.material.toJSON(),
-            logs: this.logCollection.toJSON(),
-            idUser: this.userID
-        }
     }
 }
 

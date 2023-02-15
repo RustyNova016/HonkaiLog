@@ -1,7 +1,7 @@
 import dayjs, {Dayjs, OpUnitType, QUnitType} from "dayjs";
 import _ from "lodash";
 import {LogGenerator, MaterialLogCollection} from "@/utils/entities/Material/MaterialLogCollection";
-import {MaterialQuantityLog} from "@/utils/entities/Material/MaterialQuantityLog";
+import {LogOrigin, MaterialQuantityLog} from "@/utils/entities/Material/MaterialQuantityLog";
 import {MaterialHistory, MaterialHistoryJSON} from "@/utils/entities/Material/MaterialHistory";
 import {Period} from "@/utils/types/Period";
 import {Material} from "@/utils/entities/Material/Material";
@@ -24,6 +24,16 @@ export class MaterialHistoryCalculator {
             }
         };
         this.addGenerators();
+    }
+
+    get filteredLogCollection(): MaterialQuantityLog[] {
+        const filteredLogs = [];
+
+        for (const log of this.logCollection.logs) {
+            if(this.isLogInFilter(log)) {filteredLogs.push(log)}
+        }
+
+        return filteredLogs
     }
 
     get logCollection(): MaterialLogCollection {
@@ -79,14 +89,9 @@ export class MaterialHistoryCalculator {
 
     /** Returns the gain or loss of the whole collection. */
     public calcNetDelta(): number {
-        const filteredLogs = this.getFilteredLogCollection();
-        if (filteredLogs === undefined) {return NaN}
-
-        const newestLog = filteredLogs.getNewestLog();
-        const oldestLog = filteredLogs.getOldestLog();
-        if (newestLog === undefined || oldestLog === undefined) {return NaN}
-        console.log("Log Test:", newestLog, oldestLog)
-        console.log("log list:", filteredLogs.toJSON())
+        const newestLog = this.getPreviousLogInFilter(this.logCollection.getNewestLog())
+        const oldestLog = this.getNextLogInFilter(this.logCollection.getOldestLog())
+        if (newestLog === undefined || oldestLog === undefined) {return 0}
 
         return newestLog.quantityTotal - oldestLog.quantityTotal;
     }
@@ -95,46 +100,70 @@ export class MaterialHistoryCalculator {
     public calcNetGain(): number {
         let gain = 0;
         let delta = 0;
-        let previousLog = this.getFilteredLogCollection(true)?.getOldestLog();
-        let currentLog = previousLog?.nextBlock;
+        let previousLog = this.logCollection.getOldestLog();
+        let currentLog = this.getNextLogInFilter(previousLog);
 
-        if (previousLog === undefined || currentLog === undefined) {return NaN}
+        if (previousLog === undefined || currentLog === undefined) {return 0}
 
         while (currentLog !== undefined) {
-            delta = (currentLog.quantityTotal + currentLog.quantityChangeOrZero) - previousLog.quantityTotal
+            delta = (currentLog.quantityBefore - previousLog.quantityTotal) + currentLog.quantityChangeOrZero
 
             if (delta > 0) {
                 gain += delta;
             }
 
             previousLog = currentLog
-            currentLog = currentLog.nextBlock
+            currentLog = this.getNextLogInFilter(currentLog)
         }
 
         return gain;
     }
 
-    /** Return the net loss of the whole collection */
-    public calcNetLoss(): number {
-        let gain = 0;
-        let delta = 0;
-        let previousLog = this.getFilteredLogCollection(true)?.getOldestLog();
-        let currentLog = previousLog?.nextBlock;
-
-        if (previousLog === undefined || currentLog === undefined) {return NaN}
+    private getNextLogInFilter(log: MaterialQuantityLog | undefined, allowGenerated: boolean = false): MaterialQuantityLog | undefined {
+        if(log === undefined) {return}
+        let currentLog = log.nextBlock;
 
         while (currentLog !== undefined) {
-            delta = (currentLog.quantityTotal + currentLog.quantityChangeOrZero) - previousLog.quantityTotal
-
-            if (delta < 0) {
-                gain += delta;
-            }
-
-            previousLog = currentLog
+            if(log.id !== currentLog.id && this.isLogInFilter(currentLog) && (allowGenerated || currentLog.origin !== LogOrigin.Generated)) {return  currentLog}
             currentLog = currentLog.nextBlock
         }
 
-        return gain;
+        return;
+    }
+
+    private getPreviousLogInFilter(log: MaterialQuantityLog | undefined, allowGenerated: boolean = false): MaterialQuantityLog | undefined {
+        if(log === undefined) {return}
+        let currentLog = log.previousBlock;
+
+        while (currentLog !== undefined) {
+            if(log.id !== currentLog.id && this.isLogInFilter(currentLog) && (allowGenerated || currentLog.origin !== LogOrigin.Generated)) {return  currentLog}
+            currentLog = currentLog.previousBlock
+        }
+
+        return;
+    }
+
+    /** Return the net loss of the whole collection */
+    public calcNetLoss(): number {
+        let loss = 0;
+        let delta = 0;
+        let previousLog = this.logCollection.getOldestLog();
+        let currentLog = this.getNextLogInFilter(previousLog);
+
+        if (previousLog === undefined || currentLog === undefined) {return 0}
+
+        while (currentLog !== undefined) {
+            delta = (currentLog.quantityBefore - previousLog.quantityTotal) + currentLog.quantityChangeOrZero
+
+            if (delta < 0) {
+                loss += delta;
+            }
+
+            previousLog = currentLog
+            currentLog = this.getNextLogInFilter(currentLog)
+        }
+
+        return loss;
     }
 
     public calcQuantityAtCurrentTime(datetime: Dayjs) {
@@ -147,14 +176,6 @@ export class MaterialHistoryCalculator {
         const linFunc = this.getLinearFormulaAt(datetime);
         return _.floor((linFunc.a * datetime.unix()) + linFunc.b, 0)
     }
-
-    public filterToPeriod(): MaterialHistoryCalculator {
-        return new MaterialHistoryCalculator(
-            this.materialHistory.filterPeriod(this.filter.period),
-            this.filter
-        )
-    }
-
     public getCurrentCount() {
         return this.materialHistory.logCollection.getNewestLog()?.quantityTotal || NaN
     }
@@ -209,10 +230,10 @@ export class MaterialHistoryCalculator {
         return AddLogAtEndOfFilter
     }
 
-    private getFilteredLogCollection(previousLog = false, nextLog = false): MaterialLogCollection | undefined {
-        return this.materialHistory.logCollection.filterPeriod(this.filter.period, previousLog, nextLog);
+    public haveLogsInFilter(): boolean {
+        const oldestLog = this.logCollection.getOldestLog();
+        return this.isLogInFilter(oldestLog) || this.getNextLogInFilter(oldestLog) !== undefined
     }
-
     private getLinearFormulaAt(x: Dayjs): { a: number; b: number } {
         const baseLog = this.logCollection.getLogBeforeDate(x);
         const nextLog = this.logCollection.getLogAfterDate(x);
@@ -250,6 +271,19 @@ export class MaterialHistoryCalculator {
             )
         }
         return AddLogAtStartOfFilter
+    }
+
+    private isLogInFilter(log: MaterialQuantityLog | undefined, includePrevious: boolean = false, includeNext: boolean = false): boolean {
+        if(log === undefined){return false}
+        const isLogBeforeStart = log.atTimeAsDayJs.isBefore(this.filter.period.start);
+        const isLogAfterEnd = log.atTimeAsDayJs.isAfter(this.filter.period.end);
+
+        if (!isLogBeforeStart && !isLogAfterEnd) {return true}
+
+        if (includePrevious && this.isLogInFilter(log.nextBlock)) {return true}
+        if (includeNext && this.isLogInFilter(log.previousBlock)) {return true}
+
+        return false
     }
 }
 

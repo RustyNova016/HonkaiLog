@@ -6,43 +6,29 @@ import {Suspense, useState} from "react";
 import {TimeframeSelection} from "@/app/history/[materialId]/timeframeSelection";
 import {HistorySummaryNet} from "@/app/history/[materialId]/historySummaryNet";
 import {HistorySummaryAverages} from "@/app/history/[materialId]/historySummaryAverages";
-import dayjs, {Dayjs} from "dayjs";
+import dayjs from "dayjs";
 import {Col, Row} from "@/lib/Bootstrap/Layout";
 import {MaterialSummaryGraph} from "@/app/history/[materialId]/materialSummaryGraph";
 import {MaterialHistoryCalculator} from "@/utils/entities/Material/MaterialHistoryCalculator";
 import {LoadingIconWithText} from "@/components/UI/Loading/LoadingIcon";
 
-function HistorySummaryBody({materialJson, nbrDaysBack}: { materialJson: MaterialHistoryJSON, nbrDaysBack: number }) {
-    let periodStart: Dayjs;
+function HistorySummaryBody({calculator}: { calculator: MaterialHistoryCalculator }) {
 
-    if (nbrDaysBack === 99999) {
-        periodStart = dayjs(0)
-    } else {
-        periodStart = dayjs().add(-nbrDaysBack, "day")
-    }
-
-    console.info("Setting logs from ", periodStart.toString(), "to today");
-    const historyCalculator = new MaterialHistoryCalculator(
-        MaterialHistory.fromJSON(materialJson),
-        {
-            period: {
-                start: periodStart,
-                end: dayjs()
-            }
-        });
-
+    console.info("Setting logs from ", calculator.filter.period.start.toString(), "to today");
     return <>
-        {historyCalculator.logCollection.getLogAfterDate(periodStart) !== undefined ?
+        {calculator.haveLogsInFilter() ?
             <>
                 <Row>
-                    <Col>
-                        <HistorySummaryNet calculator={historyCalculator}/>
-                    </Col>
-                    <Col>
-                        <HistorySummaryAverages calculator={historyCalculator}/>
-                    </Col>
+                    <Suspense fallback={<LoadingIconWithText subtext={"Crunching data"}/>}>
+                        <Col>
+                            <HistorySummaryNet calculator={calculator}/>
+                        </Col>
+                        <Col>
+                            <HistorySummaryAverages calculator={calculator}/>
+                        </Col>
+                    </Suspense>
                 </Row>
-                <MaterialSummaryGraph historyCalculator={historyCalculator}/>
+                <MaterialSummaryGraph historyCalculator={calculator}/>
             </>
             :
             <>Create a new log or change the time period to get your data </>
@@ -50,20 +36,39 @@ function HistorySummaryBody({materialJson, nbrDaysBack}: { materialJson: Materia
     </>;
 }
 
-export function HistorySummary({materialJson}: { materialJson: MaterialHistoryJSON }) {
+function HistorySummaryTimeFiltered({calculator}: { calculator: MaterialHistoryCalculator }) {
     const [nbrDaysBack, setNbrDaysBack] = useState(1);
+
+    calculator.filter.period.start = nbrDaysBack === 99999 ? dayjs(0) : dayjs().add(-nbrDaysBack, "day")
+
+    return <>
+        <div className={"flex flex-row justify-content-between align-content-center"}>
+            <SectionTitle title={"Summary"}/>
+
+            <TimeframeSelection nbrDaysBack={nbrDaysBack} setNbrDaysBack={setNbrDaysBack}/>
+        </div>
+
+        <Suspense fallback={<LoadingIconWithText subtext={"Crunching data"}/>}>
+            <HistorySummaryBody calculator={calculator}/>
+        </Suspense>
+    </>;
+}
+
+export function HistorySummary({materialJson}: { materialJson: MaterialHistoryJSON }) {
+    const [calculator, setCalculator] = useState(new MaterialHistoryCalculator(
+        MaterialHistory.fromJSON(materialJson),
+        {
+            period: {
+                start: dayjs(),
+                end: dayjs()
+            }
+        }
+    ));
+
 
     return <>
         <FramedDiv sides={true} style={{width: "75%"}}>
-            <div className={"flex flex-row justify-content-between align-content-center"}>
-                <SectionTitle title={"Summary"}/>
-
-                <TimeframeSelection nbrDaysBack={nbrDaysBack} setNbrDaysBack={setNbrDaysBack}/>
-            </div>
-
-            <Suspense fallback={<LoadingIconWithText subtext={"Crunching data"}/>}>
-                <HistorySummaryBody materialJson={materialJson} nbrDaysBack={nbrDaysBack}/>
-            </Suspense>
+            <HistorySummaryTimeFiltered calculator={calculator}/>
         </FramedDiv>
     </>;
 }

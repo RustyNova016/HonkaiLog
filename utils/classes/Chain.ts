@@ -54,7 +54,7 @@ export class Chain<BlockType extends Block<any>> {
 
     protected insertBlock(newBlock: BlockType | null | undefined) {
         if (newBlock === undefined || newBlock === null){return}
-        if (this.checkForDuplicate(newBlock)) {throw new Error("Error inserting the block: Block already in the chain")}
+        if (this.checkForDuplicate(newBlock)) {throw new DuplicateBlockError}
 
         const placement = this.findPlacement(newBlock);
         newBlock.link(placement.prevBlock, placement.nextBlock, this)
@@ -86,5 +86,12 @@ export class Chain<BlockType extends Block<any>> {
         }
 
         return result
+    }
+}
+
+export class DuplicateBlockError extends Error {
+    constructor() {
+        super("The block is already in the chain");
+        Object.setPrototypeOf(this, DuplicateBlockError.prototype)
     }
 }

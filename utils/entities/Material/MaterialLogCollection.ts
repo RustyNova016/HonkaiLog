@@ -3,7 +3,7 @@ import {Dayjs} from "dayjs";
 import {Period} from "@/utils/types/Period";
 import {MaterialQuantityLogModel} from ".prisma/client";
 import {addLogBeforeChangeGenerator} from "@/utils/functions/Material/LogGenerators";
-import {Chain} from "@/utils/classes/Chain";
+import {Chain, DuplicateBlockError} from "@/utils/classes/Chain";
 
 export type LogGenerator = (collection: MaterialLogCollection) => MaterialQuantityLog | MaterialQuantityLog[] | undefined;
 
@@ -13,7 +13,7 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
 
     constructor(inputLogs: MaterialQuantityLog[] | undefined = undefined, logGenerators: LogGenerator[] | undefined = undefined) {
         super();
-        if(logGenerators !== undefined) {logGenerators.forEach(value => this.addGenerator(value))}
+        if (logGenerators !== undefined) {logGenerators.forEach(value => this.addGenerator(value))}
         if (inputLogs !== undefined) {this.push(...inputLogs)}
     }
 
@@ -26,10 +26,6 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
         return new MaterialLogCollection(data.map(value => MaterialQuantityLog.fromJSON(value)), logGenerators)
     }
 
-    public insertFromJSON(data: MaterialLogCollectionJSON): MaterialLogCollection {
-        return this.push(...data.map(value => MaterialQuantityLog.fromJSON(value)))
-    }
-
     public static fromModel(data: MaterialQuantityLogModel[]): MaterialLogCollection {
         const materialQuantityLogs = [];
 
@@ -38,6 +34,10 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
         }
 
         return new MaterialLogCollection(materialQuantityLogs);
+    }
+
+    public addGenerator(logGenerator: LogGenerator) {
+        this.logGenerators.push(logGenerator)
     }
 
     /** Filter the logs according to a test into a new MaterialLogCollection */
@@ -70,8 +70,7 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
             const nextBlock = newestLog?.nextBlock;
 
             if (nextBlock !== undefined) {
-                logCollection.push(nextBlock
-                )
+                logCollection.push(nextBlock)
             }
         }
 
@@ -96,8 +95,22 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
         return outs
     }
 
-    public addGenerator(logGenerator: LogGenerator){
-        this.logGenerators.push(logGenerator)
+    public generateLogs() {
+        console.log("Generating Logs")
+        const newLogs: MaterialQuantityLog[] = [];
+
+        for (const logGenerator of this.logGenerators) {
+            const generatorResult = logGenerator(this);
+            if (generatorResult === undefined) {continue}
+            if (generatorResult instanceof MaterialQuantityLog) {
+                newLogs.push(generatorResult);
+                continue
+            }
+            newLogs.push(...generatorResult)
+        }
+
+        this.pushPreserveGenerated(...newLogs)
+        console.log("Logs Generated")
     }
 
     public getCollectionPeriod() {
@@ -115,22 +128,18 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
     }
 
     public getLogAfterDate(date: Dayjs): MaterialQuantityLog | undefined {
-        const filter = this.filterPeriod({start: date, end: this.getNewestLog()?.atTimeAsDayJs || date}, false, true);
-        if (filter === undefined) {return undefined}
-        return filter.getOldestLog();
+        let currentLog = this.getOldestLog();
+
+        while (currentLog !== undefined) {
+            if (date.isAfter(currentLog.atTime)) {return currentLog}
+            currentLog = currentLog.nextBlock;
+        }
+
+        return;
     }
 
     public getLogBeforeDate(date: Dayjs): MaterialQuantityLog | undefined {
-        const filter = this.filterPeriod({start: this.getOldestLog()?.atTimeAsDayJs || date, end: date}, true, false);
-        if (filter === undefined) {return undefined}
-        return filter.getNewestLog();
-    }
-
-    /** @deprecated */
-    public getLogsInPeriod(period: Period, keepLastLogBeforeDate?: boolean, keepFirstLogBeforeDate?: boolean): MaterialLogCollection {
-        const filterPeriod1 = this.filterPeriod(period, keepLastLogBeforeDate, keepFirstLogBeforeDate);
-        if (filterPeriod1 === undefined) {throw new EmptyLogCollectionException()}
-        return filterPeriod1
+        return this.getLogAfterDate(date)?.previousBlock
     }
 
     public getNewestLog() {
@@ -146,11 +155,6 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
         return log;
     }
 
-    /** @deprecated */
-    public getNextLog(log: MaterialQuantityLog) {
-        return log.nextBlock
-    }
-
     public getOldestLog() {
         return this.getFirstBlock()
     }
@@ -164,9 +168,8 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
         return log;
     }
 
-    /** @deprecated */
-    public getPreviousLog(nextLog: MaterialQuantityLog) {
-        return nextLog.previousBlock
+    public insertFromJSON(data: MaterialLogCollectionJSON): MaterialLogCollection {
+        return this.push(...data.map(value => MaterialQuantityLog.fromJSON(value)))
     }
 
     /** Return true if the collection is isEmpty */
@@ -195,50 +198,14 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
         return this
     }
 
-    public resetGeneratedLog() {
-        this.removeAllGeneratedLogs();
-        this.generateLogs();
-    }
-
-    protected override insertBlock(newBlock: MaterialQuantityLog | null | undefined) {
-        if (newBlock === undefined || newBlock === null){return}
-        //TODO: Prevent insertion of generated if distance on graph too small
-        const duplicate = this.checkForDuplicate(newBlock);
-
-        // If there is, if it's generated, ignore insert, if not, throw error
-        const officialAlreadyInserted = duplicate?.origin === LogOrigin.Official;
-        const generatedAlreadyInserted = duplicate?.origin === LogOrigin.Generated
-        const newLogIsGenerated = newBlock.origin === LogOrigin.Generated;
-
-        if((officialAlreadyInserted || generatedAlreadyInserted) && newLogIsGenerated) {return;}
-
-        super.insertBlock(newBlock);
-    }
-
-    private pushPreserveGenerated(...items: MaterialQuantityLog[]){
-        for (const item of items) {
-            this.insertBlock(item)
-        }
-    }
-
     public pushOne(item: MaterialQuantityLog | null) {
         if (item === null) {return this}
         return this.push(item)
     }
 
-    public generateLogs() {
-        console.log("Generating Logs")
-        const newLogs: MaterialQuantityLog[] = [];
-
-        for (const logGenerator of this.logGenerators) {
-            const generatorResult = logGenerator(this);
-            if(generatorResult === undefined) {continue}
-            if(generatorResult instanceof MaterialQuantityLog) {newLogs.push(generatorResult); continue}
-            newLogs.push(...generatorResult)
-        }
-
-        this.pushPreserveGenerated(...newLogs)
-        console.log("Logs Generated")
+    public resetGeneratedLog() {
+        this.removeAllGeneratedLogs();
+        this.generateLogs();
     }
 
     public toJSON(): MaterialLogCollectionJSON {
@@ -253,6 +220,28 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
         }
 
         return logs
+    }
+
+    protected override insertBlock(newBlock: MaterialQuantityLog | null | undefined) {
+        //TODO: Prevent insertion of generated if distance on graph too small
+
+        try {
+            super.insertBlock(newBlock);
+        } catch (e) {
+            if (newBlock === undefined || newBlock === null) {return}
+            if (e instanceof DuplicateBlockError) {
+                if(newBlock.origin === LogOrigin.Generated) { return; }
+                /*const duplicate = this.checkForDuplicate(newBlock);
+
+                // If there is, if it's generated, ignore insert, if not, throw error
+                const officialAlreadyInserted = duplicate?.origin === LogOrigin.Official;
+                const generatedAlreadyInserted = duplicate?.origin === LogOrigin.Generated
+                const newLogIsGenerated = newBlock.origin === LogOrigin.Generated;
+
+                if ((officialAlreadyInserted || generatedAlreadyInserted) && newLogIsGenerated) {return;}*/
+                throw e
+            }
+        }
     }
 
     // @ts-ignore
@@ -287,6 +276,12 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
                 this.remove(log);
             }
 
+        }
+    }
+
+    private pushPreserveGenerated(...items: MaterialQuantityLog[]) {
+        for (const item of items) {
+            this.insertBlock(item)
         }
     }
 
