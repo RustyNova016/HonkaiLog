@@ -1274,10 +1274,10 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
-"@types/canvasjs@^1.9.7":
-  version "1.9.7"
-  resolved "https://registry.yarnpkg.com/@types/canvasjs/-/canvasjs-1.9.7.tgz#bbb3042cea23c577a4d5f72e97f00619ac5b7d22"
-  integrity sha512-/CfA3VtyTYVXDHvMy8F5hsvRUTiBX7TGe+nAHNONoJlNHbqakeIzxxt1MSNH619s8Oiu4CcFBMmJVg50El/0lw==
+"@types/canvasjs@^1.9.8":
+  version "1.9.8"
+  resolved "https://registry.yarnpkg.com/@types/canvasjs/-/canvasjs-1.9.8.tgz#f483f6a24f79e33e2ecb90cdefb50f8d5fb08f98"
+  integrity sha512-+EFzR0V5oB8KrzjitIIEi0oYznRb9ZvxCBpX5XILUesuKcDJSaDKQ9ccC5wf+c998u7pILKojPEqvOSenURJ2A==
 
 "@types/cross-spawn@6.0.2":
   version "6.0.2"
