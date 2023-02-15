@@ -30,10 +30,14 @@ export class MaterialHistoryCalculator {
         const filteredLogs = [];
 
         for (const log of this.logCollection.logs) {
-            if(this.isLogInFilter(log)) {filteredLogs.push(log)}
+            if (this.isLogInFilter(log)) {filteredLogs.push(log)}
         }
 
         return filteredLogs
+    }
+
+    get id(): string {
+        return this.materialHistory.id;
     }
 
     get logCollection(): MaterialLogCollection {
@@ -46,6 +50,10 @@ export class MaterialHistoryCalculator {
 
     get material() {
         return this.materialHistory.material
+    }
+
+    get name(): string {
+        return this.materialHistory.name;
     }
 
     public static fromJSON(data: MaterialHistoryCalculatorJSON): MaterialHistoryCalculator {
@@ -119,30 +127,6 @@ export class MaterialHistoryCalculator {
         return gain;
     }
 
-    private getNextLogInFilter(log: MaterialQuantityLog | undefined, allowGenerated: boolean = false): MaterialQuantityLog | undefined {
-        if(log === undefined) {return}
-        let currentLog = log.nextBlock;
-
-        while (currentLog !== undefined) {
-            if(log.id !== currentLog.id && this.isLogInFilter(currentLog) && (allowGenerated || currentLog.origin !== LogOrigin.Generated)) {return  currentLog}
-            currentLog = currentLog.nextBlock
-        }
-
-        return;
-    }
-
-    private getPreviousLogInFilter(log: MaterialQuantityLog | undefined, allowGenerated: boolean = false): MaterialQuantityLog | undefined {
-        if(log === undefined) {return}
-        let currentLog = log.previousBlock;
-
-        while (currentLog !== undefined) {
-            if(log.id !== currentLog.id && this.isLogInFilter(currentLog) && (allowGenerated || currentLog.origin !== LogOrigin.Generated)) {return  currentLog}
-            currentLog = currentLog.previousBlock
-        }
-
-        return;
-    }
-
     /** Return the net loss of the whole collection */
     public calcNetLoss(): number {
         let loss = 0;
@@ -167,15 +151,12 @@ export class MaterialHistoryCalculator {
     }
 
     public calcQuantityAtCurrentTime(datetime: Dayjs) {
-        const oldestLog = this.materialHistory.logCollection.getOldestLog();
-        const dateIsBeforeFirstLog = datetime.isBefore(oldestLog?.atTimeAsDayJs);
-
-        // Can't guess what happens before the first logs, so we return undefined
-        if (oldestLog === undefined || dateIsBeforeFirstLog) {return;}
+        if(this.logCollection.getLogBeforeDate(datetime, true) === undefined) {return }
 
         const linFunc = this.getLinearFormulaAt(datetime);
         return _.floor((linFunc.a * datetime.unix()) + linFunc.b, 0)
     }
+
     public getCurrentCount() {
         return this.materialHistory.logCollection.getNewestLog()?.quantityTotal || NaN
     }
@@ -192,8 +173,25 @@ export class MaterialHistoryCalculator {
         return this.calcNetLoss()
     }
 
-    public toJSON() {
-        return Object.assign({}, this);
+    public haveLogsInFilter(): boolean {
+        const oldestLog = this.logCollection.getOldestLog();
+        return this.isLogInFilter(oldestLog) || this.getNextLogInFilter(oldestLog) !== undefined
+    }
+
+    public toJSON(): MaterialHistoryCalculatorJSON {
+        return {
+            filter: {
+                period: {
+                    start: this.filter.period.start.toJSON(),
+                    end: this.filter.period.end.toJSON()
+                }
+            },
+            materialHistory: this.materialHistory.toJSON()
+        }
+    }
+
+    toString(plural?: boolean, startcase?: boolean): string {
+        return this.materialHistory.toString(plural, startcase);
     }
 
     private addGenerators() {
@@ -230,16 +228,12 @@ export class MaterialHistoryCalculator {
         return AddLogAtEndOfFilter
     }
 
-    public haveLogsInFilter(): boolean {
-        const oldestLog = this.logCollection.getOldestLog();
-        return this.isLogInFilter(oldestLog) || this.getNextLogInFilter(oldestLog) !== undefined
-    }
     private getLinearFormulaAt(x: Dayjs): { a: number; b: number } {
-        const baseLog = this.logCollection.getLogBeforeDate(x);
+        const baseLog = this.logCollection.getLogBeforeDate(x, true);
         const nextLog = this.logCollection.getLogAfterDate(x);
 
         if (baseLog === undefined) {
-            throw new Error("Cannot find log before date. The function cannot be called unless there's a log before and after the given date")
+            throw new Error(`Cannot find log before the ${x.toString()}. The function cannot be called unless there's a log before and after the given date`)
         }
         if (nextLog === undefined) {
             return {a: 0, b: baseLog.quantityTotal}
@@ -255,6 +249,30 @@ export class MaterialHistoryCalculator {
             a: slope,
             b: point
         }
+    }
+
+    private getNextLogInFilter(log: MaterialQuantityLog | undefined, allowGenerated: boolean = false): MaterialQuantityLog | undefined {
+        if (log === undefined) {return}
+        let currentLog = log.nextBlock;
+
+        while (currentLog !== undefined) {
+            if (log.id !== currentLog.id && this.isLogInFilter(currentLog) && (allowGenerated || currentLog.origin !== LogOrigin.Generated)) {return currentLog}
+            currentLog = currentLog.nextBlock
+        }
+
+        return;
+    }
+
+    private getPreviousLogInFilter(log: MaterialQuantityLog | undefined, allowGenerated: boolean = false): MaterialQuantityLog | undefined {
+        if (log === undefined) {return}
+        let currentLog = log.previousBlock;
+
+        while (currentLog !== undefined) {
+            if (log.id !== currentLog.id && this.isLogInFilter(currentLog) && (allowGenerated || currentLog.origin !== LogOrigin.Generated)) {return currentLog}
+            currentLog = currentLog.previousBlock
+        }
+
+        return;
     }
 
     private getStartLogGenerator() {
@@ -274,7 +292,7 @@ export class MaterialHistoryCalculator {
     }
 
     private isLogInFilter(log: MaterialQuantityLog | undefined, includePrevious: boolean = false, includeNext: boolean = false): boolean {
-        if(log === undefined){return false}
+        if (log === undefined) {return false}
         const isLogBeforeStart = log.atTimeAsDayJs.isBefore(this.filter.period.start);
         const isLogAfterEnd = log.atTimeAsDayJs.isAfter(this.filter.period.end);
 

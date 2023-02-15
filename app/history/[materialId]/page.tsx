@@ -12,9 +12,9 @@ import {getServerUser} from "@/lib/NextAuth/GetSession";
 
 export default async function Page({params}: any) {
     const parsedParams = z.object({materialId: z.string()}).parse(params)
-    const materialHistory = await MaterialORM.getMaterialHistory(parsedParams.materialId, (await getServerUser()).id)
+    const materialHistory = await MaterialORM.getMaterialHistoryCalculator(parsedParams.materialId, (await getServerUser()).id)
 
-    if (!materialHistory.hasLogs()) {redirect("/history/" + materialHistory.id + "/new")}
+    if (!materialHistory.materialHistory.hasLogs()) {redirect("/history/" + materialHistory.material.id + "/new")}
 
     return <>
         <FadingIn duration={500} className={"size-inherit"} style={{overflow: "auto"}}>
@@ -25,7 +25,7 @@ export default async function Page({params}: any) {
                     <MaterialLogsManager material={materialHistory}/>
                 </Suspense>
 
-                <HistorySummary materialJson={materialHistory.toJSON()}/>
+                <HistorySummary matCalcJSON={materialHistory.toJSON()}/>
             </CenterContent>
         </FadingIn>
     </>

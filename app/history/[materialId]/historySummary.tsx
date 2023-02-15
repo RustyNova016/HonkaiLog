@@ -1,7 +1,6 @@
 "use client"
 import FramedDiv from "../../../component/Layout/FramedDiv";
 import {SectionTitle} from "@/components/UI/Theme/SectionTitle";
-import {MaterialHistory, MaterialHistoryJSON} from "@/utils/entities/Material/MaterialHistory";
 import {Suspense, useState} from "react";
 import {TimeframeSelection} from "@/app/history/[materialId]/timeframeSelection";
 import {HistorySummaryNet} from "@/app/history/[materialId]/historySummaryNet";
@@ -9,7 +8,10 @@ import {HistorySummaryAverages} from "@/app/history/[materialId]/historySummaryA
 import dayjs from "dayjs";
 import {Col, Row} from "@/lib/Bootstrap/Layout";
 import {MaterialSummaryGraph} from "@/app/history/[materialId]/materialSummaryGraph";
-import {MaterialHistoryCalculator} from "@/utils/entities/Material/MaterialHistoryCalculator";
+import {
+    MaterialHistoryCalculator,
+    MaterialHistoryCalculatorJSON
+} from "@/utils/entities/Material/MaterialHistoryCalculator";
 import {LoadingIconWithText} from "@/components/UI/Loading/LoadingIcon";
 
 function HistorySummaryBody({calculator}: { calculator: MaterialHistoryCalculator }) {
@@ -40,6 +42,7 @@ function HistorySummaryTimeFiltered({calculator}: { calculator: MaterialHistoryC
     const [nbrDaysBack, setNbrDaysBack] = useState(1);
 
     calculator.filter.period.start = nbrDaysBack === 99999 ? dayjs(0) : dayjs().add(-nbrDaysBack, "day")
+    calculator.filter.period.end = dayjs()
 
     return <>
         <div className={"flex flex-row justify-content-between align-content-center"}>
@@ -54,17 +57,8 @@ function HistorySummaryTimeFiltered({calculator}: { calculator: MaterialHistoryC
     </>;
 }
 
-export function HistorySummary({materialJson}: { materialJson: MaterialHistoryJSON }) {
-    const [calculator, setCalculator] = useState(new MaterialHistoryCalculator(
-        MaterialHistory.fromJSON(materialJson),
-        {
-            period: {
-                start: dayjs(),
-                end: dayjs()
-            }
-        }
-    ));
-
+export function HistorySummary({matCalcJSON}: { matCalcJSON: MaterialHistoryCalculatorJSON }) {
+    const [calculator] = useState(MaterialHistoryCalculator.fromJSON(matCalcJSON));
 
     return <>
         <FramedDiv sides={true} style={{width: "75%"}}>

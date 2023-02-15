@@ -15,7 +15,7 @@ export default async function Page() {
 
     const pullCost = new MaterialQuantity(historyCalculator.material, 280);
     const expaBannerRaw = new GachaBanner("Expa Banner", 100, 1, pullCost)
-    const currentInventory = new MaterialQuantity(historyCalculator.material, historyCalculator.logCollection.getCurrentCount())
+    const currentInventory = new MaterialQuantity(historyCalculator.material, historyCalculator.getCurrentCount())
 
     return <>
         <FadingIn duration={500} className={"size-inherit"} style={{overflow: "auto"}}>

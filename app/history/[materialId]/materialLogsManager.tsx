@@ -1,10 +1,10 @@
-import {MaterialHistory} from "@/utils/entities/Material/MaterialHistory";
 import FramedDiv from "../../../component/Layout/FramedDiv";
 import {MaterialLogsInput} from "@/app/history/[materialId]/materialLogsInput";
 import {SectionTitle} from "@/components/UI/Theme/SectionTitle";
+import {MaterialHistoryCalculator} from "@/utils/entities/Material/MaterialHistoryCalculator";
 
-export default function MaterialLogsManager({material}: { material: MaterialHistory }) {
-    const currentCount = material.getLogs().getCurrentCount();
+export default function MaterialLogsManager({material}: { material: MaterialHistoryCalculator }) {
+    const currentCount = material.getCurrentCount();
 
     return <FramedDiv sides={true} style={{width: "75%"}}>
         <SectionTitle title={material.material.toString(currentCount > 1, true) + " logs"}/>

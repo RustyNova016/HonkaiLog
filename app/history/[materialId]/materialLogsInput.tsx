@@ -7,7 +7,7 @@ export interface MaterialQuantityInputFormI {
     quantity: string
 }
 
-export function MaterialLogsInput(props: { defaultQuantity: number, materialId: number }) {
+export function MaterialLogsInput(props: { defaultQuantity: number, materialId: string }) {
     const {register, handleSubmit} = useForm<MaterialQuantityInputFormI>();
     const router = useRouter();
 

@@ -3,6 +3,7 @@ import {MaterialModel} from "@prisma/client";
 import {Material} from "@/utils/entities/Material/Material";
 import {MaterialHistory} from "@/utils/entities/Material/MaterialHistory";
 import {MaterialQuantityLogORM} from "@/prisma/ORMs/MaterialQuantityLogORM";
+import {MaterialHistoryCalculator} from "@/utils/entities/Material/MaterialHistoryCalculator";
 
 export class MaterialORM {
     public static async findMaterialByName(materialName: string) {
@@ -46,5 +47,9 @@ export class MaterialORM {
             await MaterialQuantityLogORM.getMaterialQuantityLogsModel(idUser, idMaterial),
             idUser
         )
+    }
+
+    public static async getMaterialHistoryCalculator(idMaterial: string, idUser: string): Promise<MaterialHistoryCalculator> {
+        return new MaterialHistoryCalculator(await this.getMaterialHistory(idMaterial, idUser))
     }
 }

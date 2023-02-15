@@ -127,19 +127,19 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
         return this.getNewestLogOrThrow().quantityTotal;
     }
 
-    public getLogAfterDate(date: Dayjs): MaterialQuantityLog | undefined {
+    public getLogAfterDate(date: Dayjs, includeDate: boolean = false): MaterialQuantityLog | undefined {
         let currentLog = this.getOldestLog();
 
         while (currentLog !== undefined) {
-            if (date.isAfter(currentLog.atTime)) {return currentLog}
+            if (date.isAfter(currentLog.atTime) || (includeDate && date.isSame(currentLog.atTime))) {return currentLog}
             currentLog = currentLog.nextBlock;
         }
 
         return;
     }
 
-    public getLogBeforeDate(date: Dayjs): MaterialQuantityLog | undefined {
-        return this.getLogAfterDate(date)?.previousBlock
+    public getLogBeforeDate(date: Dayjs, includeDate: boolean = false): MaterialQuantityLog | undefined {
+        return this.getLogAfterDate(date, !includeDate)?.previousBlock
     }
 
     public getNewestLog() {
