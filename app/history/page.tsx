@@ -23,6 +23,6 @@ export default async function Page() {
                     </>
                 })
             }
-        </FadingIn>
-    </div>
+    </FadingIn>
+</div>
 }

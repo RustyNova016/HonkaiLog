@@ -4,6 +4,7 @@ import {Material} from "@/utils/entities/Material/Material";
 import {MaterialHistory} from "@/utils/entities/Material/MaterialHistory";
 import {MaterialQuantityLogORM} from "@/prisma/ORMs/MaterialQuantityLogORM";
 import {MaterialHistoryCalculator} from "@/utils/entities/Material/MaterialHistoryCalculator";
+import {toPascalCase} from "@/utils/functions/ToPascalCase";
 
 export class MaterialORM {
     public static async findMaterialByName(materialName: string) {
@@ -14,16 +15,20 @@ export class MaterialORM {
         });
     }
 
-    public static async getAllMaterials() {
-        return this.getPrisma().findMany()
-    }
+    public static async findOrCreateMaterial(id: string): Promise<MaterialModel> {
+        const material = await this.getPrisma().findUnique({where: {id: toPascalCase(id)}});
+        if (material !== null) {return material}
 
-    public static async getMaterialModel(idMaterial: string): Promise<MaterialModel> {
-        return this.getPrisma().findUniqueOrThrow({
-            where: {
-                id: idMaterial
+        return this.getPrisma().create({
+            data: {
+                id: toPascalCase(id),
+                name: id,
             }
         })
+    }
+
+    public static async getAllMaterials() {
+        return this.getPrisma().findMany()
     }
 
     public static async getMaterial(idMaterial: string): Promise<Material> {
@@ -37,11 +42,7 @@ export class MaterialORM {
         )
     }
 
-    private static getPrisma() {
-        return prismadb.materialModel;
-    }
-
-    public static async getMaterialHistory(idMaterial: string, idUser: string){
+    public static async getMaterialHistory(idMaterial: string, idUser: string) {
         return MaterialHistory.fromModels(
             await MaterialORM.getMaterialModel(idMaterial),
             await MaterialQuantityLogORM.getMaterialQuantityLogsModel(idUser, idMaterial),
@@ -51,5 +52,17 @@ export class MaterialORM {
 
     public static async getMaterialHistoryCalculator(idMaterial: string, idUser: string): Promise<MaterialHistoryCalculator> {
         return new MaterialHistoryCalculator(await this.getMaterialHistory(idMaterial, idUser))
+    }
+
+    public static async getMaterialModel(idMaterial: string): Promise<MaterialModel> {
+        return this.getPrisma().findUniqueOrThrow({
+            where: {
+                id: idMaterial
+            }
+        })
+    }
+
+    private static getPrisma() {
+        return prismadb.materialModel;
     }
 }

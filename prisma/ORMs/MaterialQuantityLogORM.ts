@@ -1,11 +1,10 @@
 import prismadb from "@/lib/prismadb";
-import {HoyoCrystalLog} from "@/utils/types/api/hoyoverse/FetchHoyoCrystalLogRes";
 import {z} from "zod";
-import dayjs from "dayjs";
 import {MaterialQuantityLogModel} from ".prisma/client";
 import {MaterialQuantityLog} from "@/utils/entities/Material/MaterialQuantityLog";
 import {MaterialORM} from "@/prisma/ORMs/MaterialORM";
 import {MaterialQuantityLogModelCreateOneSchema} from "@/prisma/generated/schemas";
+import {MaterialHistoryExport, MaterialLogExport, UserDataExport} from "@/utils/types/export/types";
 
 export class MaterialQuantityLogORM {
     public static async getMaterialQuantityLogs(idMaterial: string, idUser: string): Promise<MaterialQuantityLog[]> {
@@ -27,62 +26,18 @@ export class MaterialQuantityLogORM {
         })
     }
 
-    public static async insertHoyoCrystalLog(log: HoyoCrystalLog, idUser: string, idImport: string, idNextLog: string | null) {
-        console.log("Inserting log: ", log)
-
-        const material = (await MaterialORM.findMaterialByName("crystal"))[0];
-        if (material === undefined) {
-            throw new Error("Material not found")
+    public static async insertUserDataExport(data: UserDataExport) {
+        const inserts = []
+        for (const materialHistoryExport of data.MaterialHistory) {
+            inserts.push(this.insertMaterialHistoryExport(materialHistoryExport, data.idUser))
         }
-
-
-        const atTime = dayjs(z.string().parse(log.item[0].value)).toDate();
-        const comment = z.string().parse(log.item[1].value);
-        const quantityChange = z.number().parse(parseInt(log.item[2].value));
-        const quantityTotal = z.number().parse(parseInt(log.item[3].value));
-        const idMaterial = material.id;
-        const foundLogs = await this.getPrisma().findMany({
-            where: {
-                idMaterial: material.id,
-                quantityTotal,
-                atTime,
-                idUser
-            }
-        })
-
-        if (foundLogs.length === 0) {
-            return this.create({
-                data: {
-                    atTime: atTime,
-                    comment: comment,
-                    quantityChange: quantityChange,
-                    quantityTotal: quantityTotal,
-                    idMaterial: idMaterial,
-                    idUser,
-                    idImport,
-                    idNextLog
-                }
-            })
-        }
-        return
-    }
-
-    public static async insertHoyoCrystalLogs(log: HoyoCrystalLog[], idUser: string, idImport: string) {
-        let lastLog
-        const allLogs = []
-
-        for (const hoyoCrystalLog of log) {
-            const idLastLog = (await lastLog)?.id;
-            lastLog = this.insertHoyoCrystalLog(hoyoCrystalLog, idUser, idImport, idLastLog === undefined ? null : idLastLog);
-            allLogs.push(lastLog)
-        }
-
-        return allLogs
+        return Promise.all(inserts)
     }
 
     private static async create(data: z.infer<typeof MaterialQuantityLogModelCreateOneSchema>): Promise<MaterialQuantityLogModel> {
         //TODO: Check for existing logs
         //TODO: Add comment
+        //TODO: Link logs
         return this.getPrisma().create(data);
     }
 
@@ -90,5 +45,49 @@ export class MaterialQuantityLogORM {
         return prismadb.materialQuantityLogModel;
     }
 
+    private static async insertMaterialHistoryExport(data: MaterialHistoryExport, idUser: string) {
+        const inserts = []
+        let lastLog = undefined;
+        const material = MaterialORM.findOrCreateMaterial(data.idMaterial);
 
+        for (const log of data.logs) {
+            lastLog = this.insertMaterialLogExport(
+                log,
+                idUser,
+                (await material).id,
+                data.logOrder === LogOrderType.newestToOldest ? (await lastLog)?.id : undefined,
+                data.logOrder === LogOrderType.oldestToNewest ? (await lastLog)?.id : undefined
+            )
+            // TODO: Link Back
+            inserts.push(lastLog);
+        }
+        return Promise.all(inserts)
+    }
+
+    private static async insertMaterialLogExport(data: MaterialLogExport, idUser: string, idMaterial: string, idNextLog?: string | undefined, idPreviousLog?: string | undefined) {
+        // TODO: Update if ID provided
+        return this.getPrisma().create({
+            data: {
+                atTime: data.atTime,
+                quantityTotal: data.quantityTotal,
+                quantityChange: data.quantityTotal,
+                comment: data.comment,
+                importTime: data.importTime,
+                idUser,
+                idMaterial,
+                idNextLog,
+                idPreviousLog
+            }
+        })
+    }
+
+    private static link(idLog: string) {
+        //TODO
+    }
+}
+
+export enum LogOrderType {
+    noOrder,
+    oldestToNewest,
+    newestToOldest,
 }

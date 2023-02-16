@@ -3,6 +3,12 @@ import {MaterialLogsInput} from "@/app/history/[materialId]/materialLogsInput";
 import {SectionTitle} from "@/components/UI/Theme/SectionTitle";
 import {MaterialHistoryCalculator} from "@/utils/entities/Material/MaterialHistoryCalculator";
 
+function AuthKeyInput() {
+    return <>
+        <form></form>
+    </>;
+}
+
 export default function MaterialLogsManager({material}: { material: MaterialHistoryCalculator }) {
     const currentCount = material.getCurrentCount();
 
@@ -14,6 +20,7 @@ export default function MaterialLogsManager({material}: { material: MaterialHist
                 You have currently have {currentCount} {material.name}
             </p>
             <MaterialLogsInput defaultQuantity={currentCount} materialId={material.id}/>
+            <AuthKeyInput/>
         </div>
     </FramedDiv>;
 }

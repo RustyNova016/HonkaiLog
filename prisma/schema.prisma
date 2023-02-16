@@ -60,7 +60,7 @@ model VerificationToken {
 }
 
 model MaterialModel {
-    id                   String                     @id @default(cuid())
+    id                   String                     @id
     name                 String
     namePlural           String?
     imageLink            String?
@@ -71,11 +71,12 @@ model MaterialModel {
 }
 
 model MaterialQuantityLogModel {
-    id             String   @id @default(cuid())
+    id             String    @id @default(cuid())
     quantityTotal  Int
     quantityChange Int?
     atTime         DateTime
     comment        String?
+    importTime     DateTime?
 
     idMaterial String
     material   MaterialModel @relation(fields: [idMaterial], references: [id])
@@ -86,9 +87,13 @@ model MaterialQuantityLogModel {
     idImport String?
     import   HoyoverseImportModel? @relation(fields: [idImport], references: [id])
 
-    idNextLog   String?                   @unique
-    nextLog     MaterialQuantityLogModel? @relation("LogHistory", fields: [idNextLog], references: [id])
-    previousLog MaterialQuantityLogModel? @relation("LogHistory")
+    idNextLog         String?                   @unique
+    nextLog           MaterialQuantityLogModel? @relation("LogHistoryNext", fields: [idNextLog], references: [id], onDelete: Restrict, onUpdate: Restrict)
+    currentLogForNext MaterialQuantityLogModel? @relation("LogHistoryNext")
+
+    idPreviousLog         String?                   @unique
+    previousLog           MaterialQuantityLogModel? @relation("LogHistoryPrevious", fields: [idPreviousLog], references: [id], onDelete: Restrict, onUpdate: Restrict)
+    currentLogForprevious MaterialQuantityLogModel? @relation("LogHistoryPrevious")
 
     @@unique([idUser, idMaterial, atTime, quantityTotal])
     @@map("MaterialQuantityLog")
