@@ -1,7 +1,7 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import {getAPISideUserOrThrow} from "@/lib/NextAuth/GetSession";
-import {MaterialHistoryExport} from "@/utils/types/export/types";
 import {MaterialQuantityLogORM} from "@/prisma/ORMs/MaterialQuantityLogORM";
+import {MaterialHistoryExport} from "@/utils/types/export/MaterialHistoryExport";
 
 export default async function (req: NextApiRequest, res: NextApiResponse) {
     const idUser = getAPISideUserOrThrow(req, res).then(value => value.id);

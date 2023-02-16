@@ -1,16 +1,3 @@
-import {LogOrderType} from "@/prisma/ORMs/MaterialQuantityLogORM";
-
-export type UserDataExport = {
-    idUser: string;
-    MaterialHistory: MaterialHistoryExport[]
-}
-
-export type MaterialHistoryExport = {
-    idMaterial: string,
-    logOrder: LogOrderType,
-    logs: MaterialLogExport[]
-};
-
 export type MaterialLogExport = {
     id: string | null;
     quantityTotal: number;
@@ -24,5 +11,4 @@ export type MaterialLogExport = {
     idPreviousLog: string | null;
     /** Id of the next log in the import */
     idNextLog: string | null;
-
 }

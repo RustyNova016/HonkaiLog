@@ -4,7 +4,9 @@ import {MaterialQuantityLogModel} from ".prisma/client";
 import {MaterialQuantityLog} from "@/utils/entities/Material/MaterialQuantityLog";
 import {MaterialORM} from "@/prisma/ORMs/MaterialORM";
 import {MaterialQuantityLogModelCreateOneSchema} from "@/prisma/generated/schemas";
-import {MaterialHistoryExport, MaterialLogExport, UserDataExport} from "@/utils/types/export/types";
+import {MaterialLogExport} from "@/utils/types/export/MaterialLogExport";
+import {UserDataExport} from "@/utils/types/export/UserDataExport";
+import {MaterialHistoryExport} from "@/utils/types/export/MaterialHistoryExport";
 
 export class MaterialQuantityLogORM {
     public static async getMaterialQuantityLogs(idMaterial: string, idUser: string): Promise<MaterialQuantityLog[]> {
@@ -75,8 +77,8 @@ export class MaterialQuantityLogORM {
                 importTime: data.importTime,
                 idUser,
                 idMaterial,
-                idNextLog,
-                idPreviousLog
+                idNextLog: idNextLog !== undefined ? idNextLog : null,
+                idPreviousLog: idPreviousLog !== undefined ? idPreviousLog : null,
             }
         })
     }
