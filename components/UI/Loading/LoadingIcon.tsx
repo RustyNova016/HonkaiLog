@@ -23,7 +23,7 @@ export interface LoadingComponentProps extends PropsWithClass, PropsWithStyle {
 
 export function LoadingIconWithText(props: LoadingComponentProps) {
     // TODO: Optimize performance of the icon. This shouldn't use that much of GPU
-    return <CenteredDiv>
+    return <CenteredDiv style={{flexDirection: "column"}}>
             <LoadingIcon/>
 
             <p style={{textAlign: "center", color: "white"}}>Loading...</p>

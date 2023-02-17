@@ -3,7 +3,10 @@ import {MaterialModel} from "@prisma/client";
 import {Material} from "@/utils/entities/Material/Material";
 import {MaterialHistory} from "@/utils/entities/Material/MaterialHistory";
 import {MaterialQuantityLogORM} from "@/prisma/ORMs/MaterialQuantityLogORM";
-import {MaterialHistoryCalculator} from "@/utils/entities/Material/MaterialHistoryCalculator";
+import {
+    MaterialHistoryCalculator,
+    MaterialHistoryCalculatorFilter
+} from "@/utils/entities/Material/MaterialHistoryCalculator";
 import {toPascalCase} from "@/utils/functions/ToPascalCase";
 
 export class MaterialORM {
@@ -50,8 +53,8 @@ export class MaterialORM {
         )
     }
 
-    public static async getMaterialHistoryCalculator(idMaterial: string, idUser: string): Promise<MaterialHistoryCalculator> {
-        return new MaterialHistoryCalculator(await this.getMaterialHistory(idMaterial, idUser))
+    public static async getMaterialHistoryCalculator(idMaterial: string, idUser: string, filter?: MaterialHistoryCalculatorFilter | undefined): Promise<MaterialHistoryCalculator> {
+        return new MaterialHistoryCalculator(await this.getMaterialHistory(idMaterial, idUser), filter)
     }
 
     public static async getMaterialModel(idMaterial: string): Promise<MaterialModel> {

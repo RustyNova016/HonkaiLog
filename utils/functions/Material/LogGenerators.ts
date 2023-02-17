@@ -26,6 +26,7 @@ export function addLogBeforeChange(log: MaterialQuantityLog): MaterialQuantityLo
         null,
         "", //TODO: Add generation comment
         null,
-        null
+        log.id
+
     )
 }

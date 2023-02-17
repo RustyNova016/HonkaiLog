@@ -14,7 +14,7 @@ export class Material implements MaterialModel {
 
 
     get namePlural(): string {
-        if (this._namePlural === null || this._namePlural === "") {
+        if (this._namePlural === null || this._namePlural === "" || this._namePlural === undefined) {
             return this.name + "s"
         }
         return this._namePlural;

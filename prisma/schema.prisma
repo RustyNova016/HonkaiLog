@@ -95,7 +95,7 @@ model MaterialQuantityLogModel {
     previousLog           MaterialQuantityLogModel? @relation("LogHistoryPrevious", fields: [idPreviousLog], references: [id], onDelete: Restrict, onUpdate: Restrict)
     currentLogForprevious MaterialQuantityLogModel? @relation("LogHistoryPrevious")
 
-    @@unique([idUser, idMaterial, atTime, quantityTotal])
+    @@unique(fields: [idUser, idMaterial, atTime, quantityTotal], name: "UniqueQuantityAtATime")
     @@map("MaterialQuantityLog")
 }
 

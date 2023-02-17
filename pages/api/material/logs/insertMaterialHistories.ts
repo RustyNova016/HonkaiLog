@@ -5,6 +5,7 @@ import {MaterialHistoryExport} from "@/utils/types/export/MaterialHistoryExport"
 
 export default async function (req: NextApiRequest, res: NextApiResponse) {
     const idUser = getAPISideUserOrThrow(req, res).then(value => value.id);
+    console.log(req.body)
     const parse: MaterialHistoryExport[] = req.body["histories"]
 
     const inserts = MaterialQuantityLogORM.insertUserDataExport({

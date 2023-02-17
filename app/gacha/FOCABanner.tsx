@@ -9,13 +9,16 @@ import {MaterialQuantityJSONZod} from "@/utils/entities/Material/validations/Mat
 import {IncompleteBannerBody} from "@/app/gacha/incompleteBannerBody";
 import dayjs from "dayjs";
 import {FOCABannerHeader} from "@/app/gacha/FOCABannerHeader";
-import {MaterialHistoryCalculator} from "@/utils/entities/Material/MaterialHistoryCalculator";
+import {
+    MaterialHistoryCalculator,
+    MaterialHistoryCalculatorJSON
+} from "@/utils/entities/Material/MaterialHistoryCalculator";
 import {MaterialHistoryCalculatorJSONZod} from "@/utils/entities/Material/validations/MaterialHistoryCalculator.JSONZod";
 
 interface FOCABannerParams {
     pullCost: z.infer<typeof MaterialQuantityJSONZod>;
     currentInventory: z.infer<typeof MaterialQuantityJSONZod>
-    materialCalculator: z.infer<typeof MaterialHistoryCalculatorJSONZod>
+    materialCalculator: MaterialHistoryCalculatorJSON
 }
 
 export function FOCABanner(props: FOCABannerParams) {
@@ -29,7 +32,7 @@ export function FOCABanner(props: FOCABannerParams) {
         MaterialQuantity.parse(props.pullCost)
     )
     const currentInventory = MaterialQuantity.parse(props.currentInventory);
-    const historyCalculator = MaterialHistoryCalculator.parse(props.materialCalculator);
+    const historyCalculator = MaterialHistoryCalculator.fromJSON(props.materialCalculator);
 
     const bannerCalculator = new GachaBannerCalculator(
         FOCAGachaBanner,

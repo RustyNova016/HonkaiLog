@@ -11,12 +11,15 @@ import {GachaBannerSummaryHeader} from "@/app/gacha/gachaBannerSummaryHeader";
 import {IncompleteBannerBody} from "@/app/gacha/incompleteBannerBody";
 import dayjs from "dayjs";
 import {MaterialHistoryCalculatorJSONZod} from "@/utils/entities/Material/validations/MaterialHistoryCalculator.JSONZod";
-import {MaterialHistoryCalculator} from "@/utils/entities/Material/MaterialHistoryCalculator";
+import {
+    MaterialHistoryCalculator,
+    MaterialHistoryCalculatorJSON
+} from "@/utils/entities/Material/MaterialHistoryCalculator";
 
 export interface GachaBannerSummaryProps {
     bannerJSON: GachaBannerJSON
     currentInventory: z.infer<typeof MaterialQuantityJSONZod>
-    materialCalculator: z.infer<typeof MaterialHistoryCalculatorJSONZod>
+    materialCalculator: MaterialHistoryCalculatorJSON
 }
 
 export function GachaBannerSummary(props: GachaBannerSummaryProps) {
@@ -24,7 +27,7 @@ export function GachaBannerSummary(props: GachaBannerSummaryProps) {
 
     const gachaBanner = GachaBanner.parse(props.bannerJSON);
     const currentInventory = MaterialQuantity.parse(props.currentInventory);
-    const historyCalculator = MaterialHistoryCalculator.parse(props.materialCalculator);
+    const historyCalculator = MaterialHistoryCalculator.fromJSON(props.materialCalculator);
 
     const bannerCalculator = new GachaBannerCalculator(gachaBanner, historyCalculator, currentInventory, gachaBanner.nbPullsForGuaranty - nbPulls, 0)
 

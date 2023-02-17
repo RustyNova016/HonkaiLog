@@ -3,6 +3,7 @@ import {MaterialCard} from "@/components/UI/Material/MaterialCard";
 import {FadingIn} from "@/components/Animators/FadingIn";
 import MaterialListStyle from "./HistoryPage.module.scss"
 import {MaterialORM} from "@/prisma/ORMs/MaterialORM";
+import Link from "next/link";
 
 export async function getMaterials() {
     const data = await MaterialORM.getAllMaterials();
@@ -15,6 +16,8 @@ export default async function Page() {
     console.log(materials);
 
     return <div className={MaterialListStyle["MaterialList"]}>
+        <Link href={"/history/import"}>Import data</Link>
+
         <FadingIn delay={1} duration={400} style={{width: "30%"}}>
             {
                 materials.collection.map((mat, index) => {
