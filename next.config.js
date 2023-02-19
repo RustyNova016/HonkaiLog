@@ -9,7 +9,6 @@ const nextConfig = {
     experimental: {
         appDir: true,
         serverComponentsExternalPackages: ['sequelize'],
-
     },
     devIndicators: {
         buildActivityPosition: 'bottom-right',
@@ -19,9 +18,22 @@ const nextConfig = {
         remotePatterns: [
             {
                 protocol: 'https',
-                hostname: 'avatars.githubusercontent.com',
+                hostname: 'avatars.githubusercontent.com'
             },
+            {
+                protocol: 'https',
+                hostname: 'media.discordapp.net'
+            }
         ],
+    },
+    webpack(config) {
+        config.module.rules.push({
+            test: /\.svg$/i,
+            issuer: /\.[jt]sx?$/,
+            use: ['@svgr/webpack'],
+        })
+
+        return config
     },
 }
 

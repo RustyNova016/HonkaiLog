@@ -7,7 +7,9 @@ import {useState} from "react";
 import {HoyoverseAPI} from "@/lib/External APIs/Hoyoverse/HoyoverseAPI";
 import {HoyoAPITypes} from "@/lib/External APIs/Hoyoverse/ApiTypes";
 import {MaterialHistoryConverters} from "@/lib/External APIs/Hoyoverse/MaterialHistoryConverters";
-import {LoadingIconWithText} from "@/components/UI/Loading/LoadingIcon";
+import {BoxLoadingIcon} from "@/components/UI/Loading/Box/BoxLoadinIcon";
+import {CenteredDiv} from "../../../component/Layout/CenteredDiv";
+
 
 export interface AuthkeyForm {
     authkeyUrl: string
@@ -23,11 +25,16 @@ export function ImportAuthkeyInput() {
         setLoading(true)
         setErrorMessage("")
         const authkey = new URLSearchParams(data.authkeyUrl).get('authkey');
-        if (authkey === null) {setErrorMessage("Cannot get authkey"); setLoading(false); return}
+        if (authkey === null) {
+            setErrorMessage("Cannot get authkey");
+            setLoading(false);
+            return
+        }
 
         const ApiResponses = HoyoverseAPI.fetchAPIs(HoyoAPITypes, authkey, setLoadingMessage);
         const materialHistories = MaterialHistoryConverters.APIResArray_To_MaterialHistoryExports(await ApiResponses)
 
+        setLoadingMessage("Saving Logs")
         const inserted = await axios.post(APIRoutes.saveHistories, {histories: materialHistories});
         console.log(inserted)
         setLoading(false)
@@ -41,7 +48,15 @@ export function ImportAuthkeyInput() {
                 <button className="btn btn-primary" type="submit" id="button-addon2">Fetch History</button>
             </div>
         </form>
-        {errorMessage !== ""? errorMessage:null}
-        {loading? <LoadingIconWithText subtext={loadingMessage}></LoadingIconWithText>:null}
+        {errorMessage !== "" ? errorMessage : null}
+        {loading ?
+            <CenteredDiv style={{display: "flex", flexDirection: "column"}}>
+                <div style={{fontSize: "10em"}}>
+                    <BoxLoadingIcon height={300} width={300}/>
+                </div>
+
+                <p style={{textAlign: "center", color: "white", fontSize: "1em"}}>{loadingMessage}</p>
+            </CenteredDiv>
+            : null}
     </FramedDiv>;
 }

@@ -2,6 +2,9 @@ import {z} from "zod";
 import {MaterialJSONZod} from "@/utils/entities/Material/validations/Material.JSONZod";
 import _ from "lodash";
 import {MaterialModel} from "@prisma/client";
+import {materialRarityBackgroundMap} from "../../../data/theme/MaterialRarityBackground";
+import {isMaterialRarityType, MaterialRarityType} from "@/utils/types/theme/MaterialRarityType";
+import {routes} from "@/lib/routes";
 
 /** Class of a logs object. E.G. Gold, crystals, exp logs, etc... */
 export class Material implements MaterialModel {
@@ -9,9 +12,17 @@ export class Material implements MaterialModel {
         public id: string,
         public name: string,
         public _namePlural: string | null,
-        public imageLink: string | null) {
+        public _imageLink: string | null,
+        public rarity: any
+    ) {
     }
 
+    get imageLink(): string {
+        if (this._imageLink === null) {
+            return routes.materialIcons + this.id + ".png"
+        }
+        return routes.materialIcons + this._imageLink
+    }
 
     get namePlural(): string {
         if (this._namePlural === null || this._namePlural === "" || this._namePlural === undefined) {
@@ -20,19 +31,27 @@ export class Material implements MaterialModel {
         return this._namePlural;
     }
 
+    public static fromJSON(data: MaterialJSON): Material {
+        return Material.fromModel(data)
+    }
+
     public static fromModel(data: MaterialModel): Material {
+        //if (!isMaterialRarityType(data.rarity)) {
+        //    throw new Error("Unknown Rarity")
+        //}
+
         return new Material(
             data.id,
             data.name,
             data.namePlural,
-            data.imageLink
+            data.imageLink,
+            data.rarity
         )
     }
 
     /** Create a Material instance from a validation pattern */
     static parse(data: z.infer<typeof MaterialJSONZod>): Material {
-        const parsedData = MaterialJSONZod.parse(data);
-        return new Material(parsedData.id, parsedData.name, parsedData.namePlural, parsedData.imageLink);
+        return this.fromModel(data)
     }
 
     /** Export the logs to a plain object */
@@ -41,14 +60,29 @@ export class Material implements MaterialModel {
             id: this.id,
             name: this.name,
             namePlural: this._namePlural,
-            imageLink: this.imageLink
+            imageLink: this._imageLink
         }
+    }
+
+    public getRarityBackgroundImage() {
+        let str = materialRarityBackgroundMap.get(this.rarity);
+        if (str === undefined) {
+            str = materialRarityBackgroundMap.get(this.rarity);
+            if (str === undefined) {
+                return ""
+            }
+        }
+        return str;
     }
 
     /** Output true if the logs have the same ID */
     public isSame(mat: Material): boolean {
         // TODO: Deep comparison
         return this.id === mat.id;
+    }
+
+    public toJSON(): MaterialJSON {
+        return Object.assign({}, this.toModel());
     }
 
     public toModel(): MaterialModel {
@@ -59,14 +93,6 @@ export class Material implements MaterialModel {
     public toString(plural?: boolean, startcase?: boolean): string {
         let str: string = plural ? this.namePlural : this.name
         return startcase ? _.startCase(str) : str
-    }
-
-    public toJSON(): MaterialJSON{
-        return Object.assign({}, this.toModel());
-    }
-
-    public static fromJSON(data: MaterialJSON): Material {
-        return Material.fromModel(data)
     }
 }
 

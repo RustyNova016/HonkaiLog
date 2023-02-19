@@ -33,18 +33,6 @@ export class MaterialORM {
     public static async getAllMaterials() {
         return this.getPrisma().findMany()
     }
-
-    public static async getMaterial(idMaterial: string): Promise<Material> {
-        const material = await this.getMaterialModel(idMaterial)
-
-        return new Material(
-            material.id,
-            material.name,
-            material.namePlural,
-            material.imageLink
-        )
-    }
-
     public static async getMaterialHistory(idMaterial: string, idUser: string) {
         return MaterialHistory.fromModels(
             await MaterialORM.getMaterialModel(idMaterial),

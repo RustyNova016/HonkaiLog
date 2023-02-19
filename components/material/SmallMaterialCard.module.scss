@@ -1,0 +1,85 @@
+.SmallMaterialCard {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    height: 100%;
+    width: 100%;
+
+    color: black;
+
+
+}
+
+.materialIconBackground {
+    box-sizing: border-box;
+    max-height: 100%;
+    max-width: 100%;
+    aspect-ratio: 10 / 9;
+    object-fit: contain;
+
+    background-size: cover;
+
+    border-style: solid;
+    border-radius: 8%;
+}
+
+.materialIconImage {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+
+    border-radius: 8%;
+}
+
+.iconOutline {
+    box-sizing: border-box;
+    max-height: 100%;
+    max-width: 100%;
+    /*aspect-ratio: 9 / 10;*/
+
+    background-color: white;
+    border-radius: 8%;
+
+    padding-top: calc(.04 * 100%);
+    padding-bottom: calc(.08 * 100%);
+}
+
+.MaterialIconWithQuantity {
+    box-sizing: border-box;
+    max-height: 100%;
+    max-width: 100%;
+    aspect-ratio: 4 / 5;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    color: black;
+
+    .topIcon {
+        order: 1;
+        max-height: 100%;
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .bottomLabel {
+        order: 2;
+
+        box-sizing: border-box;
+        height: min-content;
+        width: 60%;
+        margin-top: -10px;
+
+        font-weight: bold;
+        font-size: 1.5em;
+        background-color: #FFFFFF;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+
+        text-align: center;
+    }
+}

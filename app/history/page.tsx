@@ -13,7 +13,7 @@ export async function getMaterials() {
 
 export default async function Page() {
     const materials = await getMaterials()
-    console.log(materials);
+    //console.log(materials);
 
     return <div className={MaterialListStyle["MaterialList"]}>
         <Link href={"/history/import"}>Import data</Link>

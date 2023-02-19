@@ -65,6 +65,7 @@ model MaterialModel {
     namePlural           String?
     imageLink            String?
     materialQuantityLogs MaterialQuantityLogModel[]
+    rarity               String?
 
     @@unique([name])
     @@map("Material")

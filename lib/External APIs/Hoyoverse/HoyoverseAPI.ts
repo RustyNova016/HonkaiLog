@@ -32,7 +32,8 @@ export class HoyoverseAPI {
             statusCallback(`Fetching ${apiType.name} | Page ${i} | Number of logs found: ${res.data.list.length}`)
             const nextPage = await this.fetchPageFromUrl(apiType, authKey, i);
 
-            if (nextPage.data.lastUpdateTime !== res.data.lastUpdateTime) {throw new UpdateTimeChangeError()}
+            // TODO: Fix it
+            //if (nextPage.data.lastUpdateTime !== res.data.lastUpdateTime) {throw new UpdateTimeChangeError()}
 
             const list = nextPage.data.list;
             lastResponseEmpty = list.length === 0;
