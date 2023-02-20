@@ -23,6 +23,10 @@ export class MaterialHistory {
         return this.material.id
     }
 
+    get idMaterial() {
+        return this.material.id
+    }
+
     get name() {
         return this.material.name
     }
