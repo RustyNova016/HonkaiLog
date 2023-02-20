@@ -4,6 +4,7 @@ import {GachaBanner} from "./GachaBanner";
 import {MaterialQuantityCalculator} from "@/utils/entities/Material/MaterialQuantityCalculator";
 import {Material} from "@/utils/entities/Material/Material";
 import {MaterialHistoryCalculator} from "@/utils/entities/Material/MaterialHistoryCalculator";
+import {MaterialHistoryCollection} from "@/utils/entities/Material/history/MaterialHistoryCollection";
 
 
 export class GachaBannerCalculator {
@@ -78,6 +79,12 @@ export class GachaBannerCalculator {
         return new MaterialQuantity(
             this.pullCost.material,
             quantity
+        )
+    }
+
+    public static getCalculator(bannerData: GachaBanner, histories: MaterialHistoryCollection): GachaBannerCalculator {
+        return GachaBannerCalculator(
+
         )
     }
 }

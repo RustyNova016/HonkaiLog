@@ -4,10 +4,16 @@ import {MaterialCollectionJSONZod} from "@/utils/entities/Material/validations/M
 import {MaterialModel} from "@prisma/client";
 
 export class MaterialCollection {
-    public readonly collection: Material[]
+    public readonly collection: Map<string, Material> = new Map<string, Material>()
 
     constructor(collection: Material[]) {
-        this.collection = collection;
+        for (const material of collection) {
+            this.collection.set(material.id, material);
+        }
+    }
+
+    public toArray(): Material[] {
+        return Array.from(this.collection, ([, value]) => (value));
     }
 
     public static parse(MaterialCollectionJson: z.infer<typeof MaterialCollectionJSONZod>) {

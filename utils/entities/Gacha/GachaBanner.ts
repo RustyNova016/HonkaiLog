@@ -13,9 +13,9 @@ export class GachaBanner {
     nbPullsForGuaranty: number
 
     /** Cost to pull the gacha */
-    pullCost: MaterialQuantity
+    pullCost: {idMaterial: string, quantity: number}[]
 
-    constructor(name: string, NbPullsForGuaranty: number, NbGuarantyForCompletion: number, pullCost: MaterialQuantity) {
+    constructor(name: string, NbPullsForGuaranty: number, NbGuarantyForCompletion: number, pullCost: {idMaterial: string, quantity: number}[]) {
         this.name = name;
         this.pullCost = pullCost;
         this.nbPullsForGuaranty = NbPullsForGuaranty;

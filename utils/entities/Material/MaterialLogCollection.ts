@@ -4,12 +4,15 @@ import {Period} from "@/utils/types/Period";
 import {MaterialQuantityLogModel} from ".prisma/client";
 import {addLogBeforeChangeGenerator} from "@/utils/functions/Material/LogGenerators";
 import {Chain, DuplicateBlockError} from "@/utils/classes/Chain";
+import {Material} from "@/utils/entities/Material/Material";
 
 export type LogGenerator = (collection: MaterialLogCollection) => MaterialQuantityLog | MaterialQuantityLog[] | undefined;
 
 /** List of all the Material_logs of a logs. It can be used to calculate data about the usage of the materials */
 export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
-    public logGenerators: LogGenerator[] = [addLogBeforeChangeGenerator]
+    public logGenerators: LogGenerator[] = [addLogBeforeChangeGenerator];
+    public idMaterial: string;
+    public material: Material | undefined
 
     constructor(inputLogs: MaterialQuantityLog[] | undefined = undefined, logGenerators: LogGenerator[] | undefined = undefined) {
         super();

@@ -3,11 +3,13 @@ import {MaterialJSONZod} from "@/utils/entities/Material/validations/Material.JS
 import _ from "lodash";
 import {MaterialModel} from "@prisma/client";
 import {materialRarityBackgroundMap} from "../../../data/theme/MaterialRarityBackground";
-import {isMaterialRarityType, MaterialRarityType} from "@/utils/types/theme/MaterialRarityType";
 import {routes} from "@/lib/routes";
+import {MaterialHistory} from "@/utils/entities/Material/MaterialHistory";
 
 /** Class of a logs object. E.G. Gold, crystals, exp logs, etc... */
 export class Material implements MaterialModel {
+    public history: MaterialHistory | undefined;
+
     constructor(
         public id: string,
         public name: string,
