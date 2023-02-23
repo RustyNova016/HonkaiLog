@@ -13,6 +13,11 @@ export class Dictionary<key, value> extends Map<key, value> {
         });
     }
 
+    public applyToEach(fn: (value: value, key: key) => value): this {
+        this.toKeyArray().forEach(keyGiven => this.set(keyGiven, fn(this.getOrThrow(keyGiven), keyGiven)))
+        return this
+    }
+
     public toValueArray(): value[] {
         return this.map((val) => val);
     }

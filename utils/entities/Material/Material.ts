@@ -11,9 +11,9 @@ export class Material implements MaterialModel {
     constructor(
         public id: string,
         public name: string,
-        public _namePlural: string | null,
-        public _imageLink: string | null,
-        public rarity: any
+        public _namePlural: string | null = null,
+        public _imageLink: string | null = null,
+        public rarity: any = undefined
     ) {
     }
 
@@ -52,13 +52,7 @@ export class Material implements MaterialModel {
         //    throw new Error("Unknown Rarity")
         //}
 
-        return new Material(
-            data.id,
-            data.name,
-            data.namePlural,
-            data.imageLink,
-            data.rarity
-        )
+        return new Material(data.id, data.name, data.namePlural, data.imageLink, data.rarity)
     }
 
     /** Create a Material instance from a validation pattern */
