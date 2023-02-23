@@ -35,8 +35,8 @@ export class MaterialORM {
     }
     public static async getMaterialHistory(idMaterial: string, idUser: string) {
         return MaterialHistory.fromModels(
-            await MaterialORM.getMaterialModel(idMaterial),
-            await MaterialQuantityLogORM.getMaterialQuantityLogsModel(idUser, idMaterial),
+            await MaterialORM.get(idMaterial),
+            await MaterialQuantityLogORM.getMaterialLog(idUser, idMaterial),
             idUser
         )
     }
@@ -45,7 +45,7 @@ export class MaterialORM {
         return new MaterialHistoryCalculator(await this.getMaterialHistory(idMaterial, idUser), filter)
     }
 
-    public static async getMaterialModel(idMaterial: string): Promise<MaterialModel> {
+    public static async get(idMaterial: string): Promise<MaterialModel> {
         return this.getPrisma().findUniqueOrThrow({
             where: {
                 id: idMaterial

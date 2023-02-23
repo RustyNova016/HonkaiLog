@@ -1,32 +1,37 @@
-import {z} from "zod";
-import {CenterContent} from "@/components/Layouts/CenterContent";
-import {FadingIn} from "@/components/Animators/FadingIn";
-import {Suspense} from "react";
-import {CenteredLoadingIcon} from "@/components/UI/Loading/LoadingIcon";
-import MaterialLogsManager from "@/app/history/[materialId]/materialLogsManager";
 import {HistorySummary} from "@/app/history/[materialId]/historySummary";
-import {redirect} from "next/navigation";
+import MaterialLogsManager from "@/app/history/[materialId]/materialLogsManager";
+import {FadingIn} from "@/components/Animators/FadingIn";
+import {CenterContent} from "@/components/Layouts/CenterContent";
+import {CenteredLoadingIcon} from "@/components/UI/Loading/LoadingIcon";
 import {PageTitle} from "@/components/UI/Theme/PageTitle";
-import {MaterialORM} from "@/prisma/ORMs/MaterialORM";
-import {getServerUser} from "@/lib/NextAuth/GetSession";
+import {getIdUserServer} from "@/lib/NextAuth/GetSession";
+import {Material} from "@/utils/entities/Material/Material";
+import {MaterialBuilder} from "@/utils/entities/Material/MaterialBuilder";
+import {MaterialGetter} from "@/utils/entities/Material/MaterialGetter";
+import {redirect} from "next/navigation";
+import {Suspense} from "react";
+import {z} from "zod";
 
 export default async function Page({params}: any) {
-    const parsedParams = z.object({materialId: z.string()}).parse(params)
-    const materialHistory = await MaterialORM.getMaterialHistoryCalculator(parsedParams.materialId, (await getServerUser()).id)
+    const idMaterial = z.object({materialId: z.string()}).parse(params).materialId;
+    const materialInfo = await MaterialGetter.getServerSideMaterialInfo(idMaterial, await getIdUserServer());
 
-    if (!materialHistory.materialHistory.hasLogs()) {redirect("/history/" + materialHistory.material.id + "/new")}
+    if (materialInfo.history.logs.length === 0) {
+        redirect(`/history/${idMaterial}/new`);
+    }
 
+    const material: Material = MaterialBuilder.convertToEntities(materialInfo).material;
     return <>
         <FadingIn duration={500} className={"size-inherit"} style={{overflow: "auto"}}>
             <CenterContent>
-                <PageTitle title={materialHistory.material.toString(false, true) + " history"}/>
+                <PageTitle title={material.toString(false, true) + " history"}/>
 
                 <Suspense fallback={<CenteredLoadingIcon/>}>
-                    <MaterialLogsManager material={materialHistory}/>
+                    <MaterialLogsManager historyCalculator={material.history.getCalculator()}/>
                 </Suspense>
 
-                <HistorySummary matCalcJSON={materialHistory.toJSON()}/>
+                <HistorySummary materialInfo={materialInfo}/>
             </CenterContent>
         </FadingIn>
-    </>
+    </>;
 }

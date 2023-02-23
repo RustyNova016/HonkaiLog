@@ -1,3 +1,4 @@
+import {parseDate} from "@/utils/functions/ParseDate";
 import {MaterialQuantityLogModel} from ".prisma/client";
 import dayjs from "dayjs";
 import {Override} from "openid-client";
@@ -7,32 +8,47 @@ import {dayTs} from "@/lib/DayJs/DayTs";
 import {BlockPlacement} from "@/utils/enums/BlockPlacement";
 import {Block} from "@/utils/classes/Block";
 import {compareDates} from "@/utils/functions/CompareDate";
+import {MaterialLogData} from "@/utils/types/export/MaterialLogExport";
 
 export type MaterialQuantityLogModelIndex = { atTime: Date, idUser: string, idMaterial: string };
 
 /** Snapshot of a quantity at a given time */
 export class MaterialQuantityLog extends Block<MaterialQuantityLog> implements MaterialQuantityLogModel {
     atTime: Date;
-    private _comment: string | null;
     idImport: string | null;
     idMaterial: string;
-    public idNextLog: string | null
+    idNextLog: string | null
     idUser: string;
     quantityChange: number | null;
     quantityTotal: number;
+    idPreviousLog: string | null;
+    importTime: Date | null;
 
-    constructor(id: string | undefined = undefined, quantityTotal: number, atTime: Date, idMaterial: string, idUser: string, quantityChange: number | null = null, comment: string | null = null, idImport: string | null = null, idNextLog: string | null
+    constructor(id: string | undefined | null = undefined, quantityTotal: number, atTime: Date, idMaterial: string, idUser: string, quantityChange: number | null = null, comment: string | null = null, importTime: Date | null = null, idNextLog: string | null = null, idPreviousLog: string | null
         = null) {
-        if (id === undefined) {id = "GEN" + cuid2.createId()}
+        if (id === undefined || id === null) {
+            id = "GEN" + cuid2.createId()
+        }
         super(id);
         this.quantityChange = quantityChange;
         this._comment = comment;
         this.atTime = atTime;
         this.idMaterial = idMaterial;
         this.idUser = idUser;
-        this.idImport = idImport;
+        this.importTime = importTime;
         this.quantityTotal = quantityTotal;
         this.idNextLog = idNextLog
+        this.idPreviousLog = idPreviousLog
+        this.idImport = null
+    }
+
+    private _comment: string | null;
+
+    get comment(): string | null {
+        if (this._comment === null && this.origin === LogOrigin.Generated) {
+            return "Supposed quantity at this time"
+        }
+        return this._comment;
     }
 
     get atTimeAsDayJs() {
@@ -40,9 +56,35 @@ export class MaterialQuantityLog extends Block<MaterialQuantityLog> implements M
     }
 
     get origin(): LogOrigin {
-        if (this.idImport !== null) {return LogOrigin.Official}
-        if (this.id.substring(0, 3) === "GEN") {return LogOrigin.Generated}
+        if (this.idImport !== null) {
+            return LogOrigin.Official
+        }
+        if (this.id.substring(0, 3) === "GEN") {
+            return LogOrigin.Generated
+        }
         return LogOrigin.UserMade
+    }
+
+    get atTimeAsDayTs() {
+        return dayTs(this.atTime);
+    }
+
+    get quantityChangeOrZero(): number {
+        if (this.quantityChange === null) {
+            return 0
+        }
+        return this.quantityChange
+    }
+
+    get quantityBefore(): number {
+        if (this.quantityChange === null) {
+            return this.quantityTotal
+        }
+        return this.quantityTotal - this.quantityChange;
+    }
+
+    public static fromLogExport(data: MaterialLogData): MaterialQuantityLog {
+        return new MaterialQuantityLog(data.id, data.quantityTotal, parseDate(data.atTime), data.idMaterial, data.idUser, data.quantityChange, data.comment, parseDate(data.importTime), data.idNextLog)
     }
 
     public static fromJSON(data: MaterialQuantityLogJSON): MaterialQuantityLog {
@@ -53,11 +95,7 @@ export class MaterialQuantityLog extends Block<MaterialQuantityLog> implements M
     }
 
     public static fromModel(data: MaterialQuantityLogModel) {
-        return new MaterialQuantityLog(data.id, data.quantityTotal, data.atTime, data.idMaterial, data.idUser, data.quantityChange, data.comment, data.idImport, data.idNextLog)
-    }
-
-    get atTimeAsDayTs() {
-        return dayTs(this.atTime);
+        return new MaterialQuantityLog(data.id, data.quantityTotal, data.atTime, data.idMaterial, data.idUser, data.quantityChange, data.comment, data.importTime, data.idNextLog, data.idPreviousLog)
     }
 
     public compareLogDates(log: MaterialQuantityLog): DateComparison {
@@ -78,22 +116,6 @@ export class MaterialQuantityLog extends Block<MaterialQuantityLog> implements M
         return new MaterialQuantityLog(undefined, this.quantityTotal - this.quantityChange, atTimeMinus1.toDate(), this.idMaterial, this.idUser, null, "Calculated quantity at " + atTimeMinus1.toString())
     }
 
-    get quantityChangeOrZero(): number {
-        if(this.quantityChange === null) {return 0}
-        return this.quantityChange
-    }
-
-    /** Return the difference of the quantity of logs between two logs sorted in chronological order
-     * @deprecated
-     * */
-    public getChronologicalDifference(log: MaterialQuantityLog): number {
-        if (this.madeBefore(log)) {
-            return log.quantityTotal - this.quantityTotal;
-        } else {
-            return this.quantityTotal - log.quantityTotal;
-        }
-    }
-
     /** Return the difference of the quantity of logs between two logs */
     public getQuantityDifference(log: MaterialQuantityLog): number {
         return this.quantityTotal - log.quantityTotal;
@@ -106,18 +128,30 @@ export class MaterialQuantityLog extends Block<MaterialQuantityLog> implements M
     }
 
     public isPlaced(logToCompare: MaterialQuantityLog): BlockPlacement {
-        if (this.idNextLog === logToCompare.id) {return BlockPlacement.before}
-        if (logToCompare.idNextLog === this.id) {return BlockPlacement.after}
+        if (this.idNextLog === logToCompare.id) {
+            return BlockPlacement.before
+        }
+        if (logToCompare.idNextLog === this.id) {
+            return BlockPlacement.after
+        }
 
         const dateComparison = this.compareLogDates(logToCompare);
-        if (dateComparison === DateComparison.before) {return BlockPlacement.before}
-        if (dateComparison === DateComparison.after) {return BlockPlacement.after}
+        if (dateComparison === DateComparison.before) {
+            return BlockPlacement.before
+        }
+        if (dateComparison === DateComparison.after) {
+            return BlockPlacement.after
+        }
 
         const change = this.quantityChange !== null ? this.quantityChange : 0;
-        if (logToCompare.quantityTotal < this.quantityTotal + change) {return BlockPlacement.after}
+        if (logToCompare.quantityTotal < this.quantityTotal + change) {
+            return BlockPlacement.after
+        }
 
         const changeOnBase = logToCompare.quantityChange !== null ? logToCompare.quantityChange : 0;
-        if (logToCompare.quantityTotal + changeOnBase > this.quantityTotal) {return BlockPlacement.before}
+        if (logToCompare.quantityTotal + changeOnBase > this.quantityTotal) {
+            return BlockPlacement.before
+        }
 
         throw new Error("The log is invalid")
     }
@@ -151,28 +185,18 @@ export class MaterialQuantityLog extends Block<MaterialQuantityLog> implements M
             id: this.id,
             quantityTotal: this.quantityTotal,
             comment: this._comment,
-            quantityChange: this.quantityChange
+            quantityChange: this.quantityChange,
+            idPreviousLog: this.idPreviousLog,
+            importTime: this.importTime
         }
-    }
-
-    get comment(): string | null {
-        if(this._comment === null && this.origin === LogOrigin.Generated){
-            return "Supposed quantity at this time"
-        }
-        return this._comment;
-    }
-
-    get quantityBefore(): number {
-        if(this.quantityChange === null) {return this.quantityTotal}
-        return this.quantityTotal - this.quantityChange;
     }
 
     public override toString(): string {
         return `<div>
                     Logged at: ${this.atTime.toLocaleDateString()} ${this.atTime.toLocaleTimeString()}<br/>
-                    Quantity: ${this.quantityTotal} ${this.quantityChange !== null? `(${this.quantityChange})`: ""}<br/>
+                    Quantity: ${this.quantityTotal} ${this.quantityChange !== null ? `(${this.quantityChange})` : ""}<br/>
                     ${this.comment}<br/>
-                    ${this.origin === LogOrigin.Generated? "(Generated)": ""}
+                    ${this.origin === LogOrigin.Generated ? "(Generated)" : ""}
                 </div>`
     }
 

@@ -4,12 +4,10 @@ import _ from "lodash";
 import {MaterialModel} from "@prisma/client";
 import {materialRarityBackgroundMap} from "../../../data/theme/MaterialRarityBackground";
 import {routes} from "@/lib/routes";
-import {MaterialHistory} from "@/utils/entities/Material/MaterialHistory";
+import {MaterialLogCollection} from "@/utils/entities/Material/MaterialLogCollection";
 
 /** Class of a logs object. E.G. Gold, crystals, exp logs, etc... */
 export class Material implements MaterialModel {
-    public history: MaterialHistory | undefined;
-
     constructor(
         public id: string,
         public name: string,
@@ -17,6 +15,18 @@ export class Material implements MaterialModel {
         public _imageLink: string | null,
         public rarity: any
     ) {
+    }
+
+    private _history: MaterialLogCollection | undefined;
+
+    get history(): MaterialLogCollection {
+        if (this._history === undefined) {throw new Error("Error: History isn't defined. Use the MaterialBuilder class")}
+        return this._history;
+    }
+
+    set history(value: MaterialLogCollection) {
+        if (value.idMaterial !== this.id) {throw new Error("Error: History is incompatible with this material")}
+        this._history = value;
     }
 
     get imageLink(): string {

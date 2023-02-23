@@ -17,7 +17,7 @@ export function MaterialSummaryGraph({historyCalculator}: MaterialSummaryGraphPr
         exportEnabled: true,
         theme: "dark2",
         axisY: {
-            title: historyCalculator.material.toString() + " quantity",
+            title: historyCalculator.materialHistory.material.toString() + " quantity",
             includeZero: false
         },
         axisX: {

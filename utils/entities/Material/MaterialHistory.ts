@@ -3,7 +3,6 @@ import {Material, MaterialJSON} from "@/utils/entities/Material/Material";
 import {MaterialModel} from "@prisma/client";
 import {MaterialQuantityLogModel} from ".prisma/client";
 import {MaterialQuantityLogJSON} from "@/utils/entities/Material/MaterialQuantityLog";
-import {UserDataExport} from "@/utils/types/export/UserDataExport";
 
 export class MaterialHistory {
     /** The collection holding all the logs made by the user for the logs */

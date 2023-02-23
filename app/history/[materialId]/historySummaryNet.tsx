@@ -5,7 +5,7 @@ interface HistorySummaryNet {
 }
 
 export function HistorySummaryNet({calculator}: HistorySummaryNet) {
-    const material = calculator.material
+    const material = calculator.materialHistory.material
     const netGain = calculator.getNetGain();
     const netLoss = calculator.getNetloss();
     const netDelta = calculator.getNetDelta();

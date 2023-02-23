@@ -1,18 +1,16 @@
-"use client"
-import FramedDiv from "../../../component/Layout/FramedDiv";
-import {SectionTitle} from "@/components/UI/Theme/SectionTitle";
-import {Suspense, useState} from "react";
-import {TimeframeSelection} from "@/app/history/[materialId]/timeframeSelection";
-import {HistorySummaryNet} from "@/app/history/[materialId]/historySummaryNet";
+"use client";
 import {HistorySummaryAverages} from "@/app/history/[materialId]/historySummaryAverages";
-import dayjs from "dayjs";
-import {Col, Row} from "@/lib/Bootstrap/Layout";
+import {HistorySummaryNet} from "@/app/history/[materialId]/historySummaryNet";
 import {MaterialSummaryGraph} from "@/app/history/[materialId]/materialSummaryGraph";
-import {
-    MaterialHistoryCalculator,
-    MaterialHistoryCalculatorJSON
-} from "@/utils/entities/Material/MaterialHistoryCalculator";
+import {TimeframeSelection} from "@/app/history/[materialId]/timeframeSelection";
 import {LoadingIconWithText} from "@/components/UI/Loading/LoadingIcon";
+import {SectionTitle} from "@/components/UI/Theme/SectionTitle";
+import {Col, Row} from "@/lib/Bootstrap/Layout";
+import {MaterialBuilder, MaterialInfo} from "@/utils/entities/Material/MaterialBuilder";
+import {MaterialHistoryCalculator} from "@/utils/entities/Material/MaterialHistoryCalculator";
+import dayjs from "dayjs";
+import {Suspense, useState} from "react";
+import FramedDiv from "../../../component/Layout/FramedDiv";
 
 function HistorySummaryBody({calculator}: { calculator: MaterialHistoryCalculator }) {
 
@@ -41,8 +39,8 @@ function HistorySummaryBody({calculator}: { calculator: MaterialHistoryCalculato
 function HistorySummaryTimeFiltered({calculator}: { calculator: MaterialHistoryCalculator }) {
     const [nbrDaysBack, setNbrDaysBack] = useState(1);
 
-    calculator.filter.period.start = nbrDaysBack === 99999 ? dayjs(0) : dayjs().add(-nbrDaysBack, "day")
-    calculator.filter.period.end = dayjs()
+    calculator.filter.period.start = nbrDaysBack === 99999 ? dayjs(0) : dayjs().add(-nbrDaysBack, "day");
+    calculator.filter.period.end = dayjs();
 
     return <>
         <div className={"flex flex-row justify-content-between align-content-center"}>
@@ -57,8 +55,8 @@ function HistorySummaryTimeFiltered({calculator}: { calculator: MaterialHistoryC
     </>;
 }
 
-export function HistorySummary({matCalcJSON}: { matCalcJSON: MaterialHistoryCalculatorJSON }) {
-    const [calculator] = useState(MaterialHistoryCalculator.fromJSON(matCalcJSON));
+export function HistorySummary({materialInfo}: { materialInfo: MaterialInfo }) {
+    const [calculator] = useState(MaterialBuilder.convertToEntities(materialInfo).history.getCalculator());
 
     return <>
         <FramedDiv sides={true} style={{width: "75%"}}>

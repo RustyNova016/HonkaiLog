@@ -5,6 +5,11 @@ import {MaterialQuantityLogModel} from ".prisma/client";
 import {addLogBeforeChangeGenerator} from "@/utils/functions/Material/LogGenerators";
 import {Chain, DuplicateBlockError} from "@/utils/classes/Chain";
 import {Material} from "@/utils/entities/Material/Material";
+import {MaterialHistoryData} from "@/utils/types/export/MaterialHistoryData";
+import {
+    MaterialHistoryCalculator,
+    MaterialHistoryCalculatorFilter
+} from "@/utils/entities/Material/MaterialHistoryCalculator";
 
 export type LogGenerator = (collection: MaterialLogCollection) => MaterialQuantityLog | MaterialQuantityLog[] | undefined;
 
@@ -12,12 +17,36 @@ export type LogGenerator = (collection: MaterialLogCollection) => MaterialQuanti
 export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
     public logGenerators: LogGenerator[] = [addLogBeforeChangeGenerator];
     public idMaterial: string;
-    public material: Material | undefined
 
-    constructor(inputLogs: MaterialQuantityLog[] | undefined = undefined, logGenerators: LogGenerator[] | undefined = undefined) {
+    constructor(idMaterial: string, inputLogs: MaterialQuantityLog[] | undefined = undefined, logGenerators: LogGenerator[] | undefined = undefined) {
         super();
-        if (logGenerators !== undefined) {logGenerators.forEach(value => this.addGenerator(value))}
-        if (inputLogs !== undefined) {this.push(...inputLogs)}
+        this.idMaterial = idMaterial;
+        if (logGenerators !== undefined) {
+            logGenerators.forEach(value => this.addGenerator(value))
+        }
+        if (inputLogs !== undefined) {
+            this.push(...inputLogs)
+        }
+    }
+
+    get idUser() {
+        return this.getOldestLog()?.idUser
+    }
+
+    private _material: Material | undefined;
+
+    get material(): Material {
+        if (this._material === undefined) {
+            throw new Error("Error: Material isn't defined. Use the MaterialBuilder class")
+        }
+        return this._material;
+    }
+
+    set material(value: Material) {
+        if (value.id !== this.idMaterial) {
+            throw new Error("Error: Material is incompatible with this history")
+        }
+        this._material = value;
     }
 
     /** Return the logs sorted from oldest to newest */
@@ -25,8 +54,18 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
         return this.toArray()
     }
 
+    public static fromHistoryExport(data: MaterialHistoryData): MaterialLogCollection {
+        const logs = []
+
+        for (const log of data.logs) {
+            logs.push(MaterialQuantityLog.fromLogExport(log))
+        }
+
+        return new MaterialLogCollection(data.idMaterial, logs)
+    }
+
     public static fromJson(data: MaterialLogCollectionJSON, logGenerators: LogGenerator[] | undefined = undefined): MaterialLogCollection {
-        return new MaterialLogCollection(data.map(value => MaterialQuantityLog.fromJSON(value)), logGenerators)
+        return new MaterialLogCollection("", undefined, data.map(value => MaterialQuantityLog.fromJSON(value)), logGenerators)
     }
 
     public static fromModel(data: MaterialQuantityLogModel[]): MaterialLogCollection {
@@ -36,7 +75,11 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
             materialQuantityLogs.push(MaterialQuantityLog.fromModel(materialQuantityLogJSON));
         }
 
-        return new MaterialLogCollection(materialQuantityLogs);
+        return new MaterialLogCollection("", undefined, materialQuantityLogs, undefined);
+    }
+
+    public getCalculator(filter?: MaterialHistoryCalculatorFilter | undefined) {
+        return new MaterialHistoryCalculator(this, filter)
     }
 
     public addGenerator(logGenerator: LogGenerator) {
@@ -45,18 +88,22 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
 
     /** Filter the logs according to a test into a new MaterialLogCollection */
     public filter(test: (value: MaterialQuantityLog, index: number, array: MaterialQuantityLog[]) => boolean): MaterialLogCollection {
-        return new MaterialLogCollection(this.logs.filter(test))
+        return new MaterialLogCollection(this.idMaterial, this.logs.filter(test), this.logGenerators)
     }
 
     public filterPeriod(period: Period, addPrevious: boolean = false, addNext: boolean = false) {
         const logArray = [];
         for (const thisLog of this.logs) {
-            if (thisLog.atTimeAsDayJs.isBefore(period.start)) {continue}
-            if (thisLog.atTimeAsDayJs.isAfter(period.end)) {continue}
+            if (thisLog.atTimeAsDayJs.isBefore(period.start)) {
+                continue
+            }
+            if (thisLog.atTimeAsDayJs.isAfter(period.end)) {
+                continue
+            }
             logArray.push(thisLog);
         }
 
-        const logCollection = new MaterialLogCollection(logArray);
+        const logCollection = new MaterialLogCollection(this.idMaterial, logArray, this.logGenerators);
 
         if (addPrevious) {
             const oldestLog = logCollection.getOldestLog();
@@ -104,7 +151,9 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
 
         for (const logGenerator of this.logGenerators) {
             const generatorResult = logGenerator(this);
-            if (generatorResult === undefined) {continue}
+            if (generatorResult === undefined) {
+                continue
+            }
             if (generatorResult instanceof MaterialQuantityLog) {
                 newLogs.push(generatorResult);
                 continue
@@ -134,7 +183,9 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
         let currentLog = this.getOldestLog();
 
         while (currentLog !== undefined) {
-            if (date.isAfter(currentLog.atTime) || (includeDate && date.isSame(currentLog.atTime))) {return currentLog}
+            if (date.isAfter(currentLog.atTime) || (includeDate && date.isSame(currentLog.atTime))) {
+                return currentLog
+            }
             currentLog = currentLog.nextBlock;
         }
 
@@ -202,7 +253,9 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
     }
 
     public pushOne(item: MaterialQuantityLog | null) {
-        if (item === null) {return this}
+        if (item === null) {
+            return this
+        }
         return this.push(item)
     }
 
@@ -227,13 +280,18 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
 
     protected override insertBlock(newBlock: MaterialQuantityLog | null | undefined) {
         //TODO: Prevent insertion of generated if distance on graph too small
+        //TODO: Check if the log is from the same material
 
         try {
             super.insertBlock(newBlock);
         } catch (e) {
-            if (newBlock === undefined || newBlock === null) {return}
+            if (newBlock === undefined || newBlock === null) {
+                return
+            }
             if (e instanceof DuplicateBlockError) {
-                if(newBlock.origin === LogOrigin.Generated) { return; }
+                if (newBlock.origin === LogOrigin.Generated) {
+                    return;
+                }
                 /*const duplicate = this.checkForDuplicate(newBlock);
 
                 // If there is, if it's generated, ignore insert, if not, throw error
@@ -290,14 +348,18 @@ export class MaterialLogCollection extends Chain<MaterialQuantityLog> {
 
     private remove(log: string | MaterialQuantityLog) {
         const logToDel = typeof log === "string" ? this.get(log) : log
-        if (logToDel === undefined) {return}
+        if (logToDel === undefined) {
+            return
+        }
 
         this.removeBlock(logToDel);
     }
 
     private removeAllGeneratedLogs() {
         this.chain.forEach(value => {
-            if (value.origin === LogOrigin.Generated) {this.remove(value)}
+            if (value.origin === LogOrigin.Generated) {
+                this.remove(value)
+            }
         })
     }
 

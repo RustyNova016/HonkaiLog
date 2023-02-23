@@ -2,8 +2,15 @@ import {Material} from "@/utils/entities/Material/Material";
 import {z} from "zod";
 import {MaterialQuantityJSONZod} from "@/utils/entities/Material/validations/MaterialQuantity.JSONZod";
 
+export type MaterialQuantityType = {
+    idMaterial: string;
+    quantity: number;
+}
+
+export type MaterialQuantityWithTime = MaterialQuantityType & {time: number}
+
 /** A class that represent a quantity of materials. Like a stack of items */
-export class MaterialQuantity {
+export class MaterialQuantity implements MaterialQuantityType {
     /** The logs concerned */
     readonly material: Material;
 

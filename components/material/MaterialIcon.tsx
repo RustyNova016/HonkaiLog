@@ -1,12 +1,15 @@
 import styles from "@/components/material/SmallMaterialCard.module.scss";
 import {MaterialRarityUI} from "@/utils/entities/Material/MaterialRarity";
+import {PropsWithStyle} from "../../tools/Types";
 
-export function MaterialIcon({material}: { material: { imageLink: string, name: string } }) {
+export function MaterialIcon({material, style}: { material: { imageLink: string, name: string } } & PropsWithStyle) {
     return <img className={styles["materialIconImage"]}
                 src={material.imageLink}
                 alt={material.name}
                 width={128}
-                height={128}/>;
+                height={128}
+                style={style}
+    />;
 }
 
 export function MaterialIconWithBackground(props: {
@@ -35,9 +38,9 @@ export function MaterialIconWithQuantity(props: {
     rarityUI: MaterialRarityUI
     material: { imageLink: string, name: string },
     count: number | undefined
-}) {
+} & PropsWithStyle) {
     return <>
-        <div className={styles["MaterialIconWithQuantity"]}>
+        <div className={styles["MaterialIconWithQuantity"]} style={props.style}>
             <div className={styles["topIcon"]}>
                 <MaterialIconWithOutline rarityUI={props.rarityUI} material={props.material}/>
             </div>

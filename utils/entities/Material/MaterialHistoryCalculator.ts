@@ -13,14 +13,14 @@ export interface MaterialHistoryCalculatorFilter {
 /** Class that contain all the functions for material logs analysis */
 export class MaterialHistoryCalculator {
     readonly filter: MaterialHistoryCalculatorFilter
-    readonly materialHistory: MaterialHistory
+    readonly materialHistory: MaterialLogCollection
 
-    constructor(materialHistory: MaterialHistory, filter?: MaterialHistoryCalculatorFilter | undefined) {
+    constructor(materialHistory: MaterialLogCollection, filter?: MaterialHistoryCalculatorFilter | undefined) {
         this.materialHistory = materialHistory;
         this.filter = filter || {
             period: {
-                start: materialHistory.logCollection.getOldestLog()?.atTimeAsDayJs || dayjs(),
-                end: materialHistory.logCollection.getNewestLog()?.atTimeAsDayJs || dayjs()
+                start: materialHistory.getOldestLog()?.atTimeAsDayJs || dayjs(),
+                end: materialHistory.getNewestLog()?.atTimeAsDayJs || dayjs()
             }
         };
         this.addGenerators();
@@ -41,26 +41,18 @@ export class MaterialHistoryCalculator {
     }
 
     get logCollection(): MaterialLogCollection {
-        return this.materialHistory.logCollection;
+        return this.materialHistory;
     }
 
     get logs(): MaterialQuantityLog[] {
-        return this.materialHistory.logCollection.logs
-    }
-
-    get material() {
-        return this.materialHistory.material
-    }
-
-    get name(): string {
-        return this.materialHistory.name;
+        return this.materialHistory.logs
     }
 
     public static fromJSON(data: MaterialHistoryCalculatorJSON): MaterialHistoryCalculator {
         const materialHistoryCalculator = new MaterialHistoryCalculator(
             new MaterialHistory(
                 Material.fromJSON(data.materialHistory.material),
-                new MaterialLogCollection(),
+                new MaterialLogCollection("", undefined, undefined, undefined),
                 data.materialHistory.idUser
             ),
             {
@@ -158,7 +150,7 @@ export class MaterialHistoryCalculator {
     }
 
     public getCurrentCount() {
-        return this.materialHistory.logCollection.getNewestLog()?.quantityTotal || NaN
+        return this.materialHistory.getNewestLog()?.quantityTotal || NaN
     }
 
     public getNetDelta(): number {
@@ -216,13 +208,7 @@ export class MaterialHistoryCalculator {
             const quantityTotal = this.calcQuantityAtCurrentTime(this.filter.period.end);
             if (quantityTotal === undefined) {return;}
 
-            return new MaterialQuantityLog(
-                undefined,
-                quantityTotal,
-                this.filter.period.end.toDate(),
-                this.material.id,
-                this.materialHistory.userID,
-            )
+            return new MaterialQuantityLog(undefined, quantityTotal, this.filter.period.end.toDate(), this.material.id, this.materialHistory.idUser)
         }
 
         return AddLogAtEndOfFilter
@@ -280,13 +266,7 @@ export class MaterialHistoryCalculator {
             const quantityTotal = this.calcQuantityAtCurrentTime(this.filter.period.start);
             if (quantityTotal === undefined) {return;}
 
-            return new MaterialQuantityLog(
-                undefined,
-                quantityTotal,
-                this.filter.period.start.toDate(),
-                this.material.id,
-                this.materialHistory.userID,
-            )
+            return new MaterialQuantityLog(undefined, quantityTotal, this.filter.period.start.toDate(), this.material.id, this.materialHistory.idUser)
         }
         return AddLogAtStartOfFilter
     }

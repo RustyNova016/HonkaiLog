@@ -6,7 +6,7 @@ interface HistorySummaryAveragesProps {
 }
 
 export function HistorySummaryAverages({calculator}: HistorySummaryAveragesProps) {
-    const material = calculator.material
+    const material = calculator.materialHistory.material
     const avgGain = _.round(calculator.calcAvgGain(), 2);
     const avgLoss = _.round(calculator.calcAvgLoss(), 2);
     const avgDelta = _.round(calculator.calcAvgDelta(), 2);

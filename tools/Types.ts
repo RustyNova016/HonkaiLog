@@ -1,5 +1,5 @@
 export interface PropsWithClass {
-    className?: string;
+    className?: string | string[] | undefined;
 }
 
 export interface PropsWithStyle {

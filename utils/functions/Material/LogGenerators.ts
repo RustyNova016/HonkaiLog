@@ -17,16 +17,5 @@ export function addLogBeforeChangeGenerator(collection: MaterialLogCollection){
 export function addLogBeforeChange(log: MaterialQuantityLog): MaterialQuantityLog | undefined {
     if(log.quantityChange === null || log.quantityChange === 0) {return;}
 
-    return new MaterialQuantityLog(
-        undefined,
-        log.quantityTotal - log.quantityChange,
-        log.atTime,
-        log.idMaterial,
-        log.idUser,
-        null,
-        "", //TODO: Add generation comment
-        null,
-        log.id
-
-    )
+    return new MaterialQuantityLog(undefined, log.quantityTotal - log.quantityChange, log.atTime, log.idMaterial, log.idUser, null, "", null, log.id)
 }

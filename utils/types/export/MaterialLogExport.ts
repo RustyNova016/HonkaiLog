@@ -1,5 +1,7 @@
-export type MaterialLogExport = {
+export type MaterialLogData = {
     id: string | null;
+    idMaterial: string;
+    idUser: string;
     quantityTotal: number;
     quantityChange: number | null;
     /** Date string */

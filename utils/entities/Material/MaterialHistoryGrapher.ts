@@ -41,7 +41,7 @@ export class MaterialHistoryGrapher {
                     y: log.quantityTotal,
                     dateString: `${log.atTime.toLocaleDateString()} ${log.atTime.toLocaleTimeString()}`,
                     comment: comment,
-                    material: this.calculator.material.toString(log.quantityTotal > 0, true)
+                    material: this.calculator.materialHistory.material.toString(log.quantityTotal > 0, true)
                 })
         }
 

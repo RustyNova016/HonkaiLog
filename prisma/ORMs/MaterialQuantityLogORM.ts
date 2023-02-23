@@ -4,9 +4,9 @@ import {MaterialQuantityLogModel} from ".prisma/client";
 import {MaterialQuantityLog} from "@/utils/entities/Material/MaterialQuantityLog";
 import {MaterialORM} from "@/prisma/ORMs/MaterialORM";
 import {MaterialQuantityLogModelCreateOneSchema} from "@/prisma/generated/schemas";
-import {MaterialLogExport} from "@/utils/types/export/MaterialLogExport";
+import {MaterialLogData} from "@/utils/types/export/MaterialLogExport";
 import {UserDataExport} from "@/utils/types/export/UserDataExport";
-import {MaterialHistoryExport} from "@/utils/types/export/MaterialHistoryExport";
+import {MaterialHistoryData} from "@/utils/types/export/MaterialHistoryData";
 import {toPascalCase} from "@/utils/functions/ToPascalCase";
 import {LogOrderType} from "@/utils/enums/LogOrderType";
 
@@ -27,14 +27,14 @@ export class MaterialQuantityLogORM {
     public static async getMaterialQuantityLogs(idMaterial: string, idUser: string): Promise<MaterialQuantityLog[]> {
         const materialLogCol = []
 
-        for (const materialQuantityLogsModelElement of await this.getMaterialQuantityLogsModel(idMaterial, idUser)) {
+        for (const materialQuantityLogsModelElement of await this.getMaterialLog(idMaterial, idUser)) {
             materialLogCol.push(MaterialQuantityLog.fromModel(materialQuantityLogsModelElement))
         }
 
         return materialLogCol
     }
 
-    public static getMaterialQuantityLogsModel(idUser: string, idMaterial: string): Promise<MaterialQuantityLogModel[]> {
+    public static getMaterialLog(idUser: string, idMaterial: string): Promise<MaterialQuantityLogModel[]> {
         return this.getPrisma().findMany({
             where: {
                 idMaterial: toPascalCase(idMaterial),
@@ -46,7 +46,7 @@ export class MaterialQuantityLogORM {
     public static async insertUserDataExport(data: UserDataExport) {
         const inserts = []
         console.log(data)
-        for (const materialHistoryExport of data.MaterialHistory) {
+        for (const materialHistoryExport of data.materialHistories) {
             inserts.push(this.insertMaterialHistoryExport(materialHistoryExport, data.idUser))
         }
         return Promise.all(inserts)
@@ -79,7 +79,7 @@ export class MaterialQuantityLogORM {
         return prismadb.materialQuantityLogModel;
     }
 
-    private static async insertMaterialHistoryExport(data: MaterialHistoryExport, idUser: string) {
+    private static async insertMaterialHistoryExport(data: MaterialHistoryData, idUser: string) {
         const inserts = []
         let lastLog = undefined;
         const material = MaterialORM.findOrCreateMaterial(data.idMaterial);
@@ -98,7 +98,7 @@ export class MaterialQuantityLogORM {
         return Promise.all(inserts)
     }
 
-    private static async insertMaterialLogExport(data: MaterialLogExport, idUser: string, idMaterial: string, idNextLog?: string | undefined, idPreviousLog?: string | undefined) {
+    private static async insertMaterialLogExport(data: MaterialLogData, idUser: string, idMaterial: string, idNextLog?: string | undefined, idPreviousLog?: string | undefined) {
         return this.createOrUpdate({
             data: {
                 atTime: data.atTime,
@@ -117,5 +117,7 @@ export class MaterialQuantityLogORM {
     private static link(idLog: string) {
         //TODO
     }
+
+    public static
 }
 

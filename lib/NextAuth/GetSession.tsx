@@ -27,3 +27,7 @@ export async function getAPISideUserOrThrow(req: NextApiRequest, res: NextApiRes
 
     return serverSession.user
 }
+
+export async function getIdUserServer() {
+    return (await getServerUser()).id
+}
