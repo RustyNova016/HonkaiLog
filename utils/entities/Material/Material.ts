@@ -1,15 +1,20 @@
-import {z} from "zod";
-import {MaterialJSONZod} from "@/utils/entities/Material/validations/Material.JSONZod";
-import _ from "lodash";
-import {MaterialModel} from "@prisma/client";
-import {materialRarityBackgroundMap} from "../../../data/theme/MaterialRarityBackground";
 import {routes} from "@/lib/routes";
 import {MaterialLogCollection} from "@/utils/entities/Material/MaterialLogCollection";
+import {MaterialRecipeDictionary} from "@/utils/entities/Material/Recipes/MaterialRecipeDictionary";
+import {MaterialJSONZod} from "@/utils/entities/Material/validations/Material.JSONZod";
+import {MaterialModel} from "@prisma/client";
+import _ from "lodash";
+import {z} from "zod";
+import {materialRarityBackgroundMap} from "../../../data/theme/MaterialRarityBackground";
+
+export type idMaterial = string;
 
 /** Class of a logs object. E.G. Gold, crystals, exp logs, etc... */
 export class Material implements MaterialModel {
+    public recipes: MaterialRecipeDictionary = new MaterialRecipeDictionary([]);
+
     constructor(
-        public id: string,
+        public id: idMaterial,
         public name: string,
         public _namePlural: string | null = null,
         public _imageLink: string | null = null,
@@ -20,31 +25,35 @@ export class Material implements MaterialModel {
     private _history: MaterialLogCollection | undefined;
 
     get history(): MaterialLogCollection {
-        if (this._history === undefined) {throw new Error("Error: History isn't defined. Use the MaterialBuilder class")}
+        if (this._history === undefined) {throw new Error("Error: History isn't defined. Use the MaterialBuilder class");}
         return this._history;
     }
 
     set history(value: MaterialLogCollection) {
-        if (value.idMaterial !== this.id) {throw new Error("Error: History is incompatible with this material")}
+        if (value.idMaterial !== this.id) {throw new Error("Error: History is incompatible with this material");}
         this._history = value;
     }
 
+    get idMaterial(): idMaterial {return this.id;};
+
+    set idMaterial(idMaterial: idMaterial) {this.id = idMaterial;};
+
     get imageLink(): string {
         if (this._imageLink === null) {
-            return routes.materialIcons + this.id + ".png"
+            return routes.materialIcons + this.id + ".png";
         }
-        return routes.materialIcons + this._imageLink
+        return routes.materialIcons + this._imageLink;
     }
 
     get namePlural(): string {
         if (this._namePlural === null || this._namePlural === "" || this._namePlural === undefined) {
-            return this.name + "s"
+            return this.name + "s";
         }
         return this._namePlural;
     }
 
     public static fromJSON(data: MaterialJSON): Material {
-        return Material.fromModel(data)
+        return Material.fromModel(data);
     }
 
     public static fromModel(data: MaterialModel): Material {
@@ -52,12 +61,7 @@ export class Material implements MaterialModel {
         //    throw new Error("Unknown Rarity")
         //}
 
-        return new Material(data.id, data.name, data.namePlural, data.imageLink, data.rarity)
-    }
-
-    /** Create a Material instance from a validation pattern */
-    static parse(data: z.infer<typeof MaterialJSONZod>): Material {
-        return this.fromModel(data)
+        return new Material(data.id, data.name, data.namePlural, data.imageLink, data.rarity);
     }
 
     /** Export the logs to a plain object */
@@ -67,7 +71,7 @@ export class Material implements MaterialModel {
             name: this.name,
             namePlural: this._namePlural,
             imageLink: this._imageLink
-        }
+        };
     }
 
     public getRarityBackgroundImage() {
@@ -75,7 +79,7 @@ export class Material implements MaterialModel {
         if (str === undefined) {
             str = materialRarityBackgroundMap.get(this.rarity);
             if (str === undefined) {
-                return ""
+                return "";
             }
         }
         return str;
@@ -97,9 +101,10 @@ export class Material implements MaterialModel {
 
     /** Return the name of the logs, alongside some optional formatting */
     public toString(plural?: boolean, startcase?: boolean): string {
-        let str: string = plural ? this.namePlural : this.name
-        return startcase ? _.startCase(str) : str
+        let str: string = plural ? this.namePlural : this.name;
+        return startcase ? _.startCase(str) : str;
     }
 }
 
 export type MaterialJSON = MaterialModel
+

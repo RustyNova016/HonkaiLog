@@ -45,9 +45,3 @@ export function isUndefined(value: any): value is undefined {
     return value === undefined;
 }
 
-export class CollectionOfUnique<T> extends Collection<T> {
-    public override push(...items: T[]): number {
-        const actualPush = items.filter((item: T) => !this.includes(item))
-        return super.push(...actualPush);
-    }
-}
