@@ -1,6 +1,47 @@
 {
-    "extends": [
-        "eslint:recommended",
-        "next/core-web-vitals"
-    ]
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "next/core-web-vitals",
+    "prettier"
+  ],
+  "rules": {
+    "indent": [
+      "error",
+      4
+    ],
+    "quotes": [
+      "error",
+      "double"
+    ],
+    "semi": [
+      "error",
+      "always"
+    ],
+    "no-await-in-loop": "error",
+    "no-constant-binary-expression": "error",
+    "no-self-compare": "error",
+    "require-atomic-updates": "error",
+    "no-constructor-return": "error",
+    "no-duplicate-imports": "error",
+    "no-new-native-nonconstructor": "error",
+    "no-template-curly-in-string": "error",
+    "no-unmodified-loop-condition": "error",
+    "no-unreachable-loop": "error",
+    "no-use-before-define": "error",
+    "capitalized-comments": [
+      "error",
+      "always"
+    ],
+    "dot-notation": "error",
+    "eqeqeq": [
+      "error",
+      "always"
+    ],
+    "no-confusing-arrow": "error",
+    "no-else-return": "error",
+    "no-lonely-if": "error"
+  }
 }
