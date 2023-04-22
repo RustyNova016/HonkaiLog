@@ -9,12 +9,13 @@ import {RecipeChainBuilder} from "@/utils/calculators/Recipe/RecipeChainBuilder"
 export class RecipeFinderAStar {
     public nodes = new RecipeChainNodeTable();
     public visitedNodes = new IdChecklist();
+    public bestNode: RecipeChainNode | undefined = undefined;
     public numberIte = 0;
 
     constructor(public startInventory: MaterialInventory = new MaterialInventory(),
                 public minimizePrimaryMaterials: string[],
                 public builder: RecipeChainBuilder) {
-
+        this.startInventory = this.builder.invTargetMaterials
         const startNode = new RecipeChainNode(startInventory, this.nodes, this.builder)
         this.nodes.insert(startNode);
         this.visitedNodes.set(startNode.id, false)
@@ -32,11 +33,14 @@ export class RecipeFinderAStar {
             const achievedNode = this.visitNode(bestNextNode)
             if(achievedNode === undefined) {continue}
 
-            console.log("Processed in:", this.numberIte)
-            return achievedNode
+            if(this.bestNode !== undefined &&
+                this.bestNode.getEstimatedTotalCost_FCost().isSortedAfter(achievedNode.getEstimatedTotalCost_FCost(), this.minimizePrimaryMaterials)) {
+                this.bestNode = achievedNode
+            }
         }
 
-        throw new Error("Error: Cannot go to node")
+        console.log("Processed in:", this.numberIte)
+        return this.bestNode
     }
 
     public visitNode(node: RecipeChainNode) {
@@ -44,6 +48,9 @@ export class RecipeFinderAStar {
         console.log("Node N°", this.numberIte)
         node.debug_log()
         this.visitedNodes.set(node.id, true);
+
+        // First, we check if the node is not worse than the best
+
 
         if(node.hasAchievedTarget()){
             return node
@@ -96,12 +103,20 @@ export class RecipeFinderAStar {
         return bestFCostNodes[0]
     }*/
 
-        public getBestNodeToVisit() {
+    public getBestNodeToVisit() {
         const allPotentialBestNextNodes = this.unvisitedNodes.map(nodeId => this.nodes.getOrThrow(nodeId))
 
-        // We get all the nodes that have the best estimated total cost
-        allPotentialBestNextNodes.sort((nodeA, nodeB) => nodeA.FCost() - nodeB.FCost())
+        // Get all the nodes with the lowest G Cost
+        const lowestGCosts = allPotentialBestNextNodes.filter(
+            (node) => {
+                return allPotentialBestNextNodes.every(
+                    otherNode => !node.targetInventory.isSortedAfter(otherNode.targetInventory, this.minimizePrimaryMaterials)
+                )
+            }
+            )
 
-        return allPotentialBestNextNodes[0]
+        lowestGCosts.sort((nodeA, nodeB) => nodeA.HCost() - nodeB.HCost())
+
+        return lowestGCosts[0]
     }
 }

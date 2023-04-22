@@ -1,0 +1,24 @@
+
+.GachaCard {
+  display: flex;
+  flex-direction: column;
+
+  .GachaInputs {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+  }
+
+  .GachaCardBody {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 20px;
+
+    justify-content: space-around;
+
+    .GachaInfo {
+      width: 45%;
+    }
+  }
+}

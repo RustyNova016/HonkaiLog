@@ -20,7 +20,7 @@ export default async function Page() {
 
         <FadingIn delay={1} duration={400} style={{width: "30%"}}>
             {
-                materials.toArray().map((mat, index) => {
+                materials.toValueArray().map((mat, index) => {
                     return <>
                         <MaterialCard key={index} material={mat}/>
                     </>

@@ -12,12 +12,14 @@ export class RecipeChainFinderStep {
     private readonly builder: RecipeChainBuilder;
     public knownChildren: RecipeChainFinderStep[] = [];
     public knownParents: RecipeChainFinderStep[] = [];
+    public targetInventory: MaterialInventory
 
     public save() {this.builder.allRecipeChainSteps.insert(this)}
 
-    constructor(builder: RecipeChainBuilder, recipeChain: RecipeChain) {
+    constructor(builder: RecipeChainBuilder, recipeChain: RecipeChain, targetInventory: MaterialInventory) {
         this.builder = builder;
         this.recipeChain = recipeChain;
+        this.targetInventory = targetInventory;
     }
 
     public get canHaveChildren() {
@@ -74,7 +76,7 @@ export class RecipeChainFinderStep {
     /** The inventory left to reduce */
     public get inventory(): MaterialInventory {
         if (this._inventory !== undefined) {return this._inventory;}
-        this._inventory = this.recipeChain.unCraftInventory(this.builder.invTargetMaterials.cloneShallow());
+        this._inventory = this.recipeChain.unCraftInventory(this.targetInventory);
         return this._inventory;
     }
 
@@ -158,14 +160,14 @@ export class RecipeChainFinderStep {
                    .toValueArray()
                    .filter(recipe => {
                        // Filter out all the recipes that don't produce what we need
-                       if (!recipe.producedMaterials.includeOneOf(this.inventoryToReduce.toKeyArray())) { return false; }
+                       if (!recipe.materialIdProduced.includeOneOf(this.inventoryToReduce.toKeyArray())) { return false; }
 
                        // If the step has some intermediary materials to process, process them now.
                        // The sooner we know the cost in primary materials, the better.
                        //
                        // We do that by refusing all recipes that don't produce an intermediary material needing
                        // reducing.
-                       if (!this.invIntermediaryMaterialsToReduce.isNull() && !recipe.producedMaterials.includeOneOf(this.invIntermediaryMaterialsToReduce.toKeyArray())) {return false;}
+                       if (!this.invIntermediaryMaterialsToReduce.isNull() && !recipe.materialIdProduced.includeOneOf(this.invIntermediaryMaterialsToReduce.toKeyArray())) {return false;}
 
                        // If the recipe is producing intermediary materials, remove it if it needs to get reduced,
                        // This prevents making tons of intermediary material to only get later processed for a high
@@ -303,3 +305,4 @@ export class RecipeChainFinderStep {
         );
     }
 }
+

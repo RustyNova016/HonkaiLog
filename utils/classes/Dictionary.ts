@@ -7,6 +7,8 @@ export class Dictionary<key, value> extends Map<key, value> {
         return this;
     }
 
+    /** Return true if a value isn't undefined */
+    public isSet(key: key){ return this.get(key) === undefined};
     public cloneShallow(): this {
         return _.clone(this);
     }
@@ -20,6 +22,7 @@ export class Dictionary<key, value> extends Map<key, value> {
         return new Dictionary(this.toArray().filter(fn));
     }
 
+    /** Filter on keys into a new dictionary */
     public filterKeys(whitelist: key[]) {
         const validEntries: [key, value][] = [];
 
@@ -54,7 +57,7 @@ export class Dictionary<key, value> extends Map<key, value> {
     }
 
     /** Return true if the key of this dictionary have the same values as the other's */
-    public isEqualLeftJoin(otherDictionary: Dictionary<key, value>): boolean {
+    public isSelfValuesEqual(otherDictionary: Dictionary<key, value>): boolean {
         for (const [thisEleKey, thisEle] of this) {
             if (!_.isEqual(thisEle, otherDictionary.get(thisEleKey))) {return false;}
         }
@@ -103,6 +106,35 @@ export class Dictionary<key, value> extends Map<key, value> {
 
     public toValueArraySortedByKey(): value[] {
         return this.toArray().sort().map(val => val[1]);
+    }
+
+    public overwriteInto<map extends Map<key, value>>(dictionary: map) {
+        this.toArray().forEach(keyValue => dictionary.set(keyValue[0], keyValue[1]))
+        return dictionary
+    }
+
+    /** Return true if all the values that match a condition */
+    public matchAll(conditionFn: (element: value, index: key, dictionary: Dictionary<key, value>) => boolean){
+        return this.toKeyArray().every(curKey => conditionFn(this.getOrThrow(curKey), curKey, this))
+    }
+
+    /** Return true if there is a value that matches a condition */
+    public matchOne(conditionFn: (element: value, index: key, dictionary: Dictionary<key, value>) => boolean){
+        return this.toKeyArray().some(curKey => conditionFn(this.getOrThrow(curKey), curKey, this))
+    }
+
+    /** Return true if one of the value doesn't match the condition
+     * / matchOne() === false
+     * */
+    public doesntMatchOne(conditionFn: (element: value, index: key, dictionary: Dictionary<key, value>) => boolean) {
+        return !this.matchOne(conditionFn)
+    }
+
+    /** Return true if all the values don't match the condition
+     * / matchAll() === false
+     * */
+    public doesntMatchAll(conditionFn: (element: value, index: key, dictionary: Dictionary<key, value>) => boolean) {
+        return !this.matchAll(conditionFn)
     }
 }
 

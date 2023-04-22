@@ -1,23 +1,18 @@
-import {Dictionary} from "@/utils/classes/Dictionary";
+import {IdentifierDictionary} from "@/utils/classes/IdentifierDictionary";
+import {idMaterial} from "@/utils/entities/Material/Material";
 
 export interface ObjectWithIdMaterial {
-    idMaterial: string
+    idMaterial: idMaterial;
 }
 
-export class MaterialIdMap<objectWithId extends ObjectWithIdMaterial> extends Dictionary<string, objectWithId>{
-    public addMultiple(value: objectWithId[]){
-        value.map((value) => this.add(value))
-        return this
-    }
-
-    public add(value: objectWithId) {
-        this.set(value.idMaterial, value)
-        return this
+export class MaterialIdMap<objectWithId extends ObjectWithIdMaterial> extends IdentifierDictionary<idMaterial, objectWithId> {
+    public getObjectIdentifier(val: objectWithId): idMaterial {
+        return val.idMaterial;
     }
 
     public override getOrThrow(key: string) {
         const obj = this.get(key);
-        if(obj === undefined) {throw new Error("Cannot get material with id: " + key)}
-        return obj
+        if (obj === undefined) {throw new Error("Cannot get material with id: " + key);}
+        return obj;
     }
 }

@@ -1,7 +1,7 @@
 import {GachaBanner} from "@/utils/entities/Gacha/GachaBanner";
 import {SectionTitle} from "@/components/UI/Theme/SectionTitle";
-import {Form} from "react-bootstrap";
 import {z} from "zod";
+import {GachaCardInput} from "@/components/UI/Gacha/GachaCardInput";
 
 export function GachaBannerSummaryHeader(props: {
     gachaBanner: GachaBanner,
@@ -14,27 +14,18 @@ export function GachaBannerSummaryHeader(props: {
         <div className={"flex flex-row align-items-center text-center"}>
             <>
                 <>Pulls left before pity:</>
-                <Form>
-                    <Form.Group className="mb-3">
-                        <Form.Label label="Guarranty" className="mb-3"></Form.Label>
-                        <Form.Control type="number"
-                                      placeholder="name@example.com"
-                                      value={props.value}
-                                      onChange={event => {
-                                          let num = z.number().parse(parseInt(event.target.value));
-                                          if (num < 1) {
-                                              props.setNbPulls(1);
-                                              return
-                                          }
-                                          if (num > 100) {
-                                              props.setNbPulls(100);
-                                              return
-                                          }
-                                          props.setNbPulls(num)
-                                      }
-                                      }/>
-                    </Form.Group>
-                </Form>
+                <GachaCardInput value={props.value} onChange={event => {
+                    let num = z.number().parse(parseInt(event.target.value));
+                    if (num < 1) {
+                        props.setNbPulls(1);
+                        return
+                    }
+                    if (num > 100) {
+                        props.setNbPulls(100);
+                        return
+                    }
+                    props.setNbPulls(num)
+                }}/>
             </>
         </div>
     </div>;

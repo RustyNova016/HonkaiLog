@@ -1,5 +1,7 @@
-import {MaterialQuantity} from "@/utils/entities/Material/MaterialQuantity";
+import {MaterialQuantityType} from "@/utils/entities/Material/MaterialQuantity";
 import {GachaBannerJSON} from "@/lib/Zod/Validations/GachaBannerJSONZod";
+import {GachaCost, GachaCostInterface} from "@/utils/entities/Gacha/GachaCost";
+import {MaterialIdMap} from "@/utils/classes/MaterialIdMap";
 
 /** An object corresponding to a gacha banner. */
 export class GachaBanner {
@@ -13,27 +15,32 @@ export class GachaBanner {
     nbPullsForGuaranty: number
 
     /** Cost to pull the gacha */
-    pullCost: {idMaterial: string, quantity: number}[]
+    possibleCosts = new MaterialIdMap<GachaCost>()
 
-    constructor(name: string, NbPullsForGuaranty: number, NbGuarantyForCompletion: number, pullCost: {idMaterial: string, quantity: number}[]) {
+    constructor(name: string, NbPullsForGuaranty: number, NbGuarantyForCompletion: number) {
         this.name = name;
-        this.pullCost = pullCost;
         this.nbPullsForGuaranty = NbPullsForGuaranty;
         this.nbGuarantyForCompletion = NbGuarantyForCompletion;
     }
 
-    public static parse(data: GachaBannerJSON): GachaBanner {
-        return new GachaBanner(
-            data.name,
-            data.nbPullsForGuaranty,
-            data.nbGuarantiesForBannerCompletion,
-            MaterialQuantity.parse(data.pullCost)
-        )
+    /** Number of pulls to complete the banner */
+    get nbPullsForCompletion(): number {
+        return this.nbPullsForGuaranty * this.nbGuarantyForCompletion;
+    }
+
+    public addCost(data: GachaCostInterface) {
+        this.possibleCosts.add(new GachaCost(data.idMaterial, data.cost, data.isMainCurrency, this))
+        return this
     }
 
     /** The cost for completing the banner */
-    public calcCostForCompletion(): MaterialQuantity {
-        return new MaterialQuantity(this.pullCost.material, this.pullCost.quantity * this.calcNBPullsForBannerCompletion())
+    public calcCostForCompletion(): MaterialQuantityType[] {
+        return this.possibleCosts.map(value => {
+            return {
+                idMaterial: value.idMaterial,
+                quantity: value.getTotalCostOfCompletion()
+            }
+        })
     }
 
     /** The number of pull for full banner completion */
@@ -41,13 +48,22 @@ export class GachaBanner {
         return this.nbPullsForGuaranty * this.nbGuarantyForCompletion;
     }
 
+    //TODO: Remove
     public export(): GachaBannerJSON {
         return {
             name: this.name,
             nbPullsForGuaranty: this.nbPullsForGuaranty,
             nbGuarantiesForBannerCompletion: this.nbGuarantyForCompletion,
-            pullCost: this.pullCost.toJSON()
+            pullCost: this.possibleCosts.toJSON()
         }
+    }
+
+    get mainCost() {
+        for (const possibleCost of this.possibleCosts.toValueArray()) {
+            if (possibleCost.isMainCurrency) {return possibleCost}
+        }
+
+        throw new Error("No main currency is set for banner: " + this.name)
     }
 }
 

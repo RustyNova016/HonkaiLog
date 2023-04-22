@@ -6,8 +6,9 @@ import {TimeframeSelection} from "@/app/history/[materialId]/timeframeSelection"
 import {LoadingIconWithText} from "@/components/UI/Loading/LoadingIcon";
 import {SectionTitle} from "@/components/UI/Theme/SectionTitle";
 import {Col, Row} from "@/lib/Bootstrap/Layout";
-import {MaterialBuilder, MaterialInfo} from "@/utils/entities/Material/MaterialBuilder";
+import {MaterialBuilder} from "@/utils/entities/Material/MaterialBuilder";
 import {MaterialHistoryCalculator} from "@/utils/entities/Material/MaterialHistoryCalculator";
+import {MaterialInfo} from "@/utils/types/materials/MaterialInfo";
 import dayjs from "dayjs";
 import {Suspense, useState} from "react";
 import FramedDiv from "../../../component/Layout/FramedDiv";

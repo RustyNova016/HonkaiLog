@@ -45,7 +45,7 @@ export function FOCABanner(props: FOCABannerParams) {
     const nextBannerCalculator = new GachaBannerCalculator(
         FOCAGachaBanner,
         historyCalculator,
-        bannerCalculator.getRemainingInventory()
+        bannerCalculator.getLeftoverInventory()
     )
 
     return <>
@@ -55,7 +55,7 @@ export function FOCABanner(props: FOCABannerParams) {
                               setNbItemGotten={setNbItemGotten}/>
 
             {
-                !bannerCalculator.canCompleteGacha() ?
+                !bannerCalculator.canCompleteTheBanner() ?
                     <IncompleteBannerBody bannerCalculator={bannerCalculator} gachaBanner={FOCAGachaBanner}/>
                     :
                     <p>

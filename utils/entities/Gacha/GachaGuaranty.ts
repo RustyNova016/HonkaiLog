@@ -1,4 +1,4 @@
-import {MaterialQuantity} from "@/utils/entities/Material/MaterialQuantity";
+import {MaterialQuantity, MaterialQuantityType} from "@/utils/entities/Material/MaterialQuantity";
 
 export class GachaGuaranty {
     public numberOfPullsNeeded: number;
@@ -9,7 +9,7 @@ export class GachaGuaranty {
         this.pullCost = pullCost;
     }
 
-    public getCostOfGuaranty(): MaterialQuantity {
+    public getCostOfGuaranty(): MaterialQuantityType {
         return new MaterialQuantity(
             this.pullCost.material,
             this.pullCost.quantity * this.numberOfPullsNeeded

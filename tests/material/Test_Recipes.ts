@@ -40,6 +40,7 @@ export const TierIVElecMatRecipes: MaterialRecipeJSON[] = [
 
 export const TimeSwirlRecipes: MaterialRecipeJSON[] = [
     {
+        name: "TimeStruc->TimeSwirl",
         require: [
             {id: "Time Structure", quantity: 6}
         ],
@@ -49,5 +50,27 @@ export const TimeSwirlRecipes: MaterialRecipeJSON[] = [
     }
 ]
 
+export const EtherFuelRecipes: MaterialRecipeJSON[] = [
+    {
+        name: "EtherFromTierIV",
+        require: [
+            {id: tierIVElecMat.id, quantity: 1 }
+        ],
+        produce: [
+            {id: EtherFuel.id, quantity: 4}
+        ]
+    }
+]
 
-
+export const G4ElecStigmaRecipes: MaterialRecipeJSON[] = [
+    {
+        name: "G4ElecStigma",
+        require: [
+            {id: tierIVElecMat.id, quantity: 140 }, //TODO: Add convectron and Other stig
+            {id: EtherFuel.id, quantity: 1100}
+        ],
+        produce: [
+            {id: "G4ElecStigma", quantity: 1}
+        ]
+    }
+]

@@ -31,9 +31,9 @@ export function GachaBannerSummary(props: GachaBannerSummaryProps) {
 
     const bannerCalculator = new GachaBannerCalculator(gachaBanner, historyCalculator, currentInventory, gachaBanner.nbPullsForGuaranty - nbPulls, 0)
 
-    const nextBannerCalculator = new GachaBannerCalculator(gachaBanner, historyCalculator, bannerCalculator.getRemainingInventory(), 0, 0)
+    const nextBannerCalculator = new GachaBannerCalculator(gachaBanner, historyCalculator, bannerCalculator.getLeftoverInventory(), 0, 0)
 
-    console.log("next banner inventory", nextBannerCalculator.currentInventory)
+    console.log("next banner inventory", nextBannerCalculator.inventory)
 
     return <>
         <FramedDiv sides={true} style={{width: "75%"}}>
@@ -41,7 +41,7 @@ export function GachaBannerSummary(props: GachaBannerSummaryProps) {
                                       setNbPulls={setNbPulls}/>
 
             {
-                !bannerCalculator.canCompleteGacha() ?
+                !bannerCalculator.canCompleteTheBanner() ?
                     <IncompleteBannerBody bannerCalculator={bannerCalculator} gachaBanner={gachaBanner}/>
                     :
                     <p>

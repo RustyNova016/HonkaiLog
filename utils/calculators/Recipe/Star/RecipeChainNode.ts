@@ -47,7 +47,7 @@ export class RecipeChainNode {
 
     public getChildren() {
         return this.recipeTable.toValueArray().map(recipe => {
-            const childInv = recipe.produceOne(this.inventoryAtNode.cloneShallow());
+            const childInv = recipe.unCraft(this.inventoryAtNode.cloneShallow());
             const childNode = new RecipeChainNode(childInv, this.table, this.builder, recipe, this);
 
             if (!childNode.isValid()) {return;}
@@ -56,15 +56,14 @@ export class RecipeChainNode {
     }
 
     public getCostFromStartNode_GCost() {return this.costFromStartNode.cloneShallow();}
-    public GCost() {return new MaterialInventory().getEuclideanDistanceTo(this.getCostFromStartNode_GCost())} // TODO: Put proper starting inventory
+    public GCost() {return this.targetInventory.getEuclideanDistanceTo(this.getCostFromStartNode_GCost()) + this.currentChain.totalNumberOfItems} // TODO: Put proper starting inventory
 
-    public HCost() {return this.targetInventory.getEuclideanDistanceTo(this.inventoryAtNode)}
+    public HCost() {return new MaterialInventory().getEuclideanDistanceTo(this.inventoryAtNode.getPositiveNonNullCounts())}
 
     public FCost() {return this.GCost() + this.HCost()}
 
     public getCostToEndNode_HCost() {
-        return this.targetInventory
-                   .cloneShallow()
+        return new MaterialInventory()
                    .removeInventory(this.inventoryAtNode.getPositiveNonNullCounts())
                    .addInventory(this.getIntermediaryMaterialsInv().invertQuantities().getPositiveNonNullCounts())
                    .getPositiveNonNullCounts();
@@ -96,11 +95,9 @@ export class RecipeChainNode {
     /** Return true if it has achieved the target */
     public hasAchievedTarget() {
         //const primaryMaterialsInv = this.getPrimaryMaterialsInv().invertQuantities().getPositiveNonNullCounts();
-        //const intermediaryMaterialsInv =
-        // this.getIntermediaryMaterialsInv().invertQuantities().getPositiveNonNullCounts();
+        const intermediaryMaterialsInv = this.getIntermediaryMaterialsInv().invertQuantities().getPositiveNonNullCounts();
         const finalMaterialsInv = this.getFinalMaterialsInv().getPositiveNonNullCounts();
-        return finalMaterialsInv.isSuperiorOrEqual(this.targetInventory)
-        && this.getMaterialsInDebt().length === 0
+        return intermediaryMaterialsInv.totalNumberOfItems === 0 && finalMaterialsInv.totalNumberOfItems  === 0
     }
 
     public isValid() {
@@ -141,3 +138,9 @@ export class RecipeChainNode {
     }
 }
 
+/** Get all the inventories that, through recipes, can produce the target inventory */
+function getInventoriesToProduceInventory(inv: MaterialInventory): {inventory: MaterialInventory, recipe: MaterialRecipe}[]{}
+
+/** Get all the irreducible inventories that, through recipes, can produce the target inventory
+ *  return undefined if there's not enough info to calculate it */
+function getBestPrimaryInvForInv(inv: MaterialInventory, pref): MaterialInventory | undefined {}

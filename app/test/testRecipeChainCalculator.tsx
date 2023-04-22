@@ -1,19 +1,28 @@
 import {MaterialDataEntity} from "@/utils/entities/MaterialDataEntity";
 import {MaterialInventory} from "@/utils/ORMEntities/Materials/inventory/MaterialInventory";
-import {TierIVElecMatRecipes} from "../../tests/material/Test_Recipes";
+import {
+    EtherFuelRecipes,
+    G4ElecStigmaRecipes,
+    TierIVElecMatRecipes,
+    TimeSwirlRecipes
+} from "../../tests/material/Test_Recipes";
 
 export function testRecipeChainCalculator(inventoryToTest: MaterialInventory) {
     const materialData = new MaterialDataEntity();
-    materialData.materialRecipes.fromJSON(TierIVElecMatRecipes)//.addFromJson(TimeSwirlRecipes)
+    materialData.materialRecipes
+                .insertMultipleFromJSON(TierIVElecMatRecipes)
+                .insertMultipleFromJSON(TimeSwirlRecipes)
+                .insertMultipleFromJSON(G4ElecStigmaRecipes)
+                //.insertMultipleFromJSON(EtherFuelRecipes);
 
-    const recipeStepTree = materialData.materialRecipes.getRecipeChainFinderForInventory(inventoryToTest);
-    recipeStepTree.generateStepsDepthFirst();
-    console.log(recipeStepTree);
+    const recipeChainFinder = materialData.materialRecipes.getRecipeChainFinderForInventory(inventoryToTest, ['Time Swirl', "EtherFuel", "EtherFuel"]);//
+    const bestChains = recipeChainFinder.getBestChainsAStar();
+    console.log(recipeChainFinder);
+    //console.log(`Done in ${recipeChainFinder.processCounter} steps`)
 
-    //let prev;
-    //for (const completedPath of recipeStepTree.allSteps.bestCompletedSteps.toValueArray()) {
-    //    completedPath.debug_logs()
-    //    console.log("--------------------")
-    //    //prev = completedPath
-    //}
+    console.log("Here's the best completed chains");
+    for (const completedChain of bestChains) {
+        completedChain.debug_log()
+        console.log("--------------------");
+    }
 }

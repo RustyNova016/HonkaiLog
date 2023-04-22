@@ -35,7 +35,7 @@ export class RecipeChainBuilder {
         const whitelist = primaryMaterials.getPermutations();
 
         // TO DO: Make proper whitelist generator
-        return whitelist.map(primaryMat => new RecipeFinderAStar(new MaterialInventory(), primaryMat, this));
+        return whitelist.map(primaryMat => new RecipeFinderAStar(this.invTargetMaterials, primaryMat, this));
     }
 
     public getBestChains() {

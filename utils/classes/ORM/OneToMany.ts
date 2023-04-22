@@ -1,14 +1,34 @@
+import {DataTable} from "@/utils/classes/ORM/DataTable";
 import {Dictionary} from "@/utils/classes/Dictionary";
-import {DataTable, DataTableItem} from "@/utils/classes/ORM/DataTable";
 import {CollectionOfUnique} from "@/utils/classes/CollectionOfUnique";
 
-export class OneToMany<leftTableItem extends DataTableItem, rightTableItem extends DataTableItem> extends Dictionary<string, CollectionOfUnique<string>> {
-    private leftTable: DataTable<leftTableItem>;
-    private rightTable: DataTable<rightTableItem>;
+export class OneToMany<leftTable extends DataTable<any>, rightTable extends DataTable<any>> extends Dictionary<string, CollectionOfUnique<string>> {
+    constructor(private readonly _leftDataTable: leftTable | undefined = undefined, private readonly _rightDataTable: rightTable | undefined = undefined) {super();}
 
-    constructor(leftTable: DataTable<leftTableItem>, rightTable: DataTable<rightTableItem>) {
-        super()
-        this.leftTable = leftTable;
-        this.rightTable = rightTable;
+    public link(keyId: string, idToAdd: string) {
+        this.getOrCreate(keyId).push(idToAdd);
+    }
+
+    private create(id: string) {
+        this.set(id, new CollectionOfUnique<string>());
+    }
+
+    public unlink(keyId: string, idToAdd: string) {
+        this.getOrCreate(keyId).remove(idToAdd);
+    }
+
+    public getOrCreate(id: string) {
+        const getted = this.get(id);
+        if (getted !== undefined) {return getted;}
+
+        this.create(id);
+        return this.getOrThrow(id);
+    }
+
+    public getItemsRight(id: string) {
+        for (const item of this.toArray()) {
+            if(item[1].includes(id)) {return item[0]}
+        }
+        return
     }
 }

@@ -5,6 +5,7 @@ import {IdChecklist} from "@/utils/classes/ORM/IdChecklist";
 import {RecipeChainBuilder} from "@/utils/calculators/Recipe/RecipeChainBuilder";
 import {RecipeChainTable} from "@/utils/ORMEntities/Recipes/inventory/RecipeChainTable";
 import {OneToMany} from "@/utils/classes/ORM/OneToMany";
+import {MaterialInventory} from "@/utils/ORMEntities/Materials/inventory/MaterialInventory";
 
 export class RecipeChainFinderStep_Table extends DataTable<RecipeChainFinderStep> {
     public allRecipeChains;
@@ -13,6 +14,7 @@ export class RecipeChainFinderStep_Table extends DataTable<RecipeChainFinderStep
     private readonly builder: RecipeChainBuilder;
     private irreducibleSteps = new IdChecklist();
     private readonly recipes;
+    public step_TargetInventory = new ManyToMany();
 
     constructor(builder: RecipeChainBuilder) {
         super();
@@ -52,6 +54,7 @@ export class RecipeChainFinderStep_Table extends DataTable<RecipeChainFinderStep
     public override insert(step: RecipeChainFinderStep) {
         step.knownParents.forEach(parent => {this.parentChildRelation.linkIds(parent.id, step.id)})
         step.knownChildren.forEach(child => {this.parentChildRelation.linkIds(step.id, child.id)})
+        this.step_TargetInventory.linkIds(step.id, step.targetInventory.id)
         this.irreducibleSteps.setIfNew(step.id, step.isIrreducible);
         return super.insert(step);
     }

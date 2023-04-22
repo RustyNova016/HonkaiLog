@@ -1,7 +1,7 @@
 import {DataTable} from "@/utils/classes/ORM/DataTable";
 import {RecipeDataTable} from "@/utils/ORMEntities/Recipes/RecipeDataTable";
 import {MaterialInventory} from "@/utils/ORMEntities/Materials/inventory/MaterialInventory";
-import {RecipeChainFinderStep} from "@/utils/calculators/Recipe/RecipeChainFinderStep";
+import {RecipeChainFinderStepOld} from "@/utils/calculators/Recipe/ChainStep/RecipeChainFinderStepOld";
 import {RecipeChainTable} from "@/utils/ORMEntities/Recipes/inventory/RecipeChainTable";
 import {IdChecklist} from "@/utils/classes/ORM/IdChecklist";
 import {RecipeChain} from "@/utils/ORMEntities/Recipes/inventory/RecipeChain";
@@ -11,7 +11,14 @@ import {ManyToMany} from "@/utils/classes/ORM/ManyToMany";
 import {RecipeChainCostCategoryTable} from "@/utils/calculators/Recipe/RecipeChainCostCategory";
 import {OneToMany} from "@/utils/classes/ORM/OneToMany";
 
-export class RecipeChainFinder extends DataTable<RecipeChainFinderStep> {
+export interface RecipeChainFinderInterface {
+    irreducibleSteps: RecipeChainFinderStepOld
+}
+
+
+
+
+export class RecipeChainFinder extends DataTable<RecipeChainFinderStepOld> implements RecipeChainFinderInterface {
     public readonly availableRecipes: RecipeDataTable;
     public readonly parentChildrenSteps = new ManyToMany();
     public processCounter = 0;
@@ -41,6 +48,8 @@ export class RecipeChainFinder extends DataTable<RecipeChainFinderStep> {
         this.getOrCreate("");
     }
 
+    irreducibleSteps: RecipeChainFinderStepOld;
+
     /** Return the best steps of the array */
     get bestCompletedSteps() {
         return this.bestCompletedChains.bests.map(id => this.getOrThrow(id));
@@ -56,7 +65,7 @@ export class RecipeChainFinder extends DataTable<RecipeChainFinderStep> {
 
     public create(idStep: string) {
         this.insertOrThrow(
-            new RecipeChainFinderStep(this.targetInventory, this.allRecipeChains.getOrThrow(idStep), this));
+            new RecipeChainFinderStepOld(this.targetInventory, this.allRecipeChains.getOrThrow(idStep), this));
     }
 
     public generateStepsDepthFirst() {
@@ -77,7 +86,7 @@ export class RecipeChainFinder extends DataTable<RecipeChainFinderStep> {
     }
 
     public getParentStepsOf(idChain: string) {
-        return this.parentChildrenSteps.getParentIdsOf(idChain).map(idParent => this.getOrCreate(idParent));
+        return this.parentChildrenSteps.getFromLeftTable(idChain).map(idParent => this.getOrCreate(idParent));
     }
 
     private addNewChain(chain: RecipeChain, parentChainId: string) {
@@ -104,7 +113,7 @@ export class RecipeChainFinder extends DataTable<RecipeChainFinderStep> {
         this.unexploredChains.set(step.id, false);
 
         //this._completedChainList.set(step.id, step.isComplete)
-        this.bestCompletedChains.set(step.id, step.isComplete);
+        this.bestCompletedChains.set(step.id, step.isIrreducible);
 
         //this._endedChains.set(step.id, step.isEndOfChain)
         this._toppestEndOfChains.set(step.id, step.isEndOfChain);
@@ -127,3 +136,4 @@ export class RecipeChainFinder extends DataTable<RecipeChainFinderStep> {
         console.log(`i:${this.processCounter} - r:${this.unexploredChains.trueValues.length} - s${this.skippedCount} (${skippedPercent}%) - t:${allStepCount} (${percentComplete}%) - T${timeSpent} - i/ms:${iPerMs} -`, ...args);
     }
 }
+

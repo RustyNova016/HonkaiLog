@@ -1,9 +1,9 @@
-import {Material} from "@/utils/entities/Material/Material";
+import {idMaterial, Material} from "@/utils/entities/Material/Material";
 import {z} from "zod";
 import {MaterialQuantityJSONZod} from "@/utils/entities/Material/validations/MaterialQuantity.JSONZod";
 
 export type MaterialQuantityType = {
-    idMaterial: string;
+    idMaterial: idMaterial;
     quantity: number;
 }
 
@@ -29,12 +29,6 @@ export class MaterialQuantity implements MaterialQuantityType {
         }
     }
 
-    public static parse(data: z.infer<typeof MaterialQuantityJSONZod>): MaterialQuantity {
-        return new MaterialQuantity(
-            Material.parse(data.material),
-            data.quantity
-        )
-    }
 }
 
 export interface MaterialQuantityInterface {

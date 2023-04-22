@@ -2,6 +2,7 @@ import {toPascalCase} from "@/utils/functions/ToPascalCase";
 import {MaterialInventory} from "@/utils/ORMEntities/Materials/inventory/MaterialInventory";
 import {MaterialRecipeJSON} from "@/utils/types/materials/MaterialInfo";
 import {MaterialDataTable} from "@/utils/ORMEntities/Materials/MaterialDataTable";
+import {RecipeDataTable} from "@/utils/ORMEntities/Recipes/RecipeDataTable";
 
 
 export class MaterialRecipe {
@@ -15,8 +16,12 @@ export class MaterialRecipe {
         this.id = toPascalCase(this.name)
     }
 
-    get consumedMaterials() {
+    get materialIdConsumed() {
         return this.materialsRequired.map(matQuantity => matQuantity.id)
+    }
+
+    get materialIdProduced() {
+        return this.materialProduced.map(matQuantity => matQuantity.id)
     }
 
     /*get materialsRequiredWithoutTime() {
@@ -96,6 +101,47 @@ export class MaterialRecipe {
     /** Reverse use recipe on the inventory */
     public unCraft(currentInventory: MaterialInventory) {
         return currentInventory.removeInventory(this.materialProduced).addInventory(this.materialsRequired);
+    }
+
+    /** How much a recipe is suitable for a material inventory */
+    public getRecipeCompatibility(matInvWanted: MaterialInventory, currentMatInv: MaterialInventory) {
+        return this.getRatioProvided(matInvWanted) + this.getRatioOfRequired(currentMatInv)
+    }
+
+    public getRatioOfRequired(currentMatInv: MaterialInventory){
+        let ratioOfNeeded = 0
+
+        for (const matQuantRequired of this.materialsRequired.toValueArray()) {
+            const matQuantGotten = currentMatInv.get(matQuantRequired.id);
+            if(matQuantGotten === undefined || matQuantGotten.quantity === 0) {continue}
+
+            let provided_needed_ratio = matQuantGotten.quantity / matQuantRequired.quantity
+            ratioOfNeeded += provided_needed_ratio > 1? 1 : provided_needed_ratio
+        }
+
+        return ratioOfNeeded / this.materialsRequired.toArray().length
+    }
+
+    public getRatioProvided(matInvWanted: MaterialInventory){
+        let ratioOfProvided = 0
+
+        for (const matQuantWanted of matInvWanted.toValueArray()) {
+            const matQuantProduced = this.materialProduced.get(matQuantWanted.id);
+            if(matQuantProduced === undefined || matQuantProduced.quantity === 0) {continue}
+
+            let provided_needed_ratio = matQuantProduced.quantity / matQuantWanted.quantity
+            ratioOfProvided += provided_needed_ratio > 1? 1 : provided_needed_ratio
+        }
+
+        return ratioOfProvided / matInvWanted.toArray().length
+    }
+
+    public produceFinalMaterials(recipeTable: RecipeDataTable) {
+        return recipeTable.primaryMaterialsId.includes(this.id)
+    }
+
+    public producePrimaryMaterials(recipeTable: RecipeDataTable) {
+        return recipeTable.primaryMaterialsId.includes(this.id)
     }
 }
 

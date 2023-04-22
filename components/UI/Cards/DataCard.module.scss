@@ -1,0 +1,52 @@
+.DataCard-Container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  background-color: #323552;
+  border-radius: 25px;
+
+  padding: 30px;
+
+
+  color: #e7e7e7;
+
+  .rightSide {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    width: 15%;
+    max-width: 128px;
+  }
+
+  .Accented {
+    //aspect-ratio: 1/1;
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: flex-end;
+
+    color: #FFFFFF;
+    font-size: 2em;
+    font-weight: 600;
+  }
+
+  .leftSide {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .title {
+    color: #FFFFFF;
+    font-size: 1.25em;
+    font-weight: 600;
+
+    height: fit-content;
+    margin-bottom: 5px;
+  }
+
+  .Content {
+
+  }
+}
