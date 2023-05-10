@@ -56,7 +56,7 @@
     "@types/node": "18.16.0",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
-    "@types/validator": "^13.7.14",
+    "@types/validator": "^13.7.17",
     "autoprefixer": "^10.4.14",
     "eslint": "8.39.0",
     "jest": "^28.1.3",
